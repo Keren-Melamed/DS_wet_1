@@ -1,3 +1,6 @@
+#ifndef WET1_MOVIE_H
+#define WET1_MOVIE_H
+
 #include "wet1util.h"
 
 
@@ -35,3 +38,4 @@ class Movie
         Genre m_genre;
 
 };
+#endif
