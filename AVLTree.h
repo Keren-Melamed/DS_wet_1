@@ -12,13 +12,21 @@ class AVLTree
 
         ~AVLTree();
         
-        Node<T>* insertValue(Node<T>* root, T value);
+        int height(Node<T>* node);
+
+        int heightDiff(Node<T>* node);
+
         void removeValue(*Node<T> value);
 
-        void roll_RR();;
-        void roll_LR();
-        void roll_RL();;
-        void roll_LL();;
+        Node<T>* insertValue(Node<T>* root, T value);
+
+        Node<T>* balance(Node<T>* node);
+
+        Node<T>* roll_RR(Node<T>* node);
+        Node<T>* roll_LR(Node<T>* node);
+        Node<T>* roll_RL(Node<T>* node);
+        Node<T>* roll_LL(Node<T>* node);
+        //assuming there's an = operator for node, the default should work i think, might cause a leak though cause copying pointers
         
     private:
         Node<T>* m_root;
@@ -36,22 +44,129 @@ AVLTree<T>::~AVLTree(){}
 
 /**************************AVLTree functions*****************************/
 
-template<class T>
-Node<T>* AVLTree<T>::insertValue(Node<T>* root, T value)
-{
-    if(root == NULL)
-    {
-        root = new Node*(value);
-        return root;
-    }
-    else if (root->getValue() >= value )
-    {
 
+template<class T>
+int AVLTree<T>::height(Node<T>* node)
+{
+    int nodeHeight = 0;
+
+    if (node != NULL)
+    {
+       int leftNodeHeight = height(node->getLeftNode());
+       int rightNodeHeight = height(node->getRightNode());
+       if (leftNodeHeight >= rightNodeHeight)
+       {
+            nodeHeight = leftNodeHeight + 1;
+       }
+       else
+       {
+            nodeHeight = rightNodeHeight +1;
+       }
     }
-    else if (root->getValue() < value)
+
+    return nodeHeight;
 }
 
+template<class T>
+int AVLTree<T>::heightDiff(Node<T>* node)
+{
+    return (height(node->getLeftNode()) - height(node->getRightNode()));
+}
 
+template<class T>
+Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
+{
+    if(node == NULL)
+    {
+        node = new Node*(value);
+        return node;
+    }
+    else if (node->getValue() > value )
+    {
+        node->setLeftNode() = insertValue(node->getLeftNode(), value);
+        node = balance(node);
+    }
+    else if (node->getValue() <= value)
+    {
+        node->setRightNode() = insertValue(node->getRightNode(), value);
+        node = balance(node);
+    }
+    return node;
+}
+
+template<class T>
+Node<T>* AVLTree<T>::balance(Node<T>* node)
+{
+    int diff = heightDiff(node);
+
+    else if (diff >= 2)
+    {
+        if (heightDiff(node->getLeftNode()) >= 1)
+        {
+            node = roll_LL(node);
+        }
+        else
+        {
+            node = roll_LR(node);
+        }
+    }
+
+    else if(diff <= -2)
+    {
+        if(heightDiff(node->getRightNode()) >= 1)
+        {
+            node = roll_RR(node);
+        }
+        else
+        {
+            node = roll_RL(node);
+        }
+    }
+    return node;
+}
+
+template<class T>
+Node<T>* AVLTree<T>::roll_RR(Node<T>* node)
+{
+    Node<T>* parent = node, topParent = node->getRightNode();
+    parent->setRightNode() = topParent.getLeftNode();
+    topParent.setLeftNode() = parent;
+    return topParent;
+    
+}
+
+template<class T>
+Node<T>* AVLTree<T>::roll_LR(Node<T>* node)
+{
+    Node<T>* parent = node, topParent = node->getLeftNode(), topParent2 = node->getLeftNode()->getRightNode();
+    parent->setLeftNode() = topParent2.getRightNode();
+    topParent.setRightNode() = topParent2.getLeftNode();
+    topParent2.setRightNode() = parent;
+    topParent2.setLeftNode() = topParent;
+
+    return topParent2;
+}
+
+template<class T>
+Node<T>* AVLTree<T>::roll_RL(Node<T>* node)
+{
+    Node<T>* parent = node, topParent = node->getRightNode(), topParent2 = node->getRightNode()->getLeftNode();
+    parent->getRightNode() = topParent2.getLeftNode();
+    topParent.setLeftNode() = topParent2.getRightNode();
+    topParent2.setLeftNode() = parent;
+    topParent2.setRightNode() = topParent;
+
+    return topParent2;
+}
+
+template<class T>
+Node<T>* AVLTree<T>::roll_LL(Node<T>* node)
+{
+    Node<T>* parent = node, topParent = node->getLeftNode();
+    parent->setLeftNode() = topParent.getRightNode();
+    topParent.setRightNode() = parent;
+    return topParent;
+}
 
 
 #endif
