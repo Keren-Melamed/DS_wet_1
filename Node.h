@@ -71,6 +71,13 @@ class Node {
         T& getValue();
 
         /*
+        * returns the height of the node
+        * @return
+        *       m_height
+        */
+        int getHeight();
+
+        /*
         * setter for left node's pointer
         *
         * @param leftNode - pointer for the new left node
@@ -91,19 +98,28 @@ class Node {
         /*
         * setter for the current value saved in the node
         *
-        * @param value - the new Node value
+        * @param value - the Node's new value
         * @result
         *       void
         */
         void setValue(T value);
 
-    protected:
+        /*
+        * setter for the current height of the node
+        *
+        * @param height - the Node's new height
+        * @result
+        *       void
+        */
+       void setHeight(int height);
 
+    private:
         Node* m_leftNode;
         Node* m_rightNode;
 
-    private:
         T m_value;
+
+        int m_height;
 
 };
 
@@ -113,22 +129,23 @@ class Node {
 
 template<class T>
 Node<T>::Node() :
-    m_leftNode(NULL), m_rightNode(NULL), m_value(NULL)
+    m_leftNode(NULL), m_rightNode(NULL), m_value(NULL), m_height(1)
 {}  
 
 template<class T>
 Node<T>::Node(T& value) :
-    m_leftNode(NULL), m_rightNode(NULL), m_value(value)
+    m_leftNode(NULL), m_rightNode(NULL), m_value(value), m_height(1)
 {}
 
 template<class T>
 Node<T>::Node(const T& value) :
-    m_leftNode(NULL), m_rightNode(NULL), m_value(value),
+    m_leftNode(NULL), m_rightNode(NULL), m_value(value), m_height(1)
 {}
 
 template<class T>
 Node<T>::Node(const Node& originalNode) :
-    m_leftNode(originalNode.m_leftNode), m_rightNode(originalNode.m_rightNode), m_value(originalNode.m_value)
+    m_leftNode(originalNode.m_leftNode), m_rightNode(originalNode.m_rightNode), m_value(originalNode.m_value),
+    m_height(originalNode.getHeight())
 {}
 
 template<class T>
@@ -175,9 +192,17 @@ void Node<T>::setValue(T value)
     m_value == value;
 }
 
+template<class T>
+int Node<T>::getHeight()
+{
+    return m_height;
+}
 
-
-
+template<class T>
+void Node<T>::setHeight(int height)
+{
+    m_height = height;
+}
 
 
 
