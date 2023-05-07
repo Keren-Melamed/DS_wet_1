@@ -12,11 +12,13 @@ class AVLTree
 
         ~AVLTree();
         
-        int height(Node<T>* node);
+        int height(Node<T>* node);//maybe we should change it so that each node contains the height so the time complexity is lower
 
         int heightDiff(Node<T>* node);
 
-        void removeValue(*Node<T> value);
+        Node<T>* nodeWithMimumValue(Node<T>* node);
+
+        Node<T>* removeValue(Node<T>* node, T value);
 
         Node<T>* insertValue(Node<T>* root, T value);
 
@@ -44,7 +46,6 @@ AVLTree<T>::~AVLTree(){}
 
 /**************************AVLTree functions*****************************/
 
-
 template<class T>
 int AVLTree<T>::height(Node<T>* node)
 {
@@ -71,6 +72,68 @@ template<class T>
 int AVLTree<T>::heightDiff(Node<T>* node)
 {
     return (height(node->getLeftNode()) - height(node->getRightNode()));
+}
+
+template<class T>
+Node<T>* AVLTree<T>::nodeWithMimumValue(Node<T>* node)
+{
+    Node<T>* current = node;
+    while (current->getLeftNode() != NULL)
+    {
+        current = current->getLeftNode();
+    }
+    return current;
+}
+
+template<class T>
+Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
+{
+    if(node == NULL)
+    {
+        return node;
+    }
+
+    else if(value > node->getValue())
+    {
+        node->getRightNode() = removeValue(node->getRightNode(), value);
+    }
+
+    else if(value < node->getValue())
+    {
+        node->getLeftNode() = removeValue(node->getLeftNode(), value);
+    }
+
+    else
+    {
+        if(node->getLeftNode() == NULL || node->getRightNode() == NULL)
+        {
+            Node<T>* tmp = node->getLeftNode() ? node->getLeftNode() : node->getRightNode();
+            if(tmp == NULL)
+            {
+                tmp = node;
+                node = NULL;
+            }
+            else
+            {
+                *root = *tmp;
+            }
+            free(tmp);
+        }
+
+        else
+        {
+            Node *temp = nodeWithMimumValue(node->getRightNode());
+            node->getValue() = temp->getValue();
+            node->getRightNode() = deleteNode(node->getRightNode(), temp->getValue());
+        }
+    }
+    if (node = NULL)
+    {
+        return node;
+    }
+
+    balance(node);
+    return node;
 }
 
 template<class T>
