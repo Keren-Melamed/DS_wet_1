@@ -16,7 +16,7 @@ class Node {
         Node();
 
         /*
-        * c'tor of theNode class with a set value
+        * c'tor of the Node class with a set value
         *
         * @param value - the value to be saved in the node
         * @result
@@ -25,7 +25,7 @@ class Node {
         Node(T& value);
 
         /*
-        * c'tor of theNode class with a set const value
+        * c'tor of the Node class with a set const value
         *
         * @param value - the value to be saved in the node
         * @result
@@ -47,12 +47,19 @@ class Node {
         /**** Getters and Setters ****/
 
         /*
-        * returns the pointer to th enext node
+        * returns the pointer to the left node
         *
         * @return
-        *       m_nextNode
+        *       m_leftNode
         */
         Node* getLeftNode() const;
+
+        /*
+        * returns the pointer to the right node
+        *
+        * @return
+        *       m_rightNode
+        */
         Node* getRightNode() const;
 
         /*
@@ -64,13 +71,21 @@ class Node {
         T& getValue();
 
         /*
-        * setter for next node pointer
+        * setter for left node's pointer
         *
-        * @param nextNode - pointer for the next node
+        * @param leftNode - pointer for the new left node
         * @result
         *       void
         */
         void setLeftNode(Node* leftNode);
+
+        /*
+        * setter for right node's pointer
+        *
+        * @param rightNode - pointer for the new right node
+        * @result
+        *       void
+        */
         void setRightNode(Node* rightNode);
 
         /*
