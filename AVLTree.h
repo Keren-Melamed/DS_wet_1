@@ -8,33 +8,89 @@ class AVLTree
 {
     public:
 
+        /**** c'tors amd d'tors ****/
+
+        /*
+        *c'tor of the AVLTree class
+        *
+        * @result
+        *       an instance of AVLTree
+        */
         AVLTree();
 
+        /*
+        * copy c'tor
+        */
+        AVLTree(const AVLTree& originalTree);//TODO
+
+        /*
+        * d'tor
+        */
         ~AVLTree();
         
-        int height(Node<T>* node);//maybe we should change it so that each node contains the height so the time complexity is lower
+        /**** Methods ****/
 
+        /*
+        * calculates the height difference between the right and left nodes
+        * @param node - the nodes who's son's heights need to be compared
+        * @return
+        *       height difference between left and right nodes
+        */
         int heightDiff(Node<T>* node);
 
+        /*
+        * calculates the height of a given node
+        * @param node - the nodes who's height needs ot be calculated
+        * @return
+        *       the node's height
+        */
+        int calculateHeight(Node<T>* node);
+
+        /*
+        * finds the node with the lowest value
+        * @param node - node to start counting from
+        * @return
+        *       pointer to the node with thte lowest value in the tree
+        */
         Node<T>* nodeWithMimumValue(Node<T>* node);
 
+        /*
+        * removes the node from the tree and rebalances it via recursion
+        * @param node - the node that needs to be removed
+        * @return
+        *       a pointer to the node that is to be put in the appropriate spot
+        */
         Node<T>* removeValue(Node<T>* node, T value);
 
+        /*
+        * inserts node into the tree with the corrosponding value and rebalances it via recursion
+        * @param node - the node that needs to be added
+        *        value - the value of the added node
+        * @return
+        *       a pointer to the node that is to be put in the appropriate spot
+        */
         Node<T>* insertValue(Node<T>* root, T value);
 
+        /*
+        * balances the tree from this root downwards
+        * @param node - the root that is to be balanced
+        * @return
+        *       a pointer to the node that is to be put in the appropriate spot
+        */
         Node<T>* balance(Node<T>* node);
 
+    private:
+
+        /*
+        * different methods for balancing an AVLTree 
+        */
         Node<T>* roll_RR(Node<T>* node);
         Node<T>* roll_LR(Node<T>* node);
         Node<T>* roll_RL(Node<T>* node);
         Node<T>* roll_LL(Node<T>* node);
         //assuming there's an = operator for node, the default should work i think, might cause a leak though cause copying pointers
         
-    private:
         Node<T>* m_root;
-
-
-
 };
 
 template<class T>
@@ -46,26 +102,18 @@ AVLTree<T>::~AVLTree(){}
 
 /**************************AVLTree functions*****************************/
 
+
 template<class T>
-int AVLTree<T>::height(Node<T>* node)
+int AVLTree<T>::calculateHeight(Node<T>* node)
 {
-    int nodeHeight = 0;
-
-    if (node != NULL)
+    if (node->getLeftNode()->getHeight() >= node->getRightNode()->getHeight())
     {
-       int leftNodeHeight = height(node->getLeftNode());
-       int rightNodeHeight = height(node->getRightNode());
-       if (leftNodeHeight >= rightNodeHeight)
-       {
-            nodeHeight = leftNodeHeight + 1;
-       }
-       else
-       {
-            nodeHeight = rightNodeHeight +1;
-       }
+        return node->getLeftNode()->getHeight();
     }
-
-    return nodeHeight;
+    else
+    {
+        return node->getRightNode()->getHeight();
+    }
 }
 
 template<class T>
@@ -147,11 +195,13 @@ Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
     else if (node->getValue() > value )
     {
         node->setLeftNode() = insertValue(node->getLeftNode(), value);
+        node->setHeight(calculateHeight(node));
         node = balance(node);
     }
     else if (node->getValue() <= value)
     {
         node->setRightNode() = insertValue(node->getRightNode(), value);
+        node->setHeight(calculateHeight(node));
         node = balance(node);
     }
     return node;
