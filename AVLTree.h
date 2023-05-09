@@ -119,7 +119,7 @@ int AVLTree<T>::calculateHeight(Node<T>* node)
 template<class T>
 int AVLTree<T>::heightDiff(Node<T>* node)
 {
-    return (height(node->getLeftNode()) - height(node->getRightNode()));
+    return (getHeight(node->getLeftNode()) - getHeight(node->getRightNode()));
 }
 
 template<class T>
