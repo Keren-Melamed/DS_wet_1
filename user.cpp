@@ -1,31 +1,52 @@
 #ifndef USER_H_
 #define USER_H_
 
-#include "wet1util.h"
+#include "user.h"
 
-class User{
-    private:
-        int id;
-        bool is_vip;
-        //Tree* user_group
-        int[4] movies_user_watched;
+User(int user_id, bool is_Vip, Group* user_group, int[4] movies_watched)
+    :m_user_id(user_id), m_is_vip(is_vip), m_user_group(user_group){
 
-    public:
-        User(int user_id, bool is_Vip, ... , int[4] movies_watched):id(user_id), is_vip(is_Vip), ...{
-            for(int i = 0; i <= 4; i++){
-                movies_user_watched[i] = movies_watched[i];
-            }
-        }
-
-        virtual ~User(){
-            free(movies_user_watched);
-        }
-
-        User(const User& user) = default;
-        
-
-
+    for(int i = 0; i <= 4; i++){
+        m_movies_user_watched[i] = movies_user_watched[i];
+    }
 }
+
+~User(){
+    free(m_movies_user_watched);
+}
+
+User(const User& user) = default;
+
+int User::getId(){
+    return m_id;
+}
+
+bool getIsVip(){
+    return m_is_vip;
+}
+
+Group* getGroup(){
+    return m_user_group;
+}
+
+int getMoviesUserWatchedInGenre(Genre genre){
+    
+    if(genre != NONE){
+        return m_movies_watched[genre];
+    }
+    
+    else{
+        int value=0;
+
+        for(int i = 0; i <=4; i++;){
+            value += m_movies_watched[i];
+        }
+        return value;
+    }
+    //might throw error bc not every path returns value?
+}
+
+
 
     
 
