@@ -44,7 +44,7 @@ class AVLTree
         * @return
         *       the node's height
         */
-        int calculateHeight(Node<T>* node);
+        int calculateHeight(Node<T>* node) const;
 
         /*
         * finds the node with the lowest value
@@ -52,7 +52,7 @@ class AVLTree
         * @return
         *       pointer to the node with thte lowest value in the tree
         */
-        Node<T>* nodeWithMimumValue(Node<T>* node);
+        Node<T>* nodeWithMinimumValue(Node<T>* node) const;
 
         /*
         * removes the node from the tree and rebalances it via recursion
@@ -104,7 +104,7 @@ AVLTree<T>::~AVLTree(){}
 
 
 template<class T>
-int AVLTree<T>::calculateHeight(Node<T>* node)
+int AVLTree<T>::calculateHeight(Node<T>* node) const
 {
     if (node->getLeftNode()->getHeight() >= node->getRightNode()->getHeight())
     {
@@ -115,15 +115,34 @@ int AVLTree<T>::calculateHeight(Node<T>* node)
         return node->getRightNode()->getHeight();
     }
 }
+//maybe make this -1 at the end? cause the height of a single node should be zero
 
 template<class T>
 int AVLTree<T>::heightDiff(Node<T>* node)
 {
-    return (node->getLeftNode()->getHeight() - node->getRightNode()->getHeight());
+    int left, right;
+    if (node->getLeftNode() == NULL)
+    {
+        left = 0;
+    }
+    else
+    {
+        left = node->getLeftNode()->getHeight();
+    }
+
+    if (node->getRightNode() == NULL)
+    {
+        right = 0;
+    }
+    else
+    {
+        right = node->getRightNode()->getHeight();
+    }
+    return (left - right);
 }
 
 template<class T>
-Node<T>* AVLTree<T>::nodeWithMimumValue(Node<T>* node)
+Node<T>* AVLTree<T>::nodeWithMinimumValue(Node<T>* node) const
 {
     Node<T>* current = node;
     while (current->getLeftNode() != NULL)
@@ -165,17 +184,17 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
             {
                 *node = *tmp;
             }
-            free(tmp);
+            delete(tmp);
         }
 
         else
         {
             Node<T>* temp = nodeWithMimumValue(node->getRightNode());
             node->getValue() = temp->getValue();
-            node->getRightNode() = deleteNode(node->getRightNode(), temp->getValue());
+            node->setRightNode(deleteNode(node->getRightNode(), temp->getValue()));
         }
     }
-    if (node = NULL)
+    if (node == NULL)
     {
         return node;
     }
@@ -194,18 +213,19 @@ Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
     }
     else if (node->getValue() > value )
     {
-        node->setLeftNode() = insertValue(node->getLeftNode(), value);
+        node->setLeftNode(insertValue(node->getLeftNode(), value));
         node->setHeight(calculateHeight(node));
         node = balance(node);
     }
     else if (node->getValue() <= value)
     {
-        node->setRightNode() = insertValue(node->getRightNode(), value);
+        node->setRightNode(insertValue(node->getRightNode(), value));
         node->setHeight(calculateHeight(node));
         node = balance(node);
     }
     return node;
 }
+//might need to check that the right and eft nodes arnt null
 
 template<class T>
 Node<T>* AVLTree<T>::balance(Node<T>* node)

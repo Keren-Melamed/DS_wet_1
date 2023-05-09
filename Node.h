@@ -14,6 +14,7 @@ class Node {
         *       an instance of Node
         */
         Node();
+        //do we need this?
 
         /*
         * c'tor of the Node class with a set value
@@ -23,6 +24,7 @@ class Node {
         *       an instance of Node with a saved value
         */
         Node(T& value);
+        //do we need this?
 
         /*
         * c'tor of the Node class with a set const value
@@ -68,14 +70,14 @@ class Node {
         * @return
         *       m_value
         */
-        T& getValue();
+        T& getValue() const;
 
         /*
         * returns the height of the node
         * @return
         *       m_height
         */
-        int getHeight();
+        int getHeight() const;
 
         /*
         * setter for left node's pointer
@@ -102,7 +104,7 @@ class Node {
         * @result
         *       void
         */
-        void setValue(T value);
+        void setValue(const T& value);
 
         /*
         * setter for the current height of the node
@@ -111,7 +113,7 @@ class Node {
         * @result
         *       void
         */
-       void setHeight(int height);
+        void setHeight(const int height);
 
     private:
         Node* m_leftNode;
@@ -129,13 +131,14 @@ class Node {
 
 template<class T>
 Node<T>::Node() :
-    m_leftNode(NULL), m_rightNode(NULL), m_value(NULL), m_height(1)
+    m_leftNode(NULL), m_rightNode(NULL), m_value(), m_height(1)
 {}  
 
 template<class T>
 Node<T>::Node(T& value) :
     m_leftNode(NULL), m_rightNode(NULL), m_value(value), m_height(1)
 {}
+//should the beggining height be 1?
 
 template<class T>
 Node<T>::Node(const T& value) :
@@ -144,7 +147,7 @@ Node<T>::Node(const T& value) :
 
 template<class T>
 Node<T>::Node(const Node& originalNode) :
-    m_leftNode(originalNode.m_leftNode), m_rightNode(originalNode.m_rightNode), m_value(originalNode.m_value),
+    m_leftNode(originalNode.getLeftNode()), m_rightNode(originalNode.getRightNode()), m_value(originalNode.getValue()),
     m_height(originalNode.getHeight())
 {}
 
@@ -181,25 +184,25 @@ void Node<T>::setRightNode(Node* rightNode)
 }
 
 template<class T>
-T& Node<T>::getValue()
+T& Node<T>::getValue() const
 {
     return (m_value);
 }
 
 template<class T>
-void Node<T>::setValue(T value)
+void Node<T>::setValue(const T& value)
 {
-    m_value == value;
+    m_value = value;
 }
 
 template<class T>
-int Node<T>::getHeight()
+int Node<T>::getHeight() const
 {
     return m_height;
 }
 
 template<class T>
-void Node<T>::setHeight(int height)
+void Node<T>::setHeight(const int height)
 {
     m_height = height;
 }
