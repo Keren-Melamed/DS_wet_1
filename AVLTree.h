@@ -119,7 +119,7 @@ int AVLTree<T>::calculateHeight(Node<T>* node)
 template<class T>
 int AVLTree<T>::heightDiff(Node<T>* node)
 {
-    return (getHeight(node->getLeftNode()) - getHeight(node->getRightNode()));
+    return (node->getLeftNode()->getHeight() - node->getRightNode()->getHeight());
 }
 
 template<class T>
@@ -163,14 +163,14 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
             }
             else
             {
-                *root = *tmp;
+                *node = *tmp;
             }
             free(tmp);
         }
 
         else
         {
-            Node *temp = nodeWithMimumValue(node->getRightNode());
+            Node<T>* temp = nodeWithMimumValue(node->getRightNode());
             node->getValue() = temp->getValue();
             node->getRightNode() = deleteNode(node->getRightNode(), temp->getValue());
         }
@@ -189,7 +189,7 @@ Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
 {
     if(node == NULL)
     {
-        node = new Node*(value);
+        node = new Node<T>(value);
         return node;
     }
     else if (node->getValue() > value )
@@ -212,7 +212,7 @@ Node<T>* AVLTree<T>::balance(Node<T>* node)
 {
     int diff = heightDiff(node);
 
-    else if (diff >= 2)
+    if (diff >= 2)
     {
         if (heightDiff(node->getLeftNode()) >= 1)
         {
