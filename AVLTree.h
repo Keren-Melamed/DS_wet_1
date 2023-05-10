@@ -2,6 +2,7 @@
 #define WET1_AVLTREE_H
 
 #include "Node.h"
+#include <iostream>
 
 template<class T>
 class AVLTree 
@@ -27,6 +28,8 @@ class AVLTree
         * d'tor
         */
         ~AVLTree();
+
+        Node<T>* getRoot() const;
         
         /**** Methods ****/
 
@@ -79,6 +82,12 @@ class AVLTree
         */
         Node<T>* balance(Node<T>* node);
 
+        void inOrder(std::ostream& os, const Node<T>* node) const;
+
+        void postOrder(std::ostream& os, const Node<T>* node) const;
+
+        void preOrder(std::ostream& os, const Node<T>* node) const;
+
     private:
 
         /*
@@ -94,7 +103,9 @@ class AVLTree
 };
 
 template<class T>
-AVLTree<T>::AVLTree(){}
+AVLTree<T>::AVLTree() :
+    m_root(NULL)
+{}
 
 template<class T>
 AVLTree<T>::~AVLTree(){}
@@ -102,6 +113,11 @@ AVLTree<T>::~AVLTree(){}
 
 /**************************AVLTree functions*****************************/
 
+template<class T>
+Node<T>* AVLTree<T>::getRoot() const
+{
+    return m_root;
+}
 
 template<class T>
 int AVLTree<T>::calculateHeight(Node<T>* node) const
@@ -299,6 +315,54 @@ Node<T>* AVLTree<T>::roll_LL(Node<T>* node)
     parent->setLeftNode() = topParent.getRightNode();
     topParent.setRightNode() = parent;
     return topParent;
+}
+
+template<class T>
+void AVLTree<T>::inOrder(std::ostream& os, const Node<T>* node) const
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    else
+    {
+        inOrder(os, node->getLeftNode());
+        os << node->getValue() << " "<< std::endl;
+        inOrder(os, node->getRightNode());
+        return;
+    }
+}
+
+template<class T>
+void AVLTree<T>::postOrder(std::ostream& os, const Node<T>* node) const
+{
+    if (node = NULL)
+    {
+        return;
+    }
+    else
+    {
+        postOrder(os, node->getLeftNode());
+        postOrder(os, node->getRightNode());
+        os << node->getValue() << " " << std::endl;
+        return;
+    }
+}
+
+template<class T>
+void AVLTree<T>::preOrder(std::ostream& os, const Node<T>* node) const
+{
+    if(node = NULL)
+    {
+        return;
+    }
+    else
+    {  
+        os << node->getValue() << " " << std::endl;
+        preOrder(os, node->getLeftNode());
+        preOrder(os, node->getLeftNode());
+        return;
+    }
 }
 
 
