@@ -26,6 +26,10 @@ class User{
 
         int getMoviesUserWatchedInGenre(Genre genre);
 
+        void setGroup(Group* group);
+
+        void UpdateMoviesUserWatchedInGenre(Genre genre);
+
         
 
 }

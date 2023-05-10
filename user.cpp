@@ -3,7 +3,7 @@
 
 #include "user.h"
 
-User(int user_id, bool is_Vip, Group* user_group, int[4] movies_watched)
+User::User(int user_id, bool is_Vip, Group* user_group, int[4] movies_watched)
     :m_user_id(user_id), m_is_vip(is_vip), m_user_group(user_group){
 
     for(int i = 0; i <= 4; i++){
@@ -11,25 +11,25 @@ User(int user_id, bool is_Vip, Group* user_group, int[4] movies_watched)
     }
 }
 
-~User(){
+User::~User(){
     free(m_movies_user_watched);
 }
 
-User(const User& user) = default;
+User::User(const User& user) = default;
 
 int User::getId(){
     return m_id;
 }
 
-bool getIsVip(){
+bool User::getIsVip(){
     return m_is_vip;
 }
 
-Group* getGroup(){
+Group* User::getGroup(){
     return m_user_group;
 }
 
-int getMoviesUserWatchedInGenre(Genre genre){
+int User::getMoviesUserWatchedInGenre(Genre genre){
     
     if(genre != NONE){
         return m_movies_watched[genre];
@@ -43,10 +43,18 @@ int getMoviesUserWatchedInGenre(Genre genre){
         }
         return value;
     }
-    //might throw error bc not every path returns value?
 }
 
 
+void User::setGroup(Group* group){
+    m_user_group = group;
+}
+
+void User::UpdateMoviesUserWatchedInGenre(Genre genre){
+    if(genre != NONE){
+        m_movies_user_watched[genre] += 1;
+    }
+}
 
     
 

@@ -21,5 +21,9 @@ class BadAllocation : public AVLTreeException{
         BadAllocation() : AVLTreeException("AVLTree Error: bad allocation") {}
 };
 
+class NodeDoesntExist : public AVLTreeException{
+    public:
+        DoesntExist() : AVLTreeException("AVLTree Error: node doesn't exist") {}
+};
 
 #endif

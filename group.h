@@ -12,9 +12,11 @@ class Group{
         int m_group_id;
         AVLTree<User> m_members;
         int[4] m_movies_group_watched;
+        bool m_isVip;
+        int m_group_size;
 
     public:
-        Group(int group_id, AVLTree<User> members, int[4] movies_group_watched);
+        Group();
 
         ~Group();
 
@@ -22,12 +24,21 @@ class Group{
 
         int getGroupId();
 
-        AVLTree<User> getMembers();
+        AVLTree<User>* getMembers();
 
-        int getMoviesGroupWatchedInGenre(Genre genre){
-            //same as in user, if ok there then copy
-        }
+        int getMoviesGroupWatchedInGenre(Genre genre);
 
+        void UpdatesetMoviesGroupWatchedInGenre(Genre genre);
+
+        bool getIsVip();
+
+        void setIsVip(bool isVip);
+
+        void UpdateGroupSize();
+
+        int getGroupSize();
+
+        void dismantleGroup(Node<T>* user);
 
 }
 

@@ -19,9 +19,10 @@
 
 class streaming_database {
 private:
-	//
-	// Here you may add anything you want
-	//
+	AVLTree<Movie> m_movies;
+	AVLTree<User> m_users;
+	AVLTree<Group> m_groups;
+	int[4] m_movies_in_genre;
 	
 public:
 	// <DO-NOT-MODIFY> {
