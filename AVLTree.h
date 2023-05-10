@@ -82,11 +82,12 @@ class AVLTree
         */
         Node<T>* balance(Node<T>* node);
 
-        void inOrder(std::ostream& os, const Node<T>* node) const;
+        std::ostream& inOrder(std::ostream& os, const Node<T>* node) const;
 
-        void postOrder(std::ostream& os, const Node<T>* node) const;
+        std::ostream& postOrder(std::ostream& os, const Node<T>* node) const;
 
-        void preOrder(std::ostream& os, const Node<T>* node) const;
+        std::ostream& preOrder(std::ostream& os, const Node<T>* node) const;
+
 
     private:
 
@@ -222,23 +223,36 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
 template<class T>
 Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
 {
+    std::cout << "insertValue has been accessed" << std::endl;
     if(node == NULL)
     {
+        std::cout << " the node was null" << std::endl;
         node = new Node<T>(value);
+        //if not throw excpetion
         return node;
     }
+
+    //if ( node already exits throw already exits exceptions)
+    if(node->getValue() == value){
+        //throw 
+    }
+
     else if (node->getValue() > value )
     {
+        std::cout << "the value inserted was smaller" << std::endl;
         node->setLeftNode(insertValue(node->getLeftNode(), value));
         node->setHeight(calculateHeight(node));
         node = balance(node);
     }
+
     else if (node->getValue() <= value)
     {
+        std::cout << "the value inserted was bigger" << std::endl;
         node->setRightNode(insertValue(node->getRightNode(), value));
         node->setHeight(calculateHeight(node));
         node = balance(node);
     }
+
     return node;
 }
 //might need to check that the right and eft nodes arnt null
@@ -277,9 +291,10 @@ Node<T>* AVLTree<T>::balance(Node<T>* node)
 template<class T>
 Node<T>* AVLTree<T>::roll_RR(Node<T>* node)
 {
-    Node<T>* parent = node, topParent = node->getRightNode();
-    parent->setRightNode() = topParent.getLeftNode();
-    topParent.setLeftNode() = parent;
+    Node<T>* parent = node;
+    Node<T>* topParent = node->getRightNode();
+    parent->setRightNode(topParent->getLeftNode());
+    topParent->setLeftNode(parent);
     return topParent;
     
 }
@@ -287,11 +302,13 @@ Node<T>* AVLTree<T>::roll_RR(Node<T>* node)
 template<class T>
 Node<T>* AVLTree<T>::roll_LR(Node<T>* node)
 {
-    Node<T>* parent = node, topParent = node->getLeftNode(), topParent2 = node->getLeftNode()->getRightNode();
-    parent->setLeftNode() = topParent2.getRightNode();
-    topParent.setRightNode() = topParent2.getLeftNode();
-    topParent2.setRightNode() = parent;
-    topParent2.setLeftNode() = topParent;
+    Node<T>* parent = node;
+    Node<T>* topParent = node->getLeftNode();
+    Node<T>* topParent2 = node->getLeftNode()->getRightNode();
+    parent->setLeftNode(topParent2->getRightNode());
+    topParent->setRightNode(topParent2->getLeftNode());
+    topParent2->setRightNode(parent);
+    topParent2->setLeftNode(topParent);
 
     return topParent2;
 }
@@ -299,11 +316,13 @@ Node<T>* AVLTree<T>::roll_LR(Node<T>* node)
 template<class T>
 Node<T>* AVLTree<T>::roll_RL(Node<T>* node)
 {
-    Node<T>* parent = node, topParent = node->getRightNode(), topParent2 = node->getRightNode()->getLeftNode();
-    parent->getRightNode() = topParent2.getLeftNode();
-    topParent.setLeftNode() = topParent2.getRightNode();
-    topParent2.setLeftNode() = parent;
-    topParent2.setRightNode() = topParent;
+    Node<T>* parent = node;
+    Node<T>* topParent = node->getRightNode();
+    Node<T>* topParent2 = node->getRightNode()->getLeftNode();
+    parent->setRightNode(topParent2->getLeftNode());
+    topParent->setLeftNode(topParent2->getRightNode());
+    topParent2->setLeftNode(parent);
+    topParent2->setRightNode(topParent);
 
     return topParent2;
 }
@@ -311,57 +330,59 @@ Node<T>* AVLTree<T>::roll_RL(Node<T>* node)
 template<class T>
 Node<T>* AVLTree<T>::roll_LL(Node<T>* node)
 {
-    Node<T>* parent = node, topParent = node->getLeftNode();
-    parent->setLeftNode() = topParent.getRightNode();
-    topParent.setRightNode() = parent;
+    Node<T>* parent = node;
+    Node<T>* topParent = node->getLeftNode();
+    parent->setLeftNode(topParent->getRightNode());
+    topParent->setRightNode(parent);
     return topParent;
 }
 
 template<class T>
-void AVLTree<T>::inOrder(std::ostream& os, const Node<T>* node) const
+std::ostream& AVLTree<T>::inOrder(std::ostream& os, const Node<T>* node) const
+{
+    //std::cout << "inorder has been accessed" << std::endl;
+    if (node == NULL)
+    {
+        return os;
+    }
+    else
+    {
+        os << inOrder(os, node->getLeftNode());
+        os << node->getValue() << " ";
+        os << inOrder(os, node->getRightNode());
+        return os;
+    }
+}
+
+template<class T>
+std::ostream& AVLTree<T>::postOrder(std::ostream& os, const Node<T>* node) const
 {
     if (node == NULL)
     {
-        return;
+        return os;
     }
     else
     {
-        inOrder(os, node->getLeftNode());
-        os << node->getValue() << " "<< std::endl;
-        inOrder(os, node->getRightNode());
-        return;
+        os << postOrder(os, node->getLeftNode());
+        os << postOrder(os, node->getRightNode());
+        os << node->getValue() << " ";
+        return os;
     }
 }
 
 template<class T>
-void AVLTree<T>::postOrder(std::ostream& os, const Node<T>* node) const
+std::ostream& AVLTree<T>::preOrder(std::ostream& os, const Node<T>* node) const
 {
-    if (node = NULL)
+    if(node == NULL)
     {
-        return;
-    }
-    else
-    {
-        postOrder(os, node->getLeftNode());
-        postOrder(os, node->getRightNode());
-        os << node->getValue() << " " << std::endl;
-        return;
-    }
-}
-
-template<class T>
-void AVLTree<T>::preOrder(std::ostream& os, const Node<T>* node) const
-{
-    if(node = NULL)
-    {
-        return;
+        return os;
     }
     else
     {  
-        os << node->getValue() << " " << std::endl;
-        preOrder(os, node->getLeftNode());
-        preOrder(os, node->getLeftNode());
-        return;
+        os << node->getValue() << " ";
+        os << preOrder(os, node->getLeftNode());
+        os << preOrder(os, node->getLeftNode());
+        return os;
     }
 }
 

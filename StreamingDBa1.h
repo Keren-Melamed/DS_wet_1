@@ -16,16 +16,12 @@
 #define STREAMINGDBA1_H_
 
 #include "wet1util.h"
-#include "AVLTree.h"
-#include "user.h"
-#include "group.h"
-#include "movie.h"
 
 class streaming_database {
 private:
-	AVLTree<user> users;
-	AVLTree<group> groups;
-	AVLTree<movie> movies;
+	//
+	// Here you may add anything you want
+	//
 	
 public:
 	// <DO-NOT-MODIFY> {

@@ -33,7 +33,8 @@ class Node {
         * @result
         *       an instance of Node with a saved value
         */
-        Node(const T& value);
+        //Node(const T& value);
+        
 
         /*
         * copy c'tor
@@ -70,7 +71,7 @@ class Node {
         * @return
         *       m_value
         */
-        T& getValue() const;
+        const T& getValue() const;
 
         /*
         * returns the height of the node
@@ -131,19 +132,19 @@ class Node {
 
 template<class T>
 Node<T>::Node() :
-    m_leftNode(NULL), m_rightNode(NULL), m_value(), m_height(1)
+    m_leftNode(nullptr), m_rightNode(nullptr), m_value(), m_height(1)
 {}  
 
 template<class T>
 Node<T>::Node(T& value) :
-    m_leftNode(NULL), m_rightNode(NULL), m_value(value), m_height(1)
+    m_leftNode(nullptr), m_rightNode(nullptr), m_value(value), m_height(1)
 {}
 //should the beggining height be 1?
 
-template<class T>
+/* template<class T>
 Node<T>::Node(const T& value) :
-    m_leftNode(NULL), m_rightNode(NULL), m_value(value), m_height(1)
-{}
+    m_leftNode(nullptr), m_rightNode(nullptr), m_value(value), m_height(1)
+{} */
 
 template<class T>
 Node<T>::Node(const Node& originalNode) :
@@ -162,13 +163,13 @@ Node<T>::~Node()
 template<class T>
 Node<T>* Node<T>::getLeftNode() const
 {
-    return (m_leftNode);
+    return m_leftNode;
 }
 
 template<class T>
 Node<T>* Node<T>::getRightNode() const
 {
-    return (m_rightNode);
+    return m_rightNode;
 }
 
 template<class T>
@@ -184,7 +185,7 @@ void Node<T>::setRightNode(Node* rightNode)
 }
 
 template<class T>
-T& Node<T>::getValue() const
+const T& Node<T>::getValue() const
 {
     return (m_value);
 }

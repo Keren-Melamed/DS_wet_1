@@ -13,6 +13,7 @@
 #include "StreamingDBa1.h"
 #include <string>
 #include <iostream>
+#include "AVLTree.h"////////////////
 
 using namespace std;
 
@@ -22,7 +23,7 @@ void query_get_all_movies(string cmd, streaming_database *obj, Genre genre);
 
 int main()
 {
-	
+	AVLTree<int> test;////////////////
     int d1, d2, d3, g1;
     string b1;
     bool b;

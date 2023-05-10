@@ -3,10 +3,6 @@
 
 #include "wet1util.h"
 
-
-
-
-
 class Movie
 {
     public:
