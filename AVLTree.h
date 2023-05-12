@@ -3,7 +3,6 @@
 
 #include "Node.h"
 #include <iostream>
-#include <exception.h>
 
 template<class T>
 class AVLTree 
@@ -105,13 +104,9 @@ class AVLTree
 };
 
 template<class T>
-AVLTree<T>::AVLTree() : m_root(NULL){}
-
-template<class T>
-AVLTree<T>::AVLTree(const AVLTree& originalTree)
-{
-    m_root = originalTree.getRoot();
-}
+AVLTree<T>::AVLTree() :
+    m_root(NULL)
+{}
 
 template<class T>
 AVLTree<T>::~AVLTree(){}
@@ -206,8 +201,7 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
             {
                 *node = *tmp;
             }
-            
-            delete tmp;
+            delete(tmp);
         }
 
         else
@@ -234,16 +228,13 @@ Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
     {
         std::cout << " the node was null" << std::endl;
         node = new Node<T>(value);
-        if(node == NULL){
-            throw BadAllocation();
-        }
-
+        //if not throw excpetion
         return node;
     }
 
     //if ( node already exits throw already exits exceptions)
     if(node->getValue() == value){
-        throw NodeAlreadyExists();
+        //throw 
     }
 
     else if (node->getValue() > value )
@@ -395,24 +386,5 @@ std::ostream& AVLTree<T>::preOrder(std::ostream& os, const Node<T>* node) const
     }
 }
 
-template<class T>
-Node<T>* FindObject(Node<T>* node, T value)
-{
-    if(node == NULL){
-        return nullptr;
-    }
-
-    else if(node->getValue() == value){
-        return node;
-    }
-
-    else if(node->getValue() > value){
-        return FindObject(node->getLeftNode(), value);
-    }
-
-    else{
-        return FindObject(node->getRightNode(), value);
-    }
-}
 
 #endif
