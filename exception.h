@@ -5,7 +5,6 @@
 #include <exception>
 #include <string>
 
-
 class AVLTreeException : public std::runtime_error {
     public:
         AVLTreeException(const std::string& msg) : runtime_error(msg) {}
@@ -16,14 +15,15 @@ class NodeAlreadyExists : public AVLTreeException {
         NodeAlreadyExists() : AVLTreeException("AVLTree Error: adding a node that already exists") {}
 };
 
-class BadAllocation : public AVLTreeException{
+class  : public AVLTreeException {
     public:
-        BadAllocation() : AVLTreeException("AVLTree Error: bad allocation") {}
+        DeckFileFormatError(int line) : 
+            AVLTreeException("Deck File Error: File format error in line " + to_string(line)), line(line) {}
 };
 
-class NodeDoesntExist : public AVLTreeException{
+class DeckFileInvalidSize : public DeckException{
     public:
-        DoesntExist() : AVLTreeException("AVLTree Error: node doesn't exist") {}
+        DeckFileInvalidSize() : DeckException("Deck File Error: Deck size is invalid") {}
 };
 
 #endif
