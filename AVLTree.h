@@ -3,6 +3,9 @@
 
 #include "Node.h"
 #include <iostream>
+#include "exception.h"
+ 
+using namespace std;
 
 template<class T>
 class AVLTree 
@@ -18,7 +21,7 @@ class AVLTree
         *       an instance of AVLTree
         */
         AVLTree();
-
+        AVLTree(Node<T> root);
         /*
         * copy c'tor
         */
@@ -30,6 +33,8 @@ class AVLTree
         ~AVLTree();
 
         Node<T>* getRoot() const;
+
+        void setRoot(Node<T>* root);
         
         /**** Methods ****/
 
@@ -39,7 +44,7 @@ class AVLTree
         * @return
         *       height difference between left and right nodes
         */
-        int heightDiff(Node<T>* node);
+        int BalanceFactor(Node<T>* node);
 
         /*
         * calculates the height of a given node
@@ -48,14 +53,6 @@ class AVLTree
         *       the node's height
         */
         int calculateHeight(Node<T>* node) const;
-
-        /*
-        * finds the node with the lowest value
-        * @param node - node to start counting from
-        * @return
-        *       pointer to the node with thte lowest value in the tree
-        */
-        Node<T>* nodeWithMinimumValue(Node<T>* node) const;
 
         /*
         * removes the node from the tree and rebalances it via recursion
@@ -80,13 +77,19 @@ class AVLTree
         * @return
         *       a pointer to the node that is to be put in the appropriate spot
         */
-        Node<T>* balance(Node<T>* node);
+        Node<T>* balance(Node<T>* node, T value);
 
-        std::ostream& inOrder(std::ostream& os, const Node<T>* node) const;
+        void setRightNode(Node<T>* parent, int value);
+    
+        void setLeftNode(Node<T>* parent, int value);
 
-        std::ostream& postOrder(std::ostream& os, const Node<T>* node) const;
+        void printTheTree();
 
-        std::ostream& preOrder(std::ostream& os, const Node<T>* node) const;
+        ostream& inOrder(ostream& os, const Node<T>* node) const;
+
+        ostream& postOrder(ostream& os, const Node<T>* node) const;
+
+        ostream& preOrder(ostream& os, const Node<T>* node) const;
 
 
     private:
@@ -94,19 +97,23 @@ class AVLTree
         /*
         * different methods for balancing an AVLTree 
         */
-        Node<T>* roll_RR(Node<T>* node);
-        Node<T>* roll_LR(Node<T>* node);
-        Node<T>* roll_RL(Node<T>* node);
-        Node<T>* roll_LL(Node<T>* node);
-        //assuming there's an = operator for node, the default should work i think, might cause a leak though cause copying pointers
+        Node<T>* rotateLeft(Node<T>* parent);
+        Node<T>* rotateRight(Node<T>* parent);
         
         Node<T>* m_root;
 };
 
 template<class T>
-AVLTree<T>::AVLTree() :
-    m_root(NULL)
-{}
+AVLTree<T>::AVLTree() : m_root(NULL){}
+
+template<class T>
+AVLTree<T>::AVLTree(Node<T> root) : m_root(&root){}
+
+template<class T>
+AVLTree<T>::AVLTree(const AVLTree& originalTree)
+{
+    m_root = originalTree.getRoot();
+}
 
 template<class T>
 AVLTree<T>::~AVLTree(){}
@@ -115,15 +122,68 @@ AVLTree<T>::~AVLTree(){}
 /**************************AVLTree functions*****************************/
 
 template<class T>
+void AVLTree<T>::printTheTree()
+{
+    cout <<"this is node number 1's value: "<< m_root->getValue()<<endl;
+    cout <<"this is node number 2's value: "<< m_root->getLeftNode()->getValue()<<endl;
+    cout <<"this is node number 3's value: "<< m_root->getRightNode()->getValue()<<endl;
+    cout <<"this is node number 4's value: "<< m_root->getLeftNode()->getLeftNode()->getValue()<<endl;
+    cout <<"this is node number 5's value: "<< m_root->getLeftNode()->getRightNode()->getValue()<<endl;
+    cout <<"this is node number 6's value: "<< m_root->getRightNode()->getLeftNode()->getValue()<<endl;
+    cout <<"this is node number 7's value: "<< m_root->getRightNode()->getRightNode()->getValue()<<endl;
+}
+
+template<class T>
+void AVLTree<T>::setRightNode(Node<T>* parent, int value)
+{
+    parent->setRightNode(insertValue(parent->getRightNode(), value));
+}
+
+template<class T>
+void AVLTree<T>::setLeftNode(Node<T>* parent, int value)
+{
+    parent->setLeftNode(insertValue(parent->getLeftNode(), value));
+}
+
+template<class T>
 Node<T>* AVLTree<T>::getRoot() const
 {
     return m_root;
 }
 
 template<class T>
+void AVLTree<T>::setRoot(Node<T>* root)
+{
+    m_root = root;
+}
+
+template<class T>
 int AVLTree<T>::calculateHeight(Node<T>* node) const
 {
-    if (node->getLeftNode()->getHeight() >= node->getRightNode()->getHeight())
+    int left, right;
+    if(node->getLeftNode() == NULL)
+    {
+        left = 0;
+    }
+    else
+    {
+        left = node->getLeftNode()->getHeight();
+    }
+
+    if(node->getRightNode() == NULL)
+    {
+        right = 0;
+    }
+    else
+    {
+        right = node->getRightNode()->getHeight();
+    }
+
+    if (left == 0 && right == 0)
+    {
+        return 0;
+    }
+    else if (left >= right)
     {
         return node->getLeftNode()->getHeight();
     }
@@ -132,10 +192,9 @@ int AVLTree<T>::calculateHeight(Node<T>* node) const
         return node->getRightNode()->getHeight();
     }
 }
-//maybe make this -1 at the end? cause the height of a single node should be zero
 
 template<class T>
-int AVLTree<T>::heightDiff(Node<T>* node)
+int AVLTree<T>::BalanceFactor(Node<T>* node)
 {
     int left, right;
     if (node->getLeftNode() == NULL)
@@ -156,17 +215,6 @@ int AVLTree<T>::heightDiff(Node<T>* node)
         right = node->getRightNode()->getHeight();
     }
     return (left - right);
-}
-
-template<class T>
-Node<T>* AVLTree<T>::nodeWithMinimumValue(Node<T>* node) const
-{
-    Node<T>* current = node;
-    while (current->getLeftNode() != NULL)
-    {
-        current = current->getLeftNode();
-    }
-    return current;
 }
 
 template<class T>
@@ -201,7 +249,8 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
             {
                 *node = *tmp;
             }
-            delete(tmp);
+            
+            delete tmp;
         }
 
         else
@@ -223,139 +272,98 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
 template<class T>
 Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
 {
-    std::cout << "insertValue has been accessed" << std::endl;
     if(node == NULL)
     {
-        std::cout << " the node was null" << std::endl;
         node = new Node<T>(value);
-        //if not throw excpetion
+        if(node == NULL){
+            throw BadAllocation();
+        }
         return node;
     }
 
-    //if ( node already exits throw already exits exceptions)
-    if(node->getValue() == value){
-        //throw 
+    else if(node->getValue() == value){
+        throw NodeAlreadyExists();
     }
 
     else if (node->getValue() > value )
     {
-        std::cout << "the value inserted was smaller" << std::endl;
-        node->setLeftNode(insertValue(node->getLeftNode(), value));
-        node->setHeight(calculateHeight(node));
-        node = balance(node);
+        setLeftNode(node, value);
+
     }
 
-    else if (node->getValue() <= value)
-    {
-        std::cout << "the value inserted was bigger" << std::endl;
-        node->setRightNode(insertValue(node->getRightNode(), value));
-        node->setHeight(calculateHeight(node));
-        node = balance(node);
+    else if (node->getValue() < value)
+    {        
+        setRightNode(node, value);
     }
 
-    return node;
-}
-//might need to check that the right and eft nodes arnt null
+    node->setHeight(1 + calculateHeight(node));
+    node = balance(node, value);
 
-template<class T>
-Node<T>* AVLTree<T>::balance(Node<T>* node)
-{
-    int diff = heightDiff(node);
-
-    if (diff >= 2)
-    {
-        if (heightDiff(node->getLeftNode()) >= 1)
-        {
-            node = roll_LL(node);
-        }
-        else
-        {
-            node = roll_LR(node);
-        }
-    }
-
-    else if(diff <= -2)
-    {
-        if(heightDiff(node->getRightNode()) >= 1)
-        {
-            node = roll_RR(node);
-        }
-        else
-        {
-            node = roll_RL(node);
-        }
-    }
     return node;
 }
 
 template<class T>
-Node<T>* AVLTree<T>::roll_RR(Node<T>* node)
+Node<T>* AVLTree<T>::balance(Node<T>* node, T value)
 {
-    Node<T>* parent = node;
-    Node<T>* topParent = node->getRightNode();
-    parent->setRightNode(topParent->getLeftNode());
-    topParent->setLeftNode(parent);
-    return topParent;
-    
-}
+    int balance = BalanceFactor(node);
 
-template<class T>
-Node<T>* AVLTree<T>::roll_LR(Node<T>* node)
-{
-    Node<T>* parent = node;
-    Node<T>* topParent = node->getLeftNode();
-    Node<T>* topParent2 = node->getLeftNode()->getRightNode();
-    parent->setLeftNode(topParent2->getRightNode());
-    topParent->setRightNode(topParent2->getLeftNode());
-    topParent2->setRightNode(parent);
-    topParent2->setLeftNode(topParent);
-
-    return topParent2;
-}
-
-template<class T>
-Node<T>* AVLTree<T>::roll_RL(Node<T>* node)
-{
-    Node<T>* parent = node;
-    Node<T>* topParent = node->getRightNode();
-    Node<T>* topParent2 = node->getRightNode()->getLeftNode();
-    parent->setRightNode(topParent2->getLeftNode());
-    topParent->setLeftNode(topParent2->getRightNode());
-    topParent2->setLeftNode(parent);
-    topParent2->setRightNode(topParent);
-
-    return topParent2;
-}
-
-template<class T>
-Node<T>* AVLTree<T>::roll_LL(Node<T>* node)
-{
-    Node<T>* parent = node;
-    Node<T>* topParent = node->getLeftNode();
-    parent->setLeftNode(topParent->getRightNode());
-    topParent->setRightNode(parent);
-    return topParent;
-}
-
-template<class T>
-std::ostream& AVLTree<T>::inOrder(std::ostream& os, const Node<T>* node) const
-{
-    //std::cout << "inorder has been accessed" << std::endl;
-    if (node == NULL)
+	if (balance > 1 && value < node->getLeftNode()->getValue())
     {
-        return os;
+		return rotateRight(node);
     }
-    else
+
+	if (balance < -1 && value > node->getRightNode()->getValue())
     {
-        os << inOrder(os, node->getLeftNode());
-        os << node->getValue() << " ";
-        os << inOrder(os, node->getRightNode());
-        return os;
+		return rotateLeft(node);
     }
+
+	if (balance > 1 && value > node->getLeftNode()->getValue())
+	{
+		node->setLeftNode(rotateLeft(node->getLeftNode()));
+		return rotateRight(node);
+	}
+
+	if (balance < -1 && value < node->getRightNode()->getValue())
+	{
+		node->setRightNode(rotateRight(node->getRightNode()));
+		return rotateLeft(node);
+	}
+
+    return node;
 }
 
 template<class T>
-std::ostream& AVLTree<T>::postOrder(std::ostream& os, const Node<T>* node) const
+Node<T>* AVLTree<T>::rotateLeft(Node<T>* parent)
+{
+	Node<T>* child = parent->getRightNode();
+	Node<T>* grandChild = child->getLeftNode();
+
+	child->setLeftNode(parent);
+	parent->setRightNode(grandChild);
+
+	parent->setHeight(calculateHeight(parent));
+	child->setHeight(calculateHeight(child));
+
+	return child;
+}
+
+template<class T>
+Node<T>* AVLTree<T>::rotateRight(Node<T>* parent)
+{
+    Node<T>* child = parent->getLeftNode();
+	Node<T>* grandChild = child->getRightNode();
+
+	child->setRightNode(parent);
+	parent->setLeftNode(grandChild);
+
+	parent->setHeight(calculateHeight(parent));
+	child->setHeight(calculateHeight(child));
+
+	return child;
+}
+
+template<class T>
+ostream& AVLTree<T>::inOrder(ostream& os, const Node<T>* node) const
 {
     if (node == NULL)
     {
@@ -363,15 +371,31 @@ std::ostream& AVLTree<T>::postOrder(std::ostream& os, const Node<T>* node) const
     }
     else
     {
-        os << postOrder(os, node->getLeftNode());
-        os << postOrder(os, node->getRightNode());
+        inOrder(os, node->getLeftNode());
+        os << node->getValue() << " ";
+        inOrder(os, node->getRightNode());
+        return os;
+    }
+}
+
+template<class T>
+ostream& AVLTree<T>::postOrder(ostream& os, const Node<T>* node) const
+{
+    if (node == NULL)
+    {
+        return os;
+    }
+    else
+    {
+        postOrder(os, node->getLeftNode());
+        postOrder(os, node->getRightNode());
         os << node->getValue() << " ";
         return os;
     }
 }
 
 template<class T>
-std::ostream& AVLTree<T>::preOrder(std::ostream& os, const Node<T>* node) const
+ostream& AVLTree<T>::preOrder(ostream& os, const Node<T>* node) const
 {
     if(node == NULL)
     {
@@ -380,11 +404,30 @@ std::ostream& AVLTree<T>::preOrder(std::ostream& os, const Node<T>* node) const
     else
     {  
         os << node->getValue() << " ";
-        os << preOrder(os, node->getLeftNode());
-        os << preOrder(os, node->getLeftNode());
+        preOrder(os, node->getLeftNode());
+        preOrder(os, node->getRightNode());
         return os;
     }
 }
 
+template<class T>
+Node<T>* FindObject(Node<T>* node, T value)
+{
+    if(node == NULL){
+        return nullptr;
+    }
+
+    else if(node->getValue() == value){
+        return node;
+    }
+
+    else if(node->getValue() > value){
+        return FindObject(node->getLeftNode(), value);
+    }
+
+    else{
+        return FindObject(node->getRightNode(), value);
+    }
+}
 
 #endif
