@@ -5,16 +5,7 @@ template <class T>
 class Node {
     public:
         
-        /**** c'tors amd d'tors ****/
-
-        /*
-        *c'tor of the Node class
-        *
-        * @result
-        *       an instance of Node
-        */
-        Node();
-        //do we need this?
+        /**** c'tors and d'tors ****/
 
         /*
         * c'tor of the Node class with a set value
@@ -105,7 +96,7 @@ class Node {
         * @result
         *       void
         */
-        void setValue(T& value);
+        void setValue(T value);
 
         /*
         * setter for the current height of the node
@@ -117,6 +108,7 @@ class Node {
         void setHeight(const int height);
 
     private:
+
         Node* m_leftNode;
         Node* m_rightNode;
 
@@ -131,21 +123,10 @@ class Node {
 /*************************Node c'tors & d'tor****************************/
 
 
-/*template<class T>
-Node<T>::Node() :
-    m_leftNode(nullptr), m_rightNode(nullptr), m_value(), m_height(1)
-{} */ 
-
 template<class T>
 Node<T>::Node(T& value) :
     m_leftNode(nullptr), m_rightNode(nullptr), m_value(value), m_height(1)
 {}
-//should the beggining height be 1?
-
-/* template<class T>
-Node<T>::Node(const T& value) :
-    m_leftNode(nullptr), m_rightNode(nullptr), m_value(value), m_height(1)
-{} */
 
 template<class T>
 Node<T>::Node(const Node& originalNode) :
@@ -192,7 +173,7 @@ T Node<T>::getValue() const
 }
 
 template<class T>
-void Node<T>::setValue(T& value)
+void Node<T>::setValue(T value)
 {
     m_value = value;
 }
