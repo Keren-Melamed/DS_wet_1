@@ -72,7 +72,8 @@ StatusType streaming_database::add_user(int userId, bool isVip)
 	return StatusType::SUCCESS;
 }
 
-StatusType streaming_database::remove_user(int userId){
+StatusType streaming_database::remove_user(int userId)
+{
 	if(userId <= 0){
 		return StatusType::INVALID_INPUT;
 	}
@@ -231,10 +232,30 @@ output_t<int> streaming_database::get_all_movies_count(Genre genre)
 
 StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 {
-    // TODO: Your code goes here
-    output[0] = 4001;
-    output[1] = 4002;
-    return StatusType::SUCCESS;
+	if(output == NULL){
+		return StatusType::INVALID_INPUT;
+	}
+
+	if(genre == NONE)
+	{
+		if(m_movies.getRoot() == NULL){
+			return StatusType:FALIURE;
+		}
+	}
+
+	else{
+		if(m_movies_in_genre[genre] == 0){
+			return StatusType:FALIURE;
+		}
+	}
+
+	try{
+		//allocating to output by order
+	}
+
+	catch(BadAllocation& e){
+		return StatusType::ALLOCATION_ERROR;
+	}
 }
 
 output_t<int> streaming_database::get_num_views(int userId, Genre genre)
