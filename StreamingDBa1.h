@@ -27,6 +27,9 @@ private:
 	AVLTree<User> m_users;
 	AVLTree<Group> m_groups;
 	int m_movies_in_genre[4];
+
+	void TreetoArray(Node<Movie>* node, int *const output);
+	void MoviesInGenre(Node<Movie>* node, Genre genre, Node<Movie>* movies_in_genre);
 	
 public:
 	// <DO-NOT-MODIFY> {

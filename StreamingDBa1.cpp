@@ -10,6 +10,31 @@ streaming_database::~streaming_database()
 	// TODO: Your code goes here
 }
 
+void streaming_database::movieTreeToArray(Node<Movie>* node, int *const output)
+{
+    static int pos = 0;
+    if(node == NULL){
+		return;
+	}
+
+    TreetoArray(node->getLeftNode(), output);
+    output[pos++] = node->getValue()->getMovieId();
+    TreetoArray(node->getRightNode, output);
+
+}
+
+void streaming_database::MoviesInGenre(Node<Movie>* node, Genre genre, Node<Movie>* movies_in_genre)
+{
+	if(node == NULL){
+		return;
+	}
+	
+	MoviesInGenre(node->getLeftNode, genre, movies_in_genre);
+	if(node->getGenre() == genre){
+		InsertValue(movies_in_genre, node);
+	}
+	MoviesInGenre(node->getRightNode, genre, movies_in_genre)
+}
 
 StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bool vipOnly)
 {
@@ -241,21 +266,28 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 		if(m_movies.getRoot() == NULL){
 			return StatusType:FALIURE;
 		}
+
+		else{
+			MovieTreeToArray(m_movies.getRoot(), output);
+			return StatusType:SUCCESS;
+		}
 	}
 
 	else{
 		if(m_movies_in_genre[genre] == 0){
 			return StatusType:FALIURE;
 		}
+
+		else{
+			AVLTree<Movie> curr_movies = new AVLTree<Movie>;
+			MoviesInGenre(m_movies.getRoot(), genre, curr_movies);
+			MovieTreeToArray(curr_movies.getRoot(), output);
+		}
 	}
 
-	try{
-		//allocating to output by order
-	}
 
-	catch(BadAllocation& e){
-		return StatusType::ALLOCATION_ERROR;
-	}
+
+	
 }
 
 output_t<int> streaming_database::get_num_views(int userId, Genre genre)
