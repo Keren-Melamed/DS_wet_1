@@ -70,7 +70,7 @@ class AVLTree
         * @return
         *       a pointer to the node that is to be put in the appropriate spot
         */
-        Node<T>* insertValue(Node<T>* root, T value);
+        Node<T>* insertValue(Node<T>* node, T value);
 
         /*
         * balances the tree from this root downwards
@@ -79,6 +79,8 @@ class AVLTree
         *       a pointer to the node that is to be put in the appropriate spot
         */
         Node<T>* balance(Node<T>* node, T value);
+
+        Node<T>* findObject(Node<T>* node, T value);
 
         void setRightNode(Node<T>* parent, T value);
     
@@ -386,22 +388,26 @@ Node<T>* AVLTree<T>::deletionBalance(Node<T>* node)
 }
 
 template<class T>
-Node<T>* FindObject(Node<T>* node, T value)
+Node<T>* AVLTree<T>::findObject(Node<T>* node, T value)
 {
-    if(node == NULL){
+    if(node == NULL)
+    {
         return nullptr;
     }
 
-    else if(node->getValue() == value){
+    else if(node->getValue() == value)
+    {
         return node;
     }
 
-    else if(node->getValue() > value){
-        return FindObject(node->getLeftNode(), value);
+    else if(node->getValue() > value)
+    {
+        return findObject(node->getLeftNode(), value);
     }
 
-    else{
-        return FindObject(node->getRightNode(), value);
+    else
+    {
+        return findObject(node->getRightNode(), value);
     }
 }
 

@@ -121,17 +121,29 @@ int main()
     tree.preOrder(cout, tree.getRoot());
     cout << endl;
 
+    cout << "looking for 20" << endl;
+    Node<int>* foundIt = tree.findObject(tree.getRoot(), 20);
+    if (foundIt != nullptr)
+    {
+        cout << "this is the value found: " << foundIt->getValue() << endl;
+    }
+    else
+    {
+        cout << "the value isn't in the tree" << endl;
+    }
+    delete foundIt;
+
     /*cout << endl << "this is the root's height: " << tree.getRoot()->getHeight() << endl;
     cout << "this is the root's right node's height: " << tree.getRoot()->getRightNode()->getHeight() << endl;
     cout << "this is the root's right node's X 2 height: " << tree.getRoot()->getRightNode()->getRightNode()->getHeight() << endl;
     cout << "this is the root's right node's X 2 left node's height: " << tree.getRoot()->getRightNode()->getRightNode()->getLeftNode()->getHeight() << endl;
-    cout << "this is the root's right node's X 2 left's right's height: " << tree.getRoot()->getRightNode()->getRightNode()->getLeftNode()->getRightNode()->getHeight() << endl;
+    cout << "this is the root's right node's X 2 lefts' right's height: " << tree.getRoot()->getRightNode()->getRightNode()->getLeftNode()->getRightNode()->getHeight() << endl;
 
     cout << endl << "this is the root's bf: " << tree.balanceFactor(tree.getRoot()) << endl;
     cout << "this is the root's right node's bf: " << tree.balanceFactor(tree.getRoot()->getRightNode()) << endl;
     cout << "this is the root's right node's X 2 bf: " << tree.balanceFactor(tree.getRoot()->getRightNode()->getRightNode()) << endl;
     cout << "this is the root's right node's X 2 left node's bf: " << tree.balanceFactor(tree.getRoot()->getRightNode()->getRightNode()->getLeftNode()) << endl;
-    cout << "this is the root's right node's X 2 left's right's bf: " << tree.balanceFactor(tree.getRoot()->getRightNode()->getRightNode()->getLeftNode()->getRightNode()) << endl;
+    cout << "this is the root's right node's X 2 lefts' right's bf: " << tree.balanceFactor(tree.getRoot()->getRightNode()->getRightNode()->getLeftNode()->getRightNode()) << endl;
     */
      return 0;
 }
