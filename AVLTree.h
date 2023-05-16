@@ -261,7 +261,7 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
         else if (node->getRightNode() == NULL)
         {
             Node<T>* tmp = node->getLeftNode();
-            delete (node);
+            delete node;
             tmp->setHeight(calculateHeight(tmp));
             return tmp;
         }
@@ -284,7 +284,7 @@ Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
     {
         node = new Node<T>(value);
         if(node == NULL){
-            //throw BadAllocation();
+            throw BadAllocation();
         }
         return node;
     }
