@@ -1,13 +1,10 @@
 
 #include "user.h"
 
-User::User(int user_id, bool is_Vip, Group* user_group, int* movies_watched)
-    :m_user_id(user_id), m_is_vip(is_vip), m_user_group(user_group)
+User::User(int user_id, bool is_Vip, Group* user_group)
+    :m_id(user_id), m_is_vip(is_Vip)
 {
-    int* m_movies_user_watched = {0, 0, 0, 0}
-    for(int i = 0; i <= 4; i++){
-        m_movies_user_watched[i] = movies_user_watched[i];
-    }
+    m_user_group = nullptr;
 }
 
 User::~User()
@@ -17,42 +14,51 @@ User::~User()
 
 User::User(const User& user) = default;
 
-int User::getId(){
+int User::getId() const
+{
     return m_id;
 }
 
-bool User::getIsVip(){
+bool User::getIsVip() const
+{
     return m_is_vip;
 }
 
-Group* User::getGroup(){
+Group* User::getGroup()
+{
     return m_user_group;
 }
 
-int User::getMoviesUserWatchedInGenre(Genre genre){
+int User::getMoviesUserWatchedInGenre(Genre genre)
+{
     
-    if(genre != NONE){
-        return m_movies_watched[genre];
+    if(genre != Genre::NONE)
+    {
+        return m_movies_user_watched[(int)genre];
     }
     
-    else{
+    else
+    {
         int value=0;
 
-        for(int i = 0; i <=4; i++;){
-            value += m_movies_watched[i];
+        for(int i = 0; i <=4; i++)
+        {
+            value += m_movies_user_watched[i];
         }
         return value;
     }
 }
 
-
-void User::setGroup(Group* group){
+void User::setGroup(Group* group)
+{
     m_user_group = group;
 }
 
-void User::UpdateMoviesUserWatchedInGenre(Genre genre){
-    if(genre != NONE){
-        m_movies_user_watched[genre] += 1;
+void User::UpdateMoviesUserWatchedInGenre(Genre genre)
+{
+    if(genre != Genre::NONE)
+    {
+        m_movies_user_watched[(int) genre] += 1;
     }
 }
 
