@@ -18,8 +18,8 @@ void streaming_database::movieTreeToArray(Node<Movie>* node, int *const output)
 {
     static int pos = 0;
     if(node == NULL){
-		return;
-	}
+        return;
+    }
 
     TreetoArray(node->getLeftNode(), output);
     output[pos++] = node->getValue()->getMovieId();
@@ -60,17 +60,17 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 		
 		getGenreTree(genre)->insertValue(getGenreTree(genre)->getRoot(), movie);
 
-		m_movies_in_genre[genre] += 1;
-	}
+        m_movies_in_genre[genre] += 1;
+    }
 
-	catch(BadAllocation& e){
-		return StatusType::ALLOCATION_ERROR;
-	}
-	catch(NodeAlreadyExists& e){
-		return StatusType::FAILURE;
-	}
+    catch(BadAllocation& e){
+        return StatusType::ALLOCATION_ERROR;
+    }
+    catch(NodeAlreadyExists& e){
+        return StatusType::FAILURE;
+    }
 
-	return StatusType::SUCCESS;
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::remove_movie(int movieId)//insert by object
@@ -87,11 +87,11 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
 		getGenreTree(movie.getGenre())->removeValue(getGenreTree(movie.getGenre())->getRoot(), movie);
 	}
 
-	catch(NodeDoesntExist& e){
-		return StatusType::FAILURE;
-	}
-	
-	return StatusType::SUCCESS;
+    catch(NodeDoesntExist& e){
+        return StatusType::FAILURE;
+    }
+
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_user(int userId, bool isVip)//insert by object
@@ -102,17 +102,17 @@ StatusType streaming_database::add_user(int userId, bool isVip)//insert by objec
 	try{
 		User user(userId, isVip);
 
-		m_users.insertValue(m_users.getRoot(), user);
-	}
+        m_users.insertValue(m_users.getRoot(), user);
+    }
 
-	catch(BadAllocation& e){
-		return StatusType::ALLOCATION_ERROR;
-	}
-	catch(NodeAlreadyExists& e){
-		return StatusType::FAILURE;
-	}
+    catch(BadAllocation& e){
+        return StatusType::ALLOCATION_ERROR;
+    }
+    catch(NodeAlreadyExists& e){
+        return StatusType::FAILURE;
+    }
 
-	return StatusType::SUCCESS;
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::remove_user(int userId)//find by object
@@ -127,11 +127,11 @@ StatusType streaming_database::remove_user(int userId)//find by object
 		m_users.removeValue(m_users.getRoot(), user);
 	}
 
-	catch(NodeDoesntExist& e){
-		return StatusType::FAILURE;
-	}
-	
-	return StatusType::SUCCESS;
+    catch(NodeDoesntExist& e){
+        return StatusType::FAILURE;
+    }
+
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_group(int groupId)//insert by object
@@ -142,16 +142,16 @@ StatusType streaming_database::add_group(int groupId)//insert by object
 	try{
 		Group group(groupId);
 
-		m_groups.insertValue(m_groups.getRoot(), group);
-	}
+        m_groups.insertValue(m_groups.getRoot(), group);
+    }
 
-	catch(BadAllocation& e){
-		return StatusType::ALLOCATION_ERROR;
-	}
-	catch(NodeAlreadyExists& e){
-		return StatusType::FAILURE;
-	}
-	return StatusType::SUCCESS;
+    catch(BadAllocation& e){
+        return StatusType::ALLOCATION_ERROR;
+    }
+    catch(NodeAlreadyExists& e){
+        return StatusType::FAILURE;
+    }
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::remove_group(int groupId)//remove by object
@@ -168,18 +168,18 @@ StatusType streaming_database::remove_group(int groupId)//remove by object
 		group.dismantleGroup(group.getRoot());
 	}
 
-	catch(NodeDoesntExist& e){
-		return StatusType::FAILURE;
-	}
-	
-	return StatusType::SUCCESS;
+    catch(NodeDoesntExist& e){
+        return StatusType::FAILURE;
+    }
+
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::add_user_to_group(int userId, int groupId)//find and insert by object
 {
-	if((groupId <= 0) || (userId <= 0)){
-		return StatusType::INVALID_INPUT;
-	}
+    if((groupId <= 0) || (userId <= 0)){
+        return StatusType::INVALID_INPUT;
+    }
 
 	User temp_user(userId, false);
 	User user = m_users.FindObject(m_users.getRoot(), temp_user);
@@ -187,56 +187,56 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 	Group temp_group(groupId);
 	Group group = m_groups.FindObject(m_groups.getRoot(), temp_group);
 
-	if((user == nullptr) || (group == nullptr)){
-		return StatusType::FAILURE;
-	}
+    if((user == nullptr) || (group == nullptr)){
+        return StatusType::FAILURE;
+    }
 
-	if(user->getGroup() != nullptr){
-		return StatusType::FAILURE;
-	}
+    if(user->getGroup() != nullptr){
+        return StatusType::FAILURE;
+    }
 
-	try{
-		m_group.insertValue(m_group.getRoot(), user);
-		user.setGroup(group);
-		if(group.getIsVip() == false){
-			if(user.getIsVip() == true){
-				group.setIsVip(true);
-			}
-		}
+    try{
+        m_group.insertValue(m_group.getRoot(), user);
+        user.setGroup(group);
+        if(group.getIsVip() == false){
+            if(user.getIsVip() == true){
+                group.setIsVip(true);
+            }
+        }
 
-		for(int i = 0; i <= 4; i++){
-			group.setMoviesGroupWatchedInGenre(i, group.getMoviesGroupWatchedInGenre(i) + user.getMoviesUserWatchedInGenre(i));
-		}
+        for(int i = 0; i <= 4; i++){
+            group.setMoviesGroupWatchedInGenre(i, group.getMoviesGroupWatchedInGenre(i) + user.getMoviesUserWatchedInGenre(i));
+        }
 
-		group.UpdateGroupSize();
-	}
+        group.UpdateGroupSize();
+    }
 
-	catch(BadAllocation& e){
-		return StatusType::ALLOCATION_ERROR;
-	}
+    catch(BadAllocation& e){
+        return StatusType::ALLOCATION_ERROR;
+    }
 
     return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::user_watch(int userId, int movieId)
 {
-	if((userId <= 0) || (movieId <= 0)){
-		return StatusType::INVALID_INPUT;
-	}
+    if((userId <= 0) || (movieId <= 0)){
+        return StatusType::INVALID_INPUT;
+    }
 
-	User user = m_users.FindObject(m_users.getRoot(), userId);
-	Movie movie = m_movies.FindObject(m_movies.getRoot(), movieId);
+    User user = m_users.FindObject(m_users.getRoot(), userId);
+    Movie movie = m_movies.FindObject(m_movies.getRoot(), movieId);
 
-	if((user == nullptr) || (movie == nullptr)){
-		return StatusType::FAILURE;
-	}
+    if((user == nullptr) || (movie == nullptr)){
+        return StatusType::FAILURE;
+    }
 
-	if(user.getIsVip() == false) && (movie.getVipOnly() == true){
-		return StatusType::FAILURE;
-	}
+    if(user.getIsVip() == false) && (movie.getVipOnly() == true){
+        return StatusType::FAILURE;
+    }
 
-	user.UpdateMoviesUserWatchedInGenre(movie.getGenre());
-	movie.addViews(1);
+    user.UpdateMoviesUserWatchedInGenre(movie.getGenre());
+    movie.addViews(1);
 
 	user_group = user.getGroup()
 	if(user_group != NULL){
@@ -248,26 +248,26 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 
 StatusType streaming_database::group_watch(int groupId,int movieId)
 {
-	if((groupId <= 0) || (movieId <= 0)){
-		return StatusType::INVALID_INPUT;
-	}
+    if((groupId <= 0) || (movieId <= 0)){
+        return StatusType::INVALID_INPUT;
+    }
 
-	Group group = m_groups.FindObject(m_groups.getRoot(), groupId);
-	Movie movie = m_movies.FindObject(m_movies.getRoot(), movieId);
+    Group group = m_groups.FindObject(m_groups.getRoot(), groupId);
+    Movie movie = m_movies.FindObject(m_movies.getRoot(), movieId);
 
-	if(group.getRoot() == nullptr){
-		return StatusType::FAILURE;
-	}
+    if(group.getRoot() == nullptr){
+        return StatusType::FAILURE;
+    }
 
-	if(group.getIsVip() == false) && (movie.getVipOnly() == true){
-		return StatusType::FAILURE;
-	}
+    if(group.getIsVip() == false) && (movie.getVipOnly() == true){
+        return StatusType::FAILURE;
+    }
 
-	group.UpdateMoviesGroupWatchedInGenre(movie.getGenre());
+    group.UpdateMoviesGroupWatchedInGenre(movie.getGenre());
 
-	movie.addviews(group.getGroupSize());
+    movie.addviews(group.getGroupSize());
 
-	return StatusType::SUCCESS;
+    return StatusType::SUCCESS;
 }
 
 output_t<int> streaming_database::get_all_movies_count(Genre genre)
@@ -287,26 +287,26 @@ output_t<int> streaming_database::get_all_movies_count(Genre genre)
 
 StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 {
-	if(output == NULL){
-		return StatusType::INVALID_INPUT;
-	}
+    if(output == NULL){
+        return StatusType::INVALID_INPUT;
+    }
 
-	if(genre == NONE)
-	{
-		if(m_movies.getRoot() == NULL){
-			return StatusType:FALIURE;
-		}
+    if(genre == NONE)
+    {
+        if(m_movies.getRoot() == NULL){
+            return StatusType::FAILURE;
+        }
 
-		else{
-			MovieTreeToArray(m_movies.getRoot(), output);
-			return StatusType:SUCCESS;
-		}
-	}
+        else{
+            MovieTreeToArray(m_movies.getRoot(), output);
+            return StatusType:SUCCESS;
+        }
+    }
 
-	else{
-		if(m_movies_in_genre[genre] == 0){
-			return StatusType:FALIURE;
-		}
+    else{
+        if(m_movies_in_genre[genre] == 0){
+            return StatusType:FALIURE;
+        }
 
 		else{
 			genre_tree = getGenreTree(genre);
@@ -318,14 +318,48 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 
 output_t<int> streaming_database::get_num_views(int userId, Genre genre)
 {
-	// TODO: Your code goes here
-	return 2008;
+    if(userId <= 0)
+    {
+        output_t<int> output(StatusType::INVALID_INPUT);
+        return output;
+    }
+    User tmp(userId, false);
+    Node<User>* node = m_users.findObject(m_users.getRoot(), tmp);
+    if (node == nullptr)
+    {
+        output_t<int> output(StatusType::FAILURE);
+        return output;
+    }
+    User user = node->getValue();
+    int num = user.getMoviesUserWatchedInGenre(genre);
+    output_t<int> output(num);
+    return output;
 }
 
 StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 {
-    // TODO: Your code goes here
-    return StatusType::SUCCESS;
+    if (userId <= 0 || movieId <=0 || rating < 0 || rating > 100)
+    {
+        return StatusType::INVALID_INPUT;
+    }
+
+    User tmpUser(userId, false);
+    Movie tmpMovie(movieId, 0 , false, Genre::COMEDY);
+    try
+    {
+        Node<User>* userNode = m_users.findObject(m_users.getRoot(), tmpUser);
+        Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), tmpMovie);
+        if(movieNode->getValue().getVipOnly() != userNode->getValue().getIsVip())
+        {
+            return StatusType::FAILURE;
+        }
+        movieNode->getValue().addRating(rating);
+        return StatusType::SUCCESS;
+    }
+    catch(NodeDoesntExists& e)
+    {
+        return StatusType::FAILURE;
+    }
 }
 
 output_t<int> streaming_database::get_group_recommendation(int groupId)
@@ -367,5 +401,4 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 		return output_t<int> out(movies_in_genre.getRoot()->getValue()->getMovieId());
 	}
 }
-
 

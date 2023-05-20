@@ -20,6 +20,7 @@
 #include "User.h"
 #include "Group.h"
 #include "AVLTree.h"
+#include "exception.h"
 
 class streaming_database {
 private:
@@ -38,41 +39,41 @@ private:
 	
 	
 public:
-	// <DO-NOT-MODIFY> {
-	
-	streaming_database();
+    // <DO-NOT-MODIFY> {
 
-	virtual ~streaming_database();
-	
-	StatusType add_movie(int movieId, Genre genre, int views, bool vipOnly);
-	
-	StatusType remove_movie(int movieId);
-	
-	StatusType add_user(int userId, bool isVip);
-	
-	StatusType remove_user(int userId);
-	
-	StatusType add_group(int groupId);
-	
-	StatusType remove_group(int groupId);
+    streaming_database();
 
-	StatusType add_user_to_group(int userId, int groupId);
-	
-	StatusType user_watch(int userId, int movieId);
+    virtual ~streaming_database();
+
+    StatusType add_movie(int movieId, Genre genre, int views, bool vipOnly);
+
+    StatusType remove_movie(int movieId);
+
+    StatusType add_user(int userId, bool isVip);
+
+    StatusType remove_user(int userId);
+
+    StatusType add_group(int groupId);
+
+    StatusType remove_group(int groupId);
+
+    StatusType add_user_to_group(int userId, int groupId);
+
+    StatusType user_watch(int userId, int movieId);
 
     StatusType group_watch(int groupId,int movieId);
 
     output_t<int> get_all_movies_count(Genre genre);
 
     StatusType get_all_movies(Genre genre, int *const output);
-	
-	output_t<int> get_num_views(int userId, Genre genre);
+
+    output_t<int> get_num_views(int userId, Genre genre);
 
     StatusType rate_movie(int userId, int movieId, int rating);
-	
-	output_t<int> get_group_recommendation(int groupId);
-	
-	// } </DO-NOT-MODIFY>
+
+    output_t<int> get_group_recommendation(int groupId);
+
+    // } </DO-NOT-MODIFY>
 };
 
 #endif // STREAMINGDBA1_H_
