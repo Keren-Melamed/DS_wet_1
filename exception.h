@@ -6,19 +6,23 @@
 #include <string>
 
 class AVLTreeException : public std::runtime_error {
-    public:
-        AVLTreeException(const std::string& msg) : runtime_error(msg) {}
+public:
+    AVLTreeException(const std::string& msg) : runtime_error(msg) {}
 };
 
 class NodeAlreadyExists : public AVLTreeException {
-    public:
-        NodeAlreadyExists() : AVLTreeException("AVLTree Error: adding a node that already exists") {}
+public:
+    NodeAlreadyExists() : AVLTreeException("AVLTree Error: adding a node that already exists") {}
 };
 
 class BadAllocation : public AVLTreeException {
-    public:
-        BadAllocation() : AVLTreeException("AVLTree Error: allocation failed") {}
+public:
+    BadAllocation() : AVLTreeException("AVLTree Error: allocation failed") {}
 };
 
+class NodeDoesntExists : public AVLTreeException {
+public:
+    NodeDoesntExists() : AVLTreeException("AVLTree Error: node doesnt exist"){}
+};
 
 #endif
