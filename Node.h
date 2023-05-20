@@ -35,7 +35,7 @@ class Node {
         /*
         * d'tor
         */
-        ~Node();
+        ~Node() = default;
 
 
         /**** Getters and Setters ****/
@@ -105,7 +105,7 @@ class Node {
         * @result
         *       void
         */
-        void setHeight(const int height);
+        void setHeight(int height);
 
     private:
 
@@ -132,10 +132,6 @@ template<class T>
 Node<T>::Node(const Node& originalNode) :
     m_leftNode(originalNode.getLeftNode()), m_rightNode(originalNode.getRightNode()), m_value(originalNode.getValue()),
     m_height(originalNode.getHeight())
-{}
-
-template<class T>
-Node<T>::~Node()
 {}
 
 
@@ -185,7 +181,7 @@ int Node<T>::getHeight() const
 }
 
 template<class T>
-void Node<T>::setHeight(const int height)
+void Node<T>::setHeight(int height)
 {
     m_height = height;
 }
