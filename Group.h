@@ -16,16 +16,17 @@ class Group{
         bool m_isVip;
         int m_group_size;
 
-        friend bool operator==(const Group& a, const Group& b);
 
-        bool operator<(const Group& other) const;
-
-        bool operator>(const Group& other) const;
 
     public:
+
+        friend bool operator==(const Group& a, const Group& b);
+        bool operator<(const Group& other) const;
+        bool operator>(const Group& other) const;
+
         Group(int group_id, bool isVip, int group_size);
 
-        ~Group();
+        ~Group() = default;
 
         Group(const Group& group);
 
@@ -37,11 +38,11 @@ class Group{
 
         int getGroupSize() const;
 
-        void UpdateSetMoviesGroupWatchedInGenre(Genre genre);
+        void updateMoviesGroupWatchedInGenre(Genre genre, int views = 1);
 
         void setIsVip(bool isVip);
 
-        void UpdateGroupSize();
+        void updateGroupSize();
 
         void dismantleGroup(Node<User>* user);
 

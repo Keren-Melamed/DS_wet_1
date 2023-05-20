@@ -64,6 +64,8 @@ class Node {
         */
         T getValue() const;
 
+        T& getValueConst();
+
         /*
         * returns the height of the node
         * @return
@@ -164,6 +166,12 @@ void Node<T>::setRightNode(Node* rightNode)
 
 template<class T>
 T Node<T>::getValue() const
+{
+    return m_value;
+}
+
+template<class T>
+T& Node<T>::getValueConst()
 {
     return m_value;
 }

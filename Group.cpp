@@ -6,10 +6,10 @@ Group::Group(int group_id, bool isVip, int group_size):
     m_members.setRoot(nullptr);
 }
 
-Group::~Group(){
+/*Group::~Group(){
     //free(m_members); the tree should delete automatically with the d'tor
     free(m_movies_group_watched);
-}
+}*/
 
 Group::Group(const Group& group) = default;
 
@@ -52,7 +52,7 @@ void Group::setIsVip(bool isVip)
     m_isVip = isVip;
 }
 
-void Group::UpdateGroupSize()
+void Group::updateGroupSize()
 {
     m_group_size += 1;
 }
@@ -72,11 +72,11 @@ void Group::dismantleGroup(Node<User>* user)
     }
 }
 
-void Group::UpdateSetMoviesGroupWatchedInGenre(Genre genre)
+void Group::updateMoviesGroupWatchedInGenre(Genre genre, int views)
 {
     if(genre != Genre::NONE)
     {
-        m_movies_group_watched[(int) genre] += 1;
+        m_movies_group_watched[(int) genre] += views;
     }
 }
 

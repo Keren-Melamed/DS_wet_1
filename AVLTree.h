@@ -7,6 +7,13 @@
  
 using namespace std;
 
+
+
+
+//might need to change NULLs to nullptr.....
+
+
+
 template<class T>
 class AVLTree 
 {
@@ -232,6 +239,7 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
 {
     if(node == NULL)
     {
+        throw NodeDoesntExist();//might break the code
         return node;
     }
 
@@ -348,13 +356,11 @@ Node<T>* AVLTree<T>::deletionBalance(Node<T>* node)
 {
     if(balanceFactor(node->getLeftNode()) > 1 || balanceFactor(node->getLeftNode()) < -1)
     {
-        //node->setLeftNode(deletionBalance(node->getLeftNode()));
         node->setLeftNode(balance(node->getLeftNode(), node->getLeftNode()->getValue()));
 
     }
     if(balanceFactor(node->getRightNode()) > 1 || balanceFactor(node->getRightNode()) < -1)
     {
-        //node->setRightNode(deletionBalance(node->getRightNode()));
         node->setRightNode(balance(node->getRightNode(), node->getRightNode()->getValue()));
 
     }
@@ -392,7 +398,7 @@ Node<T>* AVLTree<T>::findObject(Node<T>* node, T value)
 {
     if(node == NULL)
     {
-        return nullptr;
+        throw NodeDoesntExist();
     }
 
     else if(node->getValue() == value)
