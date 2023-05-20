@@ -13,6 +13,10 @@ class User{
         Group* m_user_group; 
         int m_movies_user_watched[4] = {0};
 
+        friend bool operator==(const User& a, const User& b);
+        bool operator<(const User& other) const;
+        bool operator>(const User& other) const;
+
     public:
         User(int user_id, bool is_Vip, Group* user_group = nullptr);
 

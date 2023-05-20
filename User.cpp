@@ -41,7 +41,7 @@ int User::getMoviesUserWatchedInGenre(Genre genre)
     {
         int value=0;
 
-        for(int i = 0; i <=4; i++)
+        for(int i = 0; i <4; i++)
         {
             value += m_movies_user_watched[i];
         }
@@ -60,6 +60,21 @@ void User::UpdateMoviesUserWatchedInGenre(Genre genre)
     {
         m_movies_user_watched[(int) genre] += 1;
     }
+}
+
+bool User::operator>(const User &other) const
+{
+    return (this->getId() > other.getId());
+}
+
+bool User::operator<(const User &other) const
+{
+    return (this->getId() < other.getId());
+}
+
+bool operator==(const User &a, const User &b)
+{
+    return (a.getId() == b.getId());
 }
 
     

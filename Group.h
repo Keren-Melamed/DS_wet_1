@@ -12,9 +12,15 @@ class Group{
     private:
         int m_group_id;
         AVLTree<User> m_members;
-        int m_movies_group_watched[4] = {0};//not sure if = {0} is allowed but clion seems to like it
+        int m_movies_group_watched[4] = {0};
         bool m_isVip;
         int m_group_size;
+
+        friend bool operator==(const Group& a, const Group& b);
+
+        bool operator<(const Group& other) const;
+
+        bool operator>(const Group& other) const;
 
     public:
         Group(int group_id, bool isVip, int group_size);
@@ -23,23 +29,23 @@ class Group{
 
         Group(const Group& group);
 
-        int getGroupId() const;
-
         AVLTree<User> getMembers();
+
+        int getGroupId() const;
 
         int getMoviesGroupWatchedInGenre(Genre genre);
 
-        void UpdateSetMoviesGroupWatchedInGenre(Genre genre);
+        int getGroupSize() const;
 
-        bool getIsVip() const;
+        void UpdateSetMoviesGroupWatchedInGenre(Genre genre);
 
         void setIsVip(bool isVip);
 
         void UpdateGroupSize();
 
-        int getGroupSize() const;
-
         void dismantleGroup(Node<User>* user);
+
+        bool getIsVip() const;
 
 };
 

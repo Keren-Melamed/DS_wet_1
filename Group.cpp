@@ -34,13 +34,12 @@ int Group::getMoviesGroupWatchedInGenre(Genre genre)
     {
         int value = 0;
 
-        for(int i = 0; i <= 4; i++)
+        for(int i = 0; i < 4; i++)
         {
             value += m_movies_group_watched[i];
         }
         return value;
     }
-    return m_movies_group_watched[(int)genre];// redundant?
 }
 
 bool Group::getIsVip() const
@@ -67,7 +66,7 @@ void Group::dismantleGroup(Node<User>* user)
 {
     if(user != nullptr)
     {
-        user->getValue().setGroup(nullptr);
+        user->getValue().setGroup(nullptr);//user is actually a node in a tree so to access it we need to use getValue
         dismantleGroup(user->getLeftNode());
         dismantleGroup(user->getRightNode());
     }
@@ -80,3 +79,19 @@ void Group::UpdateSetMoviesGroupWatchedInGenre(Genre genre)
         m_movies_group_watched[(int) genre] += 1;
     }
 }
+
+bool operator==(const Group& a, const Group& b)
+{
+    return (a.getGroupId() == b.getGroupId());
+}
+
+bool Group::operator>(const Group &other) const
+{
+    return (this->getGroupId() > other.getGroupId());
+}
+
+bool Group::operator<(const Group &other) const
+{
+    return (this->getGroupId() < other.getGroupId());
+}
+
