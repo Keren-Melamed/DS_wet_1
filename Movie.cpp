@@ -1,4 +1,4 @@
-#include "movie.h"
+#include "Movie.h"
 
 Movie::Movie(int movieID, int views, bool vipOnly, Genre genre, bool flag):
 m_movieId(movieID), m_views(views), m_numOfVoters(0), m_rating(0), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)

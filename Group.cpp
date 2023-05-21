@@ -1,4 +1,4 @@
-#include "group.h"
+#include "Group.h"
 
 Group::Group(int group_id, bool isVip, int group_size):
     m_group_id(group_id), m_isVip(isVip), m_group_size(group_size)
@@ -66,7 +66,7 @@ void Group::dismantleGroup(Node<User>* user)
 {
     if(user != nullptr)
     {
-        user->getValue().setGroup(nullptr);//user is actually a node in a tree so to access it we need to use getValue
+        user->getValue()->setGroup(nullptr);//user is actually a node in a tree so to access it we need to use getValue
         dismantleGroup(user->getLeftNode());
         dismantleGroup(user->getRightNode());
     }

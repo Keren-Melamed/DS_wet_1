@@ -1,16 +1,14 @@
 
-#include "user.h"
+#include "User.h"
 
 User::User(int user_id, bool is_Vip, Group* user_group)
-    :m_id(user_id), m_is_vip(is_Vip)
-{
-    m_user_group = nullptr;
-}
+    :m_id(user_id), m_is_vip(is_Vip), m_user_group(user_group)
+{}
 
-User::~User()
+/*User::~User()
 {
     free(m_movies_user_watched);
-}
+}*/
 
 User::User(const User& user) = default;
 
@@ -76,6 +74,12 @@ bool operator==(const User &a, const User &b)
 {
     return (a.getId() == b.getId());
 }
+
+void User::print(ostream &os) const
+{
+    os << m_id << " ";
+}
+
 
     
 

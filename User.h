@@ -13,14 +13,15 @@ class User{
         Group* m_user_group; 
         int m_movies_user_watched[4] = {0};
 
+    public:
+
         friend bool operator==(const User& a, const User& b);
         bool operator<(const User& other) const;
         bool operator>(const User& other) const;
 
-    public:
         User(int user_id, bool is_Vip, Group* user_group = nullptr);
 
-        ~User();
+        ~User() = default;
 
         User(const User& user);
 
@@ -35,6 +36,8 @@ class User{
         void setGroup(Group* group);
 
         void UpdateMoviesUserWatchedInGenre(Genre genre);
+
+        void print(std::ostream& os) const;
 
 };
 

@@ -68,7 +68,7 @@ class AVLTree
         * @return
         *       a pointer to the node that is to be put in the appropriate spot
         */
-        Node<T>* removeValue(Node<T>* node, T value);
+        Node<T>* removeValue(Node<T>* node, T* value);
 
         /*
         * inserts node into the tree with the corresponding value and rebalances it via recursion
@@ -77,7 +77,7 @@ class AVLTree
         * @return
         *       a pointer to the node that is to be put in the appropriate spot
         */
-        Node<T>* insertValue(Node<T>* node, T value);
+        Node<T>* insertValue(Node<T>* node, T* value);
 
         /*
         * balances the tree from this root downwards
@@ -85,19 +85,19 @@ class AVLTree
         * @return
         *       a pointer to the node that is to be put in the appropriate spot
         */
-        Node<T>* balance(Node<T>* node, T value);
+        Node<T>* balance(Node<T>* node, T* value);
 
-        Node<T>* findObject(Node<T>* node, T value);
+        Node<T>* findObject(Node<T>* node, T* value);
 
-        void setRightNode(Node<T>* parent, T value);
+        void setRightNode(Node<T>* parent, T* value);
     
-        void setLeftNode(Node<T>* parent, T value);
+        void setLeftNode(Node<T>* parent, T* value);
 
-        ostream& inOrder(ostream& os, const Node<T>* node) const;
+        ostream& inOrder(ostream& os, Node<T>* node) const;
 
-        ostream& postOrder(ostream& os, const Node<T>* node) const;
+        ostream& postOrder(ostream& os, Node<T>* node) const;
 
-        ostream& preOrder(ostream& os, const Node<T>* node) const;
+        ostream& preOrder(ostream& os, Node<T>* node) const;
 
 
     private:
@@ -135,13 +135,13 @@ AVLTree<T>::AVLTree(const AVLTree& originalTree)
 
 
 template<class T>
-void AVLTree<T>::setRightNode(Node<T>* parent, T value)
+void AVLTree<T>::setRightNode(Node<T>* parent, T* value)
 {
     parent->setRightNode(insertValue(parent->getRightNode(), value));
 }
 
 template<class T>
-void AVLTree<T>::setLeftNode(Node<T>* parent, T value)
+void AVLTree<T>::setLeftNode(Node<T>* parent, T* value)
 {
     parent->setLeftNode(insertValue(parent->getLeftNode(), value));
 }
@@ -235,7 +235,7 @@ Node<T>* AVLTree<T>::nodeWithMinimumValue(Node<T>* node)
 }
 
 template<class T>
-Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
+Node<T>* AVLTree<T>::removeValue(Node<T>* node, T* value)
 {
     if(node == NULL)
     {
@@ -243,12 +243,12 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
         return node;
     }
 
-    else if(value > node->getValue())
+    else if(*value > *(node->getValue()))
     {
         node->setRightNode(removeValue(node->getRightNode(), value));
     }
 
-    else if(value < node->getValue())
+    else if(*value < *(node->getValue()))
     {
         node->setLeftNode(removeValue(node->getLeftNode(), value));
     }
@@ -286,7 +286,7 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T value)
 }
 
 template<class T>
-Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
+Node<T>* AVLTree<T>::insertValue(Node<T>* node, T* value)
 {
     if(node == NULL)
     {
@@ -297,21 +297,20 @@ Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
         return node;
     }
 
-    else if(node->getValue() == value){
+    else if(*(node->getValue()) == *value){
         throw NodeAlreadyExists();
     }
 
-    else if (node->getValue() > value )
+    else if (*(node->getValue()) > *value )
     {
         setLeftNode(node, value);
 
     }
 
-    else if (node->getValue() < value)
-    {        
+    else if (*(node->getValue()) < *value)
+    {
         setRightNode(node, value);
     }
-
     node = balance(node, value);
 
     node->setHeight(calculateHeight(node));
@@ -322,27 +321,27 @@ Node<T>* AVLTree<T>::insertValue(Node<T>* node, T value)
 }
 
 template<class T>
-Node<T>* AVLTree<T>::balance(Node<T>* node, T value)
+Node<T>* AVLTree<T>::balance(Node<T>* node, T* value)
 {
     int balance = balanceFactor(node);
 
-	if (balance > 1 && value < node->getLeftNode()->getValue())
+	if (balance > 1 && *value < *(node->getLeftNode()->getValue()))
     {
 		return rotateRight(node);
     }
 
-	if (balance < -1 && value > node->getRightNode()->getValue())
+	if (balance < -1 && *value > *(node->getRightNode()->getValue()))
     {
 		return rotateLeft(node);
     }
 
-	if (balance > 1 && value > node->getLeftNode()->getValue())
+	if (balance > 1 && *value > *(node->getLeftNode()->getValue()))
 	{
 		node->setLeftNode(rotateLeft(node->getLeftNode()));
 		return rotateRight(node);
 	}
 
-	if (balance < -1 && value < node->getRightNode()->getValue())
+	if (balance < -1 && *value < *(node->getRightNode()->getValue()))
 	{
 		node->setRightNode(rotateRight(node->getRightNode()));
 		return rotateLeft(node);
@@ -394,26 +393,26 @@ Node<T>* AVLTree<T>::deletionBalance(Node<T>* node)
 }
 
 template<class T>
-Node<T>* AVLTree<T>::findObject(Node<T>* node, T value)
+Node<T>* AVLTree<T>::findObject(Node<T>* node, T* value)
 {
     if(node == NULL)
     {
         throw NodeDoesntExist();
     }
 
-    else if(node->getValue() == value)
+    else if(*(node->getValue()) == *value)
     {
         return node;
     }
 
-    else if(node->getValue() > value)
+    else if(*(node->getValue()) > *value)
     {
-        return findObject(node->getLeftNode(), value);
+        return findObject((node->getLeftNode()), value);
     }
 
     else
     {
-        return findObject(node->getRightNode(), value);
+        return findObject((node->getRightNode()), value);
     }
 }
 
@@ -461,7 +460,7 @@ Node<T>* AVLTree<T>::rotateRight(Node<T>* parent)
 
 
 template<class T>
-ostream& AVLTree<T>::inOrder(ostream& os, const Node<T>* node) const
+ostream& AVLTree<T>::inOrder(ostream& os, Node<T>* node) const
 {
     if (node == NULL)
     {
@@ -470,14 +469,14 @@ ostream& AVLTree<T>::inOrder(ostream& os, const Node<T>* node) const
     else
     {
         inOrder(os, node->getLeftNode());
-        os << node->getValue() << " ";
+        node->getValue()->print(os);
         inOrder(os, node->getRightNode());
         return os;
     }
 }
 
 template<class T>
-ostream& AVLTree<T>::postOrder(ostream& os, const Node<T>* node) const
+ostream& AVLTree<T>::postOrder(ostream& os, Node<T>* node) const
 {
     if (node == NULL)
     {
@@ -487,21 +486,21 @@ ostream& AVLTree<T>::postOrder(ostream& os, const Node<T>* node) const
     {
         postOrder(os, node->getLeftNode());
         postOrder(os, node->getRightNode());
-        os << node->getValue() << " ";
+        node->getValue()->print(os);
         return os;
     }
 }
 
 template<class T>
-ostream& AVLTree<T>::preOrder(ostream& os, const Node<T>* node) const
+ostream& AVLTree<T>::preOrder(ostream& os, Node<T>* node) const
 {
     if(node == NULL)
     {
         return os;
     }
     else
-    {  
-        os << node->getValue() << " ";
+    {
+        node->getValue()->print(os);
         preOrder(os, node->getLeftNode());
         preOrder(os, node->getRightNode());
         return os;

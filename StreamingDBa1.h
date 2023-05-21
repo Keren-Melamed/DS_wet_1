@@ -16,50 +16,65 @@
 #define STREAMINGDBA1_H_
 
 #include "wet1util.h"
+#include "Movie.h"
+#include "User.h"
+#include "Group.h"
+#include "AVLTree.h"
+#include "exception.h"
 
 class streaming_database {
 private:
-	AVLTree<Movie> m_movies;
-	AVLTree<User> m_users;
-	AVLTree<Group> m_groups;
-	int[4] m_movies_in_genre;
-	
+    AVLTree<Movie> m_movies;
+    AVLTree<Group> m_groups;
+    int m_movies_in_genre[4] = {0};
+    AVLTree<Movie> m_fantasy_movies;
+    AVLTree<Movie> m_comedy_movies;
+    AVLTree<Movie> m_action_movies;
+    AVLTree<Movie> m_drama_movies;
+
+    void movieTreeToArray(Node<Movie>* node, int *const output);
+    AVLTree<Movie> getGenreTree(Genre genre);
+
+
 public:
-	// <DO-NOT-MODIFY> {
-	
-	streaming_database();
+    // <DO-NOT-MODIFY> {
 
-	virtual ~streaming_database();
-	
-	StatusType add_movie(int movieId, Genre genre, int views, bool vipOnly);
-	
-	StatusType remove_movie(int movieId);
-	
-	StatusType add_user(int userId, bool isVip);
-	
-	StatusType remove_user(int userId);
-	
-	StatusType add_group(int groupId);
-	
-	StatusType remove_group(int groupId);
+    AVLTree<User> m_users;
 
-	StatusType add_user_to_group(int userId, int groupId);
-	
-	StatusType user_watch(int userId, int movieId);
+
+    streaming_database();
+
+    virtual ~streaming_database();
+
+    StatusType add_movie(int movieId, Genre genre, int views, bool vipOnly);
+
+    StatusType remove_movie(int movieId);
+
+    StatusType add_user(int userId, bool isVip);
+
+    StatusType remove_user(int userId);
+
+    StatusType add_group(int groupId);
+
+    StatusType remove_group(int groupId);
+
+    StatusType add_user_to_group(int userId, int groupId);
+
+    StatusType user_watch(int userId, int movieId);
 
     StatusType group_watch(int groupId,int movieId);
 
     output_t<int> get_all_movies_count(Genre genre);
 
     StatusType get_all_movies(Genre genre, int *const output);
-	
-	output_t<int> get_num_views(int userId, Genre genre);
+
+    output_t<int> get_num_views(int userId, Genre genre);
 
     StatusType rate_movie(int userId, int movieId, int rating);
-	
-	output_t<int> get_group_recommendation(int groupId);
-	
-	// } </DO-NOT-MODIFY>
+
+    output_t<int> get_group_recommendation(int groupId);
+
+    // } </DO-NOT-MODIFY>
 };
 
 #endif // STREAMINGDBA1_H_

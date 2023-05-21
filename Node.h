@@ -14,7 +14,7 @@ class Node {
         * @result
         *       an instance of Node with a saved value
         */
-        Node(T& value);
+        Node(T* value);
         //do we need this?
 
         /*
@@ -62,9 +62,7 @@ class Node {
         * @return
         *       m_value
         */
-        T getValue() const;
-
-        T& getValueConst();
+        T* getValue();
 
         /*
         * returns the height of the node
@@ -98,7 +96,7 @@ class Node {
         * @result
         *       void
         */
-        void setValue(T value);
+        void setValue(T* value);
 
         /*
         * setter for the current height of the node
@@ -114,8 +112,8 @@ class Node {
         Node* m_leftNode;
         Node* m_rightNode;
 
-        T m_value;
-        //should it be &? 
+        T* m_value;
+        //should it be &?
 
         int m_height;
 
@@ -126,7 +124,7 @@ class Node {
 
 
 template<class T>
-Node<T>::Node(T& value) :
+Node<T>::Node(T* value) :
     m_leftNode(nullptr), m_rightNode(nullptr), m_value(value), m_height(1)
 {}
 
@@ -165,19 +163,13 @@ void Node<T>::setRightNode(Node* rightNode)
 }
 
 template<class T>
-T Node<T>::getValue() const
+T* Node<T>::getValue()
 {
     return m_value;
 }
 
 template<class T>
-T& Node<T>::getValueConst()
-{
-    return m_value;
-}
-
-template<class T>
-void Node<T>::setValue(T value)
+void Node<T>::setValue(T* value)
 {
     m_value = value;
 }

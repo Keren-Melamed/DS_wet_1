@@ -29,12 +29,11 @@ class Movie
 
         Genre getGenre() const;
 
-
-    private:
-
         friend bool operator==(const Movie& a, const Movie& b);
         bool operator<(const Movie& other) const;
         bool operator>(const Movie& other) const;
+
+    private:
 
         int m_movieId;
         int m_views;
