@@ -57,9 +57,12 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     try{
         Movie* movie = new Movie(movieId, views, vipOnly, genre);
 
-        m_movies.insertValue(m_movies.getRoot(), movie);
+        m_movies.setRoot(m_movies.insertValue(m_movies.getRoot(), movie));
 
-        getGenreTree(genre).insertValue(getGenreTree(genre).getRoot(), movie);
+        getGenreTree(genre).setRoot(getGenreTree(genre).insertValue(getGenreTree(genre).getRoot(), movie));
+        //isn't adding it to the actual tree in the database but creating a new one and adding it to there,
+        //just to delete it when exiting the function
+        
 
         m_movies_in_genre[(int)genre] += 1;
     }
@@ -83,10 +86,11 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
     try{
         Movie* temp = new Movie(movieId, 0, false, Genre::NONE);
         Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), temp);
-        m_movies.removeValue(m_movies.getRoot(), movieNode->getValue());
+        m_movies.setRoot(m_movies.removeValue(m_movies.getRoot(), movieNode->getValue()));
 
-        getGenreTree(movieNode->getValue()->getGenre()). //line was too long
-            removeValue(getGenreTree(movieNode->getValue()->getGenre()).getRoot(), movieNode->getValue());
+        getGenreTree(movieNode->getValue()->getGenre()).setRoot( //line was too long
+                getGenreTree(movieNode->getValue()->getGenre()).removeValue(//line was still too long...
+                getGenreTree(movieNode->getValue()->getGenre()).getRoot(), movieNode->getValue()));
     }
 
     catch(NodeDoesntExist& e){
@@ -104,7 +108,7 @@ StatusType streaming_database::add_user(int userId, bool isVip)//insert by objec
     try{
         User* user = new User(userId, isVip);
 
-        m_users.insertValue(m_users.getRoot(), user);
+        m_users.setRoot(m_users.insertValue(m_users.getRoot(), user));
     }
 
     catch(BadAllocation& e){
@@ -113,7 +117,6 @@ StatusType streaming_database::add_user(int userId, bool isVip)//insert by objec
     catch(NodeAlreadyExists& e){
         return StatusType::FAILURE;
     }
-
     return StatusType::SUCCESS;
 }
 
@@ -126,7 +129,7 @@ StatusType streaming_database::remove_user(int userId)//find by object
     try{
         User* temp = new User(userId, false);
         Node<User>* userNode = m_users.findObject(m_users.getRoot(), temp);
-        m_users.removeValue(m_users.getRoot(), userNode->getValue());
+        m_users.setRoot(m_users.removeValue(m_users.getRoot(), userNode->getValue()));
     }
 
     catch(NodeDoesntExist& e){
@@ -143,7 +146,7 @@ StatusType streaming_database::add_group(int groupId)//insert by object
     }
     try{
         Group* group = new Group(groupId, false, 0);
-        m_groups.insertValue(m_groups.getRoot(), group);
+        m_groups.setRoot(m_groups.insertValue(m_groups.getRoot(), group));
     }
 
     catch(BadAllocation& e){
@@ -166,7 +169,7 @@ StatusType streaming_database::remove_group(int groupId)//remove by object
     {
         Group* temp = new Group(groupId, false, 0);//might need to be outside of try
         Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), temp);
-        m_groups.removeValue(m_groups.getRoot(), groupNode->getValue());
+        m_groups.setRoot(m_groups.removeValue(m_groups.getRoot(), groupNode->getValue()));
         groupNode->getValue()->dismantleGroup(groupNode->getValue()->getMembers().getRoot());
     }
 
@@ -199,8 +202,9 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
         }
         try
         {
-            groupNode->getValue()->getMembers().insertValue(groupNode->getValue()->getMembers().getRoot(),
-                                                           userNode->getValue());
+            groupNode->getValue()->getMembers().setRoot(groupNode->getValue()->getMembers().insertValue(//line was too long...
+                    groupNode->getValue()->getMembers().getRoot(),userNode->getValue()));
+
             Group *pointerGroup = (groupNode->getValue());
             userNode->getValue()->setGroup(pointerGroup);
             if(groupNode->getValue()->getIsVip() == false){//is this correct? why does having one vip make the whole group vip?
@@ -454,3 +458,12 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
         return out;
     }
 }
+
+
+
+/*
+ add_group 6567
+ add_user 9744 False
+ add_user_to_group 9744 6567
+
+ */
