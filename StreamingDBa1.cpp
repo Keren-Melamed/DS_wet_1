@@ -21,31 +21,51 @@ void streaming_database::movieTreeToArray(Node<Movie>* node, int *const output)
     if(node == nullptr){
         return;
     }
-
-    movieTreeToArray(node->getLeftNode(), output);
-    output[pos++] = node->getValue()->getMovieId();
     movieTreeToArray(node->getRightNode(), output);
+    output[pos++] = node->getValue()->getMovieId();
+    movieTreeToArray(node->getLeftNode(), output);
 
 }
 
-AVLTree<Movie> streaming_database::getGenreTree(Genre genre)
+void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 {
-    switch(genre){
+    switch(genre)
+    {
         case Genre::FANTASY:
-            return m_fantasy_movies;
+            m_fantasy_movies.setRoot(m_fantasy_movies.insertValue(m_fantasy_movies.getRoot(), movie));
 
         case Genre::COMEDY:
-            return m_comedy_movies;
+            m_comedy_movies.setRoot(m_comedy_movies.insertValue(m_comedy_movies.getRoot(), movie));
 
         case Genre::ACTION:
-            return m_action_movies;
+            m_action_movies.setRoot(m_action_movies.insertValue(m_action_movies.getRoot(), movie));
 
         case Genre::DRAMA:
-            return m_drama_movies;
+            m_drama_movies.setRoot(m_drama_movies.insertValue(m_drama_movies.getRoot(), movie));
 
         default:
-            AVLTree<Movie> tmpTree;
-            return tmpTree;
+            return;
+    }
+}
+
+void streaming_database::removeMovieFromGenreTree(Genre genre, Movie* movie)
+{
+    switch(genre)
+    {
+        case Genre::FANTASY:
+            m_fantasy_movies.setRoot(m_fantasy_movies.removeValue(m_fantasy_movies.getRoot(), movie));
+
+        case Genre::COMEDY:
+            m_comedy_movies.setRoot(m_comedy_movies.removeValue(m_comedy_movies.getRoot(), movie));
+
+        case Genre::ACTION:
+            m_action_movies.setRoot(m_action_movies.removeValue(m_action_movies.getRoot(), movie));
+
+        case Genre::DRAMA:
+            m_drama_movies.setRoot(m_drama_movies.removeValue(m_drama_movies.getRoot(), movie));
+
+        default:
+            return;
     }
 }
 
@@ -59,10 +79,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 
         m_movies.setRoot(m_movies.insertValue(m_movies.getRoot(), movie));
 
-        getGenreTree(genre).setRoot(getGenreTree(genre).insertValue(getGenreTree(genre).getRoot(), movie));
-        //isn't adding it to the actual tree in the database but creating a new one and adding it to there,
-        //just to delete it when exiting the function
-        
+        addMovieToGenreTree(genre, movie);
 
         m_movies_in_genre[(int)genre] += 1;
     }
@@ -87,10 +104,7 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
         Movie* temp = new Movie(movieId, 0, false, Genre::NONE);
         Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), temp);
         m_movies.setRoot(m_movies.removeValue(m_movies.getRoot(), movieNode->getValue()));
-
-        getGenreTree(movieNode->getValue()->getGenre()).setRoot( //line was too long
-                getGenreTree(movieNode->getValue()->getGenre()).removeValue(//line was still too long...
-                getGenreTree(movieNode->getValue()->getGenre()).getRoot(), movieNode->getValue()));
+        removeMovieFromGenreTree(movieNode->getValue()->getGenre(), movieNode->getValue());
     }
 
     catch(NodeDoesntExist& e){
@@ -257,7 +271,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
         Group* user_group = userNode->getValue()->getGroup();
         if(user_group != nullptr)
         {
-            user_group->updateMoviesGroupWatchedInGenre(movieNode->getValue()->getGenre());
+            user_group->updateMoviesGroupWatchedInGenre(movieNode->getValue()->getGenre(), user_group->getGroupSize());
         }
     }
     catch(NodeDoesntExist& e)
@@ -293,7 +307,9 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
             return StatusType::FAILURE;
         }
 
-        groupNode->getValue()->updateMoviesGroupWatchedInGenre(movieNode->getValue()->getGenre());
+        groupNode->getValue()->updateMoviesGroupWatchedInGenre(movieNode->getValue()->getGenre(),
+                                                               groupNode->getValue()->getGroupSize());
+
         movieNode->getValue()->addViews(groupNode->getValue()->getGroupSize());
     }
     catch(NodeDoesntExist& e)
@@ -328,26 +344,35 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
         return StatusType::INVALID_INPUT;
     }
 
-    if(genre == Genre::NONE)
+    else
     {
-        if(m_movies.getRoot() == nullptr){
+        if(m_movies.getRoot() == nullptr)
+        {
+            return StatusType::FAILURE;
+        }
+        else if(genre != Genre::NONE && m_movies_in_genre[(int)genre] == 0)
+        {
             return StatusType::FAILURE;
         }
 
         else{
-            movieTreeToArray(m_movies.getRoot(), output);
-            return StatusType::SUCCESS;
-        }
-    }
+            switch(genre){
+                case Genre::FANTASY:
+                    movieTreeToArray(m_fantasy_movies.getRoot(), output);
 
-    else{
-        if(m_movies_in_genre[(int)genre] == 0){
-            return StatusType::FAILURE;
-        }
+                case Genre::COMEDY:
+                    movieTreeToArray(m_comedy_movies.getRoot(), output);
 
-        else{
-            AVLTree<Movie> genre_tree = getGenreTree(genre);
-            movieTreeToArray(genre_tree.getRoot(), output);
+                case Genre::ACTION:
+                    movieTreeToArray(m_action_movies.getRoot(), output);
+
+                case Genre::DRAMA:
+                    movieTreeToArray(m_drama_movies.getRoot(), output);
+
+                case Genre::NONE:
+                    movieTreeToArray(m_movies.getRoot(), output);
+            }
+
             return StatusType::SUCCESS;
         }
     }
@@ -412,44 +437,72 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
     }
 
     Group* tempGroup = new Group(groupId, false ,0);
-    try
-    {
-        Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), tempGroup);
+    try {
+        Node<Group> *groupNode = m_groups.findObject(m_groups.getRoot(), tempGroup);
 
-        if(groupNode->getValue()->getMembers().getRoot() == nullptr)
-        {
+        if (groupNode->getValue()->getMembers().getRoot() == nullptr) {
             output_t<int> out(StatusType::FAILURE);
             return out;
         }
 
         int max_views = 0;
         Genre fav_genre = Genre::NONE;
-        for(int i = 3; i >= 0; i--)
-        {
+        for (int i = 3; i >= 0; i--) {
             Genre genre = static_cast<Genre>(i);
-            if(groupNode->getValue()->getMoviesGroupWatchedInGenre(genre) > max_views){
+            if (groupNode->getValue()->getMoviesGroupWatchedInGenre(genre) > max_views) {
                 max_views = groupNode->getValue()->getMoviesGroupWatchedInGenre(genre);
                 fav_genre = genre;
             }
         }
 
-        if(m_movies_in_genre[(int)fav_genre] == 0)
-        {
+        if (m_movies_in_genre[(int) fav_genre] == 0) {
             output_t<int> out(StatusType::FAILURE);
             return out;
         }
 
-        AVLTree<Movie> movies_in_genre = getGenreTree(fav_genre);
-
-        if(movies_in_genre.getRoot() == nullptr)
-        {
-            output_t<int> out(StatusType::FAILURE);
-            return out;
-        }
-        else
-        {
-            output_t<int> out(movies_in_genre.getRoot()->getValue()->getMovieId());
-            return out;
+        switch (fav_genre) {
+            case Genre::FANTASY: {
+                if (m_fantasy_movies.getRoot() == nullptr) {
+                    output_t<int> outFantasyFail(StatusType::FAILURE);
+                    return outFantasyFail;
+                }
+                output_t<int> outFantasy(m_fantasy_movies.getRoot()->getValue()->getMovieId());
+                return outFantasy;
+            }
+            case Genre::COMEDY: {
+                if (m_comedy_movies.getRoot() == nullptr) {
+                    output_t<int> outComedyFail(StatusType::FAILURE);
+                    return outComedyFail;
+                }
+                output_t<int> outComedy(m_comedy_movies.getRoot()->getValue()->getMovieId());
+                return outComedy;
+            }
+            case Genre::ACTION: {
+                if (m_action_movies.getRoot() == nullptr) {
+                    output_t<int> outActionFail(StatusType::FAILURE);
+                    return outActionFail;
+                }
+                output_t<int> outAction(m_action_movies.getRoot()->getValue()->getMovieId());
+                return outAction;
+            }
+            case Genre::DRAMA:
+            {
+                if (m_drama_movies.getRoot() == nullptr) {
+                    output_t<int> outDramaFail(StatusType::FAILURE);
+                    return outDramaFail;
+                }
+                output_t<int> outDrama(m_drama_movies.getRoot()->getValue()->getMovieId());
+                return outDrama;
+            }
+            default:
+            {
+                if (m_movies.getRoot() == nullptr) {
+                    output_t<int> outNoneFail(StatusType::FAILURE);
+                    return outNoneFail;
+                }
+                output_t<int> outNone(m_movies.getRoot()->getValue()->getMovieId());
+                return outNone;
+            }
         }
     }
     catch(NodeDoesntExist& e)

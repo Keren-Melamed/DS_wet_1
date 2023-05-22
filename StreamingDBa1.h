@@ -24,6 +24,8 @@
 
 class streaming_database {
 private:
+
+    AVLTree<User> m_users;
     AVLTree<Movie> m_movies;
     AVLTree<Group> m_groups;
     int m_movies_in_genre[4] = {0};
@@ -33,13 +35,16 @@ private:
     AVLTree<Movie> m_drama_movies;
 
     void movieTreeToArray(Node<Movie>* node, int *const output);
-    AVLTree<Movie> getGenreTree(Genre genre);
+
+    void addMovieToGenreTree(Genre genre, Movie *movie);
+
+    void removeMovieFromGenreTree(Genre genre, Movie* movie);
+
 
 
 public:
     // <DO-NOT-MODIFY> {
 
-    AVLTree<User> m_users;
 
 
     streaming_database();
