@@ -13,7 +13,7 @@ class Movie
 
         void addRating(double rating);
         
-        void addViews(int views);
+        void addViews(int views = 1);
 
         void setFlag(bool flag);
 

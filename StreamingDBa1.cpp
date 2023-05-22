@@ -22,7 +22,7 @@ void streaming_database::movieTreeToArray(Node<Movie>* node, int *const output)
         return;
     }
     movieTreeToArray(node->getRightNode(), output);
-    output[pos++] = node->getValue()->getMovieId();
+    output[++pos] = node->getValue()->getMovieId();
     movieTreeToArray(node->getLeftNode(), output);
 
 }
@@ -221,9 +221,9 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 
             Group *pointerGroup = (groupNode->getValue());
             userNode->getValue()->setGroup(pointerGroup);
-            if(groupNode->getValue()->getIsVip() == true){
-                if(userNode->getValue()->getIsVip() == false){
-                    groupNode->getValue()->setIsVip(false);
+            if(groupNode->getValue()->getIsVip() == false){
+                if(userNode->getValue()->getIsVip() == true){
+                    groupNode->getValue()->setIsVip(true);
                 }
             }
 
@@ -350,7 +350,7 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
         {
             return StatusType::FAILURE;
         }
-        else if(genre != Genre::NONE && m_movies_in_genre[(int)genre] == 0)
+        if(genre != Genre::NONE && m_movies_in_genre[(int)genre] == 0)
         {
             return StatusType::FAILURE;
         }
@@ -516,7 +516,18 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 
 /*
  add_group 6567
+ add_group 7703
  add_user 9744 False
  add_user_to_group 9744 6567
-
+ add_group 6727
+ remove_user 9744
+ get_all_movies_count 2
+ add_user 8287 False
+ add_group 9143
+ remove_movie 1422
+ add_movie 7427 3 90 True
+ add_user_to_group 8287 7703
+ add_user 8857 True
+ get_all_movies_count 1
+ add_movie 1138 2 4 False
  */
