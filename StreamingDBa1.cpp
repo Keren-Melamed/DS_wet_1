@@ -167,7 +167,7 @@ StatusType streaming_database::remove_group(int groupId)//remove by object
 
     try
     {
-        Group* temp = new Group(groupId, false, 0);//might need to be outside of try
+        Group* temp = new Group(groupId, false, 0);
         Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), temp);
         m_groups.setRoot(m_groups.removeValue(m_groups.getRoot(), groupNode->getValue()));
         groupNode->getValue()->dismantleGroup(groupNode->getValue()->getMembers().getRoot());
@@ -207,9 +207,9 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 
             Group *pointerGroup = (groupNode->getValue());
             userNode->getValue()->setGroup(pointerGroup);
-            if(groupNode->getValue()->getIsVip() == false){//is this correct? why does having one vip make the whole group vip?
-                if(userNode->getValue()->getIsVip() == true){
-                    groupNode->getValue()->setIsVip(true);
+            if(groupNode->getValue()->getIsVip() == true){
+                if(userNode->getValue()->getIsVip() == false){
+                    groupNode->getValue()->setIsVip(false);
                 }
             }
 
