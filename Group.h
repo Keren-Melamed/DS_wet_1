@@ -16,8 +16,6 @@ class Group{
         bool m_isVip;
         int m_group_size;
 
-
-
     public:
 
         friend bool operator==(const Group& a, const Group& b);
@@ -38,7 +36,7 @@ class Group{
 
         int getGroupSize() const;
 
-        void updateMoviesGroupWatchedInGenre(Genre genre, int views = 1);
+        void updateMoviesGroupWatchedInGenre(Genre genre, int views);
 
         void setIsVip(bool isVip);
 
@@ -47,7 +45,6 @@ class Group{
         void dismantleGroup(Node<User>* user);
 
         bool getIsVip() const;
-
 };
 
 #endif
