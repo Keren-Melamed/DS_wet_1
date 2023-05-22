@@ -61,7 +61,7 @@ bool Movie::operator<(const Movie& other) const
 {
     if(this->getFlag() != other.getFlag())
     {
-        std::cout << "the movie flags are different" << std::endl;
+        std::cout << "the movie flags are different" << std::endl;//should never be happen
     }
     if(!this->getFlag())//the flag dictates we compare by movie ID
     {

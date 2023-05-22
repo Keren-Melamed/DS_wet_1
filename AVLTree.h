@@ -239,21 +239,12 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T* value)
 {
     if(node == NULL)
     {
-        throw NodeDoesntExist();//might break the code
-        return node;
+        // throw NodeDoesntExist(); //breaks the code so removed, additionally, I got rid of the throw because we always call
+        //findValue beforehand, and it'll tell throw an exception if the node doesn't exist
+        return NULL;
     }
 
-    else if(*value > *(node->getValue()))
-    {
-        node->setRightNode(removeValue(node->getRightNode(), value));
-    }
-
-    else if(*value < *(node->getValue()))
-    {
-        node->setLeftNode(removeValue(node->getLeftNode(), value));
-    }
-    // ^^ can probably be implemented with the find method ^^
-    else
+    else if(*value == *(node->getValue()))
     {
         if (node->getLeftNode() == NULL && node->getRightNode() == NULL)
         {
@@ -278,6 +269,17 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T* value)
         node->setValue(tmp->getValue());
         node->setRightNode(removeValue(node->getRightNode(), tmp->getValue()));
     }
+
+    else if(*value > *(node->getValue()))
+    {
+        node->setRightNode(removeValue(node->getRightNode(), value));
+    }
+
+    else //(*value < *(node->getValue()))
+    {
+        node->setLeftNode(removeValue(node->getLeftNode(), value));
+    }
+
     node->setHeight(calculateHeight(node));
 
     node = deletionBalance(node);

@@ -28,19 +28,17 @@ private:
     AVLTree<User> m_users;
     AVLTree<Movie> m_movies;
     AVLTree<Group> m_groups;
-    int m_movies_in_genre[4] = {0};
     AVLTree<Movie> m_fantasy_movies;
     AVLTree<Movie> m_comedy_movies;
     AVLTree<Movie> m_action_movies;
     AVLTree<Movie> m_drama_movies;
+    int m_movies_in_genre[4] = {0};
 
-    void movieTreeToArray(Node<Movie>* node, int *const output);
+    void movieTreeToArray(Node<Movie>* node, int *const output, int* pos);
 
     void addMovieToGenreTree(Genre genre, Movie *movie);
 
     void removeMovieFromGenreTree(Genre genre, Movie* movie);
-
-
 
 public:
     // <DO-NOT-MODIFY> {

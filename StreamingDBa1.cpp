@@ -1,31 +1,32 @@
 #include "StreamingDBa1.h"
 
-streaming_database::streaming_database() = default;
 
-/*streaming_database::streaming_database()
-{
-    AVLTree<Movie> m_movies;
-    AVLTree<User> m_users;
-    AVLTree<Group> m_groups;
-    AVLTree<Movie> m_fantasy_movies;
-    AVLTree<Movie> m_comedy_movies;
-    AVLTree<Movie> m_action_movies;
-    AVLTree<Movie> m_drama_movies;
-}*/
+/*
+ * when do we need to use the flag in movie? do we ever use it even?
+ */
+
+
+
+
+
+streaming_database::streaming_database() = default;
 
 streaming_database::~streaming_database() = default;
 
-void streaming_database::movieTreeToArray(Node<Movie>* node, int *const output)
+void streaming_database::movieTreeToArray(Node<Movie>* node, int *const output, int* pos)
+//maybe instead of pos, we should pop into a queue and then at the end move the queue into the array?
 {
-    static int pos = 0;
+    cout <<"before addition: " << *pos << endl;
     if(node == nullptr){
         return;
     }
-    movieTreeToArray(node->getRightNode(), output);
-    output[++pos] = node->getValue()->getMovieId();
-    movieTreeToArray(node->getLeftNode(), output);
+    *pos += 1;
+    cout <<"after addition: " << *pos << endl;
+    movieTreeToArray(node->getRightNode(), output, pos);
+    output[*pos - 1] = node->getValue()->getMovieId();
+    movieTreeToArray(node->getLeftNode(), output, pos);
 
-}
+}//its giving us -1 cause that was its initialized to in the maina1 function
 
 void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 {
@@ -54,15 +55,19 @@ void streaming_database::removeMovieFromGenreTree(Genre genre, Movie* movie)
     {
         case Genre::FANTASY:
             m_fantasy_movies.setRoot(m_fantasy_movies.removeValue(m_fantasy_movies.getRoot(), movie));
+            m_movies_in_genre[(int) Genre::FANTASY] -= 1;
 
         case Genre::COMEDY:
             m_comedy_movies.setRoot(m_comedy_movies.removeValue(m_comedy_movies.getRoot(), movie));
+            m_movies_in_genre[(int) Genre::COMEDY] -= 1;
 
         case Genre::ACTION:
             m_action_movies.setRoot(m_action_movies.removeValue(m_action_movies.getRoot(), movie));
+            m_movies_in_genre[(int) Genre::ACTION] -= 1;
 
         case Genre::DRAMA:
             m_drama_movies.setRoot(m_drama_movies.removeValue(m_drama_movies.getRoot(), movie));
+            m_movies_in_genre[(int) Genre::DRAMA] -= 1;
 
         default:
             return;
@@ -144,6 +149,8 @@ StatusType streaming_database::remove_user(int userId)//find by object
         User* temp = new User(userId, false);
         Node<User>* userNode = m_users.findObject(m_users.getRoot(), temp);
         m_users.setRoot(m_users.removeValue(m_users.getRoot(), userNode->getValue()));
+        //we still need to remove him from the group
+        // ^^ is that even a thing actually?
     }
 
     catch(NodeDoesntExist& e){
@@ -356,21 +363,23 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
         }
 
         else{
+            int* pos = new int(1);
+            *pos = 0;
             switch(genre){
                 case Genre::FANTASY:
-                    movieTreeToArray(m_fantasy_movies.getRoot(), output);
+                    movieTreeToArray(m_fantasy_movies.getRoot(), output, pos);
 
                 case Genre::COMEDY:
-                    movieTreeToArray(m_comedy_movies.getRoot(), output);
+                    movieTreeToArray(m_comedy_movies.getRoot(), output, pos);
 
                 case Genre::ACTION:
-                    movieTreeToArray(m_action_movies.getRoot(), output);
+                    movieTreeToArray(m_action_movies.getRoot(), output, pos);
 
                 case Genre::DRAMA:
-                    movieTreeToArray(m_drama_movies.getRoot(), output);
+                    movieTreeToArray(m_drama_movies.getRoot(), output, pos);
 
                 case Genre::NONE:
-                    movieTreeToArray(m_movies.getRoot(), output);
+                    movieTreeToArray(m_movies.getRoot(), output, pos);
             }
 
             return StatusType::SUCCESS;
