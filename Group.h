@@ -28,7 +28,7 @@ class Group{
 
         Group(const Group& group);
 
-        AVLTree<User> getMembers();
+        AVLTree<User>* getMembers();
 
         int getGroupId() const;
 

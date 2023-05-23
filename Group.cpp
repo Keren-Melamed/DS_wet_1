@@ -18,9 +18,9 @@ int Group::getGroupId() const
     return m_group_id;
 }
 
-AVLTree<User> Group::getMembers()
+AVLTree<User>* Group::getMembers()
 {
-    return m_members;
+    return &m_members;
 }
 
 int Group::getMoviesGroupWatchedInGenre(Genre genre)
