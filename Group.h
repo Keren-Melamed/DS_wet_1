@@ -44,6 +44,8 @@ class Group{
 
         void dismantleGroup(Node<User>* user);
 
+        void addViewToMembers(Node<User>* Node, Genre genre);
+
         bool getIsVip() const;
 };
 

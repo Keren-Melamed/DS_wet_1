@@ -37,7 +37,6 @@ class Node {
         */
         ~Node() = default;
 
-
         /**** Getters and Setters ****/
 
         /*
@@ -113,7 +112,6 @@ class Node {
         Node* m_rightNode;
 
         T* m_value;
-        //should it be &?
 
         int m_height;
 

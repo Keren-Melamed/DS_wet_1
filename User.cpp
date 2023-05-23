@@ -81,5 +81,3 @@ void User::print(ostream &os) const
 }
 
 
-    
-

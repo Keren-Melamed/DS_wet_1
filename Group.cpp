@@ -95,3 +95,14 @@ bool Group::operator<(const Group &other) const
     return (this->getGroupId() < other.getGroupId());
 }
 
+void Group::addViewToMembers(Node<User>* node, Genre genre)
+{
+    if(node == nullptr)
+    {
+        return;
+    }
+    addViewToMembers(node->getLeftNode(), genre);
+    node->getValue()->UpdateMoviesUserWatchedInGenre(genre);
+    addViewToMembers(node->getRightNode(), genre);
+}
+

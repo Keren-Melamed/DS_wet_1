@@ -7,13 +7,6 @@
  
 using namespace std;
 
-
-
-
-//might need to change NULLs to nullptr.....
-
-
-
 template<class T>
 class AVLTree 
 {
@@ -101,6 +94,8 @@ class AVLTree
 
         void treeToArray(Node<T>* node, T** array, int sizeOfArray, int* counter);
 
+        void deleteNodes(Node<T>* node);
+
 
     private:
 
@@ -139,17 +134,32 @@ AVLTree<T>::~AVLTree()
     int* nodeCounter = new int(0);
     int* counter = new int(0);
 
-    numOfNodes(getRoot(), nodeCounter);
-    T* valueArray[*nodeCounter];//should add a bad alloc throw;
-    treeToArray(getRoot(), valueArray, *nodeCounter, counter);
+    //numOfNodes(getRoot(), nodeCounter);
+    //T* valueArray[*nodeCounter];//should add a bad alloc throw;
+    //treeToArray(getRoot(), valueArray, *nodeCounter, counter);
 
     for(int i = 0; i < *nodeCounter; ++i)
     {
-        delete(valueArray[i]);
+        //delete valueArray[i];
+
     }
-    //delete valueArray; it wont let me delete it
+    deleteNodes(getRoot());
     delete nodeCounter;
     delete counter;
+}
+
+template<class T>
+void AVLTree<T>::deleteNodes(Node<T> *node)
+{
+    if (node == nullptr)
+    {
+        return;
+    }
+
+    deleteNodes(node->getLeftNode());
+    deleteNodes(node->getRightNode());
+    delete node->getValue();
+    delete node;
 }
 
 

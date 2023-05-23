@@ -34,15 +34,23 @@ private:
     AVLTree<Movie> m_drama_movies;
     int m_movies_in_genre[4] = {0};
 
+
     void movieTreeToArray(Genre genre, int *const output, int* counter);
 
     void addMovieToGenreTree(Genre genre, Movie *movie);
 
     void removeMovieFromGenreTree(Genre genre, Movie* movie);
 
+    AVLTree<Movie>* m_movies_by_genre[5] = {&m_comedy_movies, &m_drama_movies, &m_action_movies,
+                                            &m_fantasy_movies, &m_movies};
+
+    void changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* node, bool flag);
+
+
 
 public:
     // <DO-NOT-MODIFY> {
+
 
 
 
