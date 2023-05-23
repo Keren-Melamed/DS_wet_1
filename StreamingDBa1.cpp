@@ -13,19 +13,72 @@ streaming_database::streaming_database() = default;
 
 streaming_database::~streaming_database() = default;
 
-void streaming_database::movieTreeToArray(Node<Movie>* node, int *const output, int* pos)
-//maybe instead of pos, we should pop into a queue and then at the end move the queue into the array?
+void streaming_database::movieTreeToArray(Genre genre, int *const output, int* counter)
 {
-    if(node == nullptr){
-        return;
-    }
-    movieTreeToArray(node->getRightNode(), output, pos);
-    *pos += 1;
-    output[*pos] = node->getValue()->getMovieId();
-    *pos += 1;
-    movieTreeToArray(node->getLeftNode(), output, pos);
+    switch(genre)
+    {
+        case Genre::COMEDY:
+        {
+            output_t<int> tmp = this->get_all_movies_count(genre);
+            int sizeOfArray = tmp.ans();
+            Movie *movieArray[sizeOfArray];
+            m_comedy_movies.treeToArray(m_comedy_movies.getRoot(), movieArray, sizeOfArray, counter);
 
-}//its giving us -1 cause that was its initialized to in the maina1 function
+            for (int i = 0; i < sizeOfArray; ++i)
+            {
+                output[i] = movieArray[i]->getMovieId();
+            }
+        }
+        case Genre::DRAMA:
+        {
+            output_t<int> tmp = this->get_all_movies_count(genre);
+            int sizeOfArray = tmp.ans();
+            Movie *movieArray[sizeOfArray];
+            m_drama_movies.treeToArray(m_drama_movies.getRoot(), movieArray, sizeOfArray, counter);
+
+            for (int i = 0; i < sizeOfArray; ++i)
+            {
+                output[i] = movieArray[i]->getMovieId();
+            }
+        }
+        case Genre::ACTION:
+        {
+            output_t<int> tmp = this->get_all_movies_count(genre);
+            int sizeOfArray = tmp.ans();
+            Movie *movieArray[sizeOfArray];
+            m_action_movies.treeToArray(m_action_movies.getRoot(), movieArray, sizeOfArray, counter);
+
+            for (int i = 0; i < sizeOfArray; ++i)
+            {
+                output[i] = movieArray[i]->getMovieId();
+            }
+        }
+        case Genre::FANTASY:
+        {
+            output_t<int> tmp = this->get_all_movies_count(genre);
+            int sizeOfArray = tmp.ans();
+            Movie *movieArray[sizeOfArray];
+            m_fantasy_movies.treeToArray(m_fantasy_movies.getRoot(), movieArray, sizeOfArray, counter);
+
+            for (int i = 0; i < sizeOfArray; ++i)
+            {
+                output[i] = movieArray[i]->getMovieId();
+            }
+        }
+        case Genre::NONE:
+        {
+            output_t<int> tmp = this->get_all_movies_count(genre);
+            int sizeOfArray = tmp.ans();
+            Movie *movieArray[sizeOfArray];
+            m_movies.treeToArray(m_movies.getRoot(), movieArray, sizeOfArray, counter);
+
+            for (int i = 0; i < sizeOfArray; ++i)
+            {
+                output[i] = movieArray[i]->getMovieId();
+            }
+        }
+    }
+}
 
 void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 {
@@ -360,27 +413,11 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
         }
 
         else{
-            int* pos = new int(1);
-            *pos = 0;
-            switch(genre){
-                case Genre::FANTASY:
-                    movieTreeToArray(m_fantasy_movies.getRoot(), output, pos);
-
-                case Genre::COMEDY:
-                    movieTreeToArray(m_comedy_movies.getRoot(), output, pos);
-
-                case Genre::ACTION:
-                    movieTreeToArray(m_action_movies.getRoot(), output, pos);
-
-                case Genre::DRAMA:
-                    movieTreeToArray(m_drama_movies.getRoot(), output, pos);
-
-                case Genre::NONE:
-                    movieTreeToArray(m_movies.getRoot(), output, pos);
-            }
-
-            return StatusType::SUCCESS;
+            int* counter = new int(0);
+            movieTreeToArray(genre, output, counter);
+            delete counter;
         }
+        return StatusType::SUCCESS;
     }
 }
 

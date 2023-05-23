@@ -84,20 +84,23 @@ int main()
     output_t<int> out6 = database->get_all_movies_count(Genre::NONE);
     cout << "this is the number of movies after removal: " << out6.ans() << endl;
 
-    int *out_mem = nullptr;
-    out_mem = new int[3];
-    for (int i = 0; i < 3; ++i)
-    {
-        out_mem[i] = -1;
-    }
-    tmp = database->get_all_movies(Genre::NONE,out_mem);
-    for (int i = 0; i < 3; ++i)
-    {
-        cout << out_mem[i] << " ";
-    }
-    cout << endl;
+    int* output = new int[3];
+    cout << "output was allocated" << endl;
 
-    cout << "ended" << endl;
+    for(int index = 0; index < 3; ++index)
+    {
+        output[index] = -1;
+    }
+    cout << "output was initialized to -1" << endl;
+
+    database->get_all_movies(Genre::NONE, output);
+    cout << "get all movies has finished" << endl;
+
+    for(int index = 0; index < 3; ++index)
+    {
+        cout << output[index] << " ";
+    }
+    cout << endl << "ended" << endl;
     return 0;
 }
 
