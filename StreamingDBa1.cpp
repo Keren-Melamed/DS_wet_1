@@ -55,19 +55,15 @@ void streaming_database::removeMovieFromGenreTree(Genre genre, Movie* movie)
     {
         case Genre::FANTASY:
             m_fantasy_movies.setRoot(m_fantasy_movies.removeValue(m_fantasy_movies.getRoot(), movie));
-            m_movies_in_genre[(int) Genre::FANTASY] -= 1;
 
         case Genre::COMEDY:
             m_comedy_movies.setRoot(m_comedy_movies.removeValue(m_comedy_movies.getRoot(), movie));
-            m_movies_in_genre[(int) Genre::COMEDY] -= 1;
 
         case Genre::ACTION:
             m_action_movies.setRoot(m_action_movies.removeValue(m_action_movies.getRoot(), movie));
-            m_movies_in_genre[(int) Genre::ACTION] -= 1;
 
         case Genre::DRAMA:
             m_drama_movies.setRoot(m_drama_movies.removeValue(m_drama_movies.getRoot(), movie));
-            m_movies_in_genre[(int) Genre::DRAMA] -= 1;
 
         default:
             return;
@@ -110,6 +106,7 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
         Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), temp);
         m_movies.setRoot(m_movies.removeValue(m_movies.getRoot(), movieNode->getValue()));
         removeMovieFromGenreTree(movieNode->getValue()->getGenre(), movieNode->getValue());
+        m_movies_in_genre[(int) movieNode->getValue()->getGenre()] -= 1;
     }
 
     catch(NodeDoesntExist& e){
