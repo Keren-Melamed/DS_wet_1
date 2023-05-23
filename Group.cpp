@@ -11,7 +11,6 @@ Group::Group(int group_id, bool isVip, int group_size):
     free(m_movies_group_watched);
 }*/
 
-Group::Group(const Group& group) = default;
 
 int Group::getGroupId() const
 {

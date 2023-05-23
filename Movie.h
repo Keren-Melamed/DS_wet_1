@@ -7,6 +7,8 @@
 class Movie
 {
     public:
+        Movie();
+
         Movie(int movieID, int views, bool vipOnly, Genre genre, bool flag = false);
 
         ~Movie() = default;

@@ -1,5 +1,9 @@
 #include "Movie.h"
 
+Movie::Movie():
+m_movieId(1), m_views(0), m_numOfVoters(0),m_rating(0), m_vipOnly(false), m_genre(Genre::NONE), m_flag(false)
+{}
+
 Movie::Movie(int movieID, int views, bool vipOnly, Genre genre, bool flag):
 m_movieId(movieID), m_views(views), m_numOfVoters(0), m_rating(0), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
 {}
@@ -116,3 +120,5 @@ bool Movie::getFlag() const
 {
     return m_flag;
 }
+
+

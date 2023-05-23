@@ -1,5 +1,5 @@
 #include "StreamingDBa1.h"
-
+#include<memory>
 
 /*
  * when do we need to use the flag in movie? do we ever use it even?
@@ -31,15 +31,18 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
 {
     output_t<int> tmp = this->get_all_movies_count(genre);
     int sizeOfArray = tmp.ans();
-    Movie *movieArray[sizeOfArray];
+
     AVLTree<Movie>* newTree = new AVLTree<Movie>;
     changeMovieFlags(newTree, m_movies_by_genre[(int) genre]->getRoot(), true);
+
+    Movie** movieArray = new Movie*[sizeOfArray];
     newTree->treeToArray(newTree->getRoot(), movieArray, sizeOfArray, counter);
 
     for (int i = 0; i < sizeOfArray; ++i) {
         output[i] = movieArray[i]->getMovieId();
     }
 
+    delete[] movieArray;
     delete newTree;
 }
 
@@ -68,6 +71,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
         addMovieToGenreTree(genre, movie);
 
         m_movies_in_genre[(int)genre] += 1;
+        //delete move; causes tests to fail
     }
 
     catch(BadAllocation& e){
@@ -110,14 +114,15 @@ StatusType streaming_database::add_user(int userId, bool isVip)//insert by objec
     }
     try{
         User* user = new User(userId, isVip);
-
         m_users.setRoot(m_users.insertValue(m_users.getRoot(), user));
+        //delete user; causes tests to fail
     }
 
     catch(BadAllocation& e){
         return StatusType::ALLOCATION_ERROR;
     }
     catch(NodeAlreadyExists& e){
+        //cout << " the node already exists" << endl;
         return StatusType::FAILURE;
     }
     return StatusType::SUCCESS;
@@ -128,12 +133,17 @@ StatusType streaming_database::remove_user(int userId)//find by object
     if(userId <= 0){
         return StatusType::INVALID_INPUT;
     }
-
     try{
         User* temp = new User(userId, false);
         Node<User>* userNode = m_users.findObject(m_users.getRoot(), temp);
-        AVLTree<User>* membersTree = (userNode->getValue()->getGroup()->getMembers());
-        membersTree->setRoot(membersTree->removeValue(membersTree->getRoot(), userNode->getValue()));
+
+        if(userNode->getValue()->getGroup() != nullptr)
+        {
+            AVLTree<User> *membersTree = (userNode->getValue()->getGroup()->getMembers());
+            membersTree->setRoot(membersTree->removeValue(membersTree->getRoot(), userNode->getValue()));
+            //delete membersTree; causes tests to fail
+        }
+
         m_users.setRoot(m_users.removeValue(m_users.getRoot(), userNode->getValue()));
         delete temp;
     }
@@ -141,7 +151,6 @@ StatusType streaming_database::remove_user(int userId)//find by object
     catch(NodeDoesntExist& e){
         return StatusType::FAILURE;
     }
-
     return StatusType::SUCCESS;
 }
 
@@ -153,6 +162,7 @@ StatusType streaming_database::add_group(int groupId)//insert by object
     try{
         Group* group = new Group(groupId, false, 0);
         m_groups.setRoot(m_groups.insertValue(m_groups.getRoot(), group));
+        //delete group; causes tests to fail
     }
 
     catch(BadAllocation& e){
@@ -195,11 +205,12 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
         return StatusType::INVALID_INPUT;
     }
 
-    User* temp_user = new User(userId, false);
-    Group* temp_group = new Group(groupId, false ,0);
+
 
     try
     {
+        User* temp_user = new User(userId, false);
+        Group* temp_group = new Group(groupId, false ,0);
         Node<User>* userNode = m_users.findObject(m_users.getRoot(), temp_user);
         Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), temp_group);
 
@@ -227,8 +238,13 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
                 groupNode->getValue()->updateMoviesGroupWatchedInGenre(genre, viewsToAdd);
             }
             groupNode->getValue()->updateGroupSize();
+            delete temp_group;
+            delete temp_user;
         }
-        catch(BadAllocation& e){
+        catch(BadAllocation& e)
+        {
+            delete temp_group;
+            delete temp_user;
             return StatusType::ALLOCATION_ERROR;
         }
     }
@@ -237,8 +253,7 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
         return StatusType::FAILURE;
     }
 
-    delete temp_group;
-    delete temp_user;
+
     return StatusType::SUCCESS;
 }
 
@@ -248,10 +263,11 @@ StatusType streaming_database::user_watch(int userId, int movieId)
         return StatusType::INVALID_INPUT;
     }
 
-    User* tempUser = new User(userId, false);
-    Movie* tempMovie = new Movie(movieId, 0, false, Genre::NONE);
+
     try
     {
+        User* tempUser = new User(userId, false);
+        Movie* tempMovie = new Movie(movieId, 0, false, Genre::NONE);
         Node<User>* userNode = m_users.findObject(m_users.getRoot(), tempUser);
         Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), tempMovie);
 
@@ -268,14 +284,16 @@ StatusType streaming_database::user_watch(int userId, int movieId)
         {
             user_group->updateMoviesGroupWatchedInGenre(movieNode->getValue()->getGenre(), 1);
         }
+
+        delete tempMovie;
+        delete tempUser;
     }
     catch(NodeDoesntExist& e)
     {
         return StatusType::FAILURE;
     }
 
-    delete tempMovie;
-    delete tempUser;
+
     return StatusType::SUCCESS;
 }
 
@@ -286,11 +304,12 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
         return StatusType::INVALID_INPUT;
     }
 
-    Group* tempGroup = new Group(groupId, false ,0);
-    Movie* tempMovie = new Movie(movieId, 0, false, Genre::NONE);
+
 
     try
     {
+        Group* tempGroup = new Group(groupId, false ,0);
+        Movie* tempMovie = new Movie(movieId, 0, false, Genre::NONE);
         Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), tempGroup);
         Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), tempMovie);
 
@@ -308,15 +327,15 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 
         movieNode->getValue()->addViews(groupNode->getValue()->getGroupSize());
 
-
+        delete tempMovie;
+        delete tempGroup;
     }
     catch(NodeDoesntExist& e)
     {
         return StatusType::FAILURE;
     }
 
-    delete tempMovie;
-    delete tempGroup;
+
     return StatusType::SUCCESS;
 }
 
@@ -401,15 +420,16 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
     try
     {
         User* tmpUser = new User(userId, false);
-        Movie* tmpMovie = new Movie(movieId, 0 , false, Genre::COMEDY);
+        Movie* tmpMovie = new Movie(movieId, 0, false, Genre::COMEDY);
         Node<User>* userNode = m_users.findObject(m_users.getRoot(), tmpUser);
         Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), tmpMovie);
 
         delete tmpMovie;
         delete tmpUser;
 
-        if(movieNode->getValue()->getVipOnly() != userNode->getValue()->getIsVip())
+        if(movieNode->getValue()->getVipOnly() == true && userNode->getValue()->getIsVip() == false)
         {
+            cout << "vip if " << endl;
             return StatusType::FAILURE;
         }
         movieNode->getValue()->addRating(rating);
@@ -449,6 +469,8 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
                 fav_genre = genre;
             }
         }
+
+        delete groupNode;
 
         if (m_movies_in_genre[(int) fav_genre] == 0) {
             output_t<int> out(StatusType::FAILURE);

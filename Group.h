@@ -26,7 +26,7 @@ class Group{
 
         ~Group() = default;
 
-        Group(const Group& group);
+        Group(const Group& group) = default; //might need to be const group&
 
         AVLTree<User>* getMembers();
 

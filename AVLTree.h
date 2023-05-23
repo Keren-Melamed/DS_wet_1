@@ -26,14 +26,14 @@ class AVLTree
         /*
         * copy c'tor
         */
-        AVLTree(const AVLTree& originalTree);//TODO
+        AVLTree(const AVLTree& originalTree) = default;
 
         /*
         * d'tor
         */
         ~AVLTree();
 
-        Node<T>* getRoot() const;
+        Node<T>* getRoot();
 
         void setRoot(Node<T>* root);
         
@@ -123,12 +123,6 @@ template<class T>
 AVLTree<T>::AVLTree(Node<T> root) : m_root(&root){}
 
 template<class T>
-AVLTree<T>::AVLTree(const AVLTree& originalTree)
-{
-    m_root = originalTree.getRoot();
-}
-
-template<class T>
 AVLTree<T>::~AVLTree()
 {
     int* nodeCounter = new int(0);
@@ -179,7 +173,7 @@ void AVLTree<T>::setLeftNode(Node<T>* parent, T* value)
 }
 
 template<class T>
-Node<T>* AVLTree<T>::getRoot() const
+Node<T>* AVLTree<T>::getRoot()
 {
     return m_root;
 }
@@ -322,20 +316,26 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T* value)
 template<class T>
 Node<T>* AVLTree<T>::insertValue(Node<T>* node, T* value)
 {
+    //cout << "insert value was reached" << endl;
     if(node == NULL)
     {
         node = new Node<T>(value);
-        if(node == NULL){
+        if(node == NULL)
+        {
+            //cout << "the value addition allocation failed" << endl;
             throw BadAllocation();
         }
         return node;
     }
-
-    else if(*(node->getValue()) == *value){
+    //cout << "checking if the value is equal" << endl;
+    if(*(node->getValue()) == *value)
+    {
+        //cout << "the value already exists" << endl;
         throw NodeAlreadyExists();
     }
 
-    else if (*(node->getValue()) > *value )
+    //cout << "checking if the value is smaller" << endl;
+    if (*(node->getValue()) > *value )
     {
         setLeftNode(node, value);
 
@@ -343,14 +343,20 @@ Node<T>* AVLTree<T>::insertValue(Node<T>* node, T* value)
 
     else if (*(node->getValue()) < *value)
     {
+        //cout << "the value was bigger" << endl;
         setRightNode(node, value);
     }
+
+    //cout << "rebalancing the tree" << endl;
     node = balance(node, value);
 
+    //cout << "calculating the height" << endl;
     node->setHeight(calculateHeight(node));
-    
+
+    //cout << "rebalancing the tree again" << endl;
     node = balance(node, value);
 
+    //cout << "the value was added" << endl;
     return node;
 }
 
