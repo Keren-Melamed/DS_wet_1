@@ -16,14 +16,13 @@ streaming_database::~streaming_database() = default;
 void streaming_database::movieTreeToArray(Node<Movie>* node, int *const output, int* pos)
 //maybe instead of pos, we should pop into a queue and then at the end move the queue into the array?
 {
-    cout <<"before addition: " << *pos << endl;
     if(node == nullptr){
         return;
     }
-    *pos += 1;
-    cout <<"after addition: " << *pos << endl;
     movieTreeToArray(node->getRightNode(), output, pos);
-    output[*pos - 1] = node->getValue()->getMovieId();
+    *pos += 1;
+    output[*pos] = node->getValue()->getMovieId();
+    *pos += 1;
     movieTreeToArray(node->getLeftNode(), output, pos);
 
 }//its giving us -1 cause that was its initialized to in the maina1 function
@@ -109,7 +108,8 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
         m_movies_in_genre[(int) movieNode->getValue()->getGenre()] -= 1;
     }
 
-    catch(NodeDoesntExist& e){
+    catch(NodeDoesntExist& e)
+    {
         return StatusType::FAILURE;
     }
 

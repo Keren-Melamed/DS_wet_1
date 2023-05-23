@@ -38,7 +38,7 @@ class AVLTree
         /*
         * d'tor
         */
-        ~AVLTree() = default;//not actually default
+        ~AVLTree();
 
         Node<T>* getRoot() const;
 
@@ -99,9 +99,12 @@ class AVLTree
 
         ostream& preOrder(ostream& os, Node<T>* node) const;
 
+        void treeToArray(Node<T>* node, T** array, int sizeOfArray, int* counter);
+
 
     private:
 
+        void numOfNodes(Node<T>* node, int* counter);
         Node<T>* nodeWithMinimumValue(Node<T>* node);
         Node<T>* deletionBalance(Node<T>* node);
 
@@ -128,6 +131,25 @@ template<class T>
 AVLTree<T>::AVLTree(const AVLTree& originalTree)
 {
     m_root = originalTree.getRoot();
+}
+
+template<class T>
+AVLTree<T>::~AVLTree()
+{
+    int* nodeCounter = new int(0);
+    int* counter = new int(0);
+
+    numOfNodes(getRoot(), nodeCounter);
+    T* valueArray[*nodeCounter];//should add a bad alloc throw;
+    treeToArray(getRoot(), valueArray, *nodeCounter, counter);
+
+    for(int i = 0; i < *nodeCounter; ++i)
+    {
+        delete(valueArray[i]);
+    }
+    //delete valueArray; it wont let me delete it
+    delete nodeCounter;
+    delete counter;
 }
 
 
@@ -455,6 +477,43 @@ Node<T>* AVLTree<T>::rotateRight(Node<T>* parent)
     }
 
 	return child;
+}
+
+template<class T>
+void AVLTree<T>::treeToArray(Node<T>* node, T **array, int sizeOfArray, int* counter)
+{
+    if (node == NULL || *counter >= sizeOfArray)
+    {
+        return;
+    }
+    else
+    {
+        if (node->getLeftNode() != nullptr)
+        {
+            treeToArray(node->getLeftNode(), array, sizeOfArray, counter);
+        }
+        array[*counter] = node->getValue();
+        *counter += 1;
+        if(node->getRightNode() != nullptr)
+        {
+            treeToArray(node->getRightNode(), array, sizeOfArray, counter);
+        }
+    }
+}
+
+template<class T>
+void AVLTree<T>::numOfNodes(Node<T> *node, int* counter)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    else
+    {
+        numOfNodes(node->getLeftNode(), counter);
+        *counter += 1;
+        numOfNodes(node->getRightNode(), counter);
+    }
 }
 
 
