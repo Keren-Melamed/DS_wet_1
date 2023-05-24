@@ -92,7 +92,7 @@ class AVLTree
 
         ostream& preOrder(ostream& os, Node<T>* node) const;
 
-        void treeToArray(Node<T>* node, T** array, int sizeOfArray, int* counter);
+        void treeToArrayInOrderRight(Node<T>* node, T** array, int sizeOfArray, int* counter);
 
         void deleteNodes(Node<T>* node);
 
@@ -130,7 +130,7 @@ AVLTree<T>::~AVLTree()
 
     //numOfNodes(getRoot(), nodeCounter);
     //T* valueArray[*nodeCounter];//should add a bad alloc throw;
-    //treeToArray(getRoot(), valueArray, *nodeCounter, counter);
+    //treeToArrayInOrderRight(getRoot(), valueArray, *nodeCounter, counter);
 
     for(int i = 0; i < *nodeCounter; ++i)
     {
@@ -152,7 +152,7 @@ void AVLTree<T>::deleteNodes(Node<T> *node)
 
     deleteNodes(node->getLeftNode());
     deleteNodes(node->getRightNode());
-    delete node->getValue();
+    //delete node->getValue();// doesnt delete the tree in group and was somehow causing a seg fault....(double free to be exact)
     delete node;
 }
 
@@ -496,7 +496,7 @@ Node<T>* AVLTree<T>::rotateRight(Node<T>* parent)
 }
 
 template<class T>
-void AVLTree<T>::treeToArray(Node<T>* node, T **array, int sizeOfArray, int* counter)
+void AVLTree<T>::treeToArrayInOrderRight(Node<T>* node, T **array, int sizeOfArray, int* counter)
 {
     if (node == NULL || *counter >= sizeOfArray)
     {
@@ -504,15 +504,15 @@ void AVLTree<T>::treeToArray(Node<T>* node, T **array, int sizeOfArray, int* cou
     }
     else
     {
-        if (node->getLeftNode() != nullptr)
+        if(node->getRightNode() != nullptr)
         {
-            treeToArray(node->getLeftNode(), array, sizeOfArray, counter);
+            treeToArrayInOrderRight(node->getRightNode(), array, sizeOfArray, counter);
         }
         array[*counter] = node->getValue();
         *counter += 1;
-        if(node->getRightNode() != nullptr)
+        if (node->getLeftNode() != nullptr)
         {
-            treeToArray(node->getRightNode(), array, sizeOfArray, counter);
+            treeToArrayInOrderRight(node->getLeftNode(), array, sizeOfArray, counter);
         }
     }
 }

@@ -16,7 +16,7 @@ void streaming_database::changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* 
     {
         return;
     }
-    changeMovieFlags(newTree, node->getLeftNode(), flag);
+    changeMovieFlags(newTree, node->getRightNode(), flag);
 
     int id = node->getValue()->getMovieId(), views = node->getValue()->getViews();
     Genre genre = node->getValue()->getGenre();
@@ -24,7 +24,8 @@ void streaming_database::changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* 
     Movie* movieToAdd = new Movie(id, views, vip, genre, true);
     newTree->setRoot(newTree->insertValue(newTree->getRoot(), movieToAdd));
 
-    changeMovieFlags(newTree, node->getRightNode(), flag);
+    changeMovieFlags(newTree, node->getLeftNode(), flag);
+
 }
 
 void streaming_database::movieTreeToArray(Genre genre, int *const output, int* counter)
@@ -36,7 +37,8 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
     changeMovieFlags(newTree, m_movies_by_genre[(int) genre]->getRoot(), true);
 
     Movie** movieArray = new Movie*[sizeOfArray];
-    newTree->treeToArray(newTree->getRoot(), movieArray, sizeOfArray, counter);
+    newTree->treeToArrayInOrderRight(newTree->getRoot(), movieArray, sizeOfArray, counter);
+    //^^^^^ when we send the newTree to be made into an array we put in into the array by inorder and not from biggest to smallest
 
     for (int i = 0; i < sizeOfArray; ++i) {
         output[i] = movieArray[i]->getMovieId();
@@ -200,26 +202,31 @@ StatusType streaming_database::remove_group(int groupId)//remove by object
 
 StatusType streaming_database::add_user_to_group(int userId, int groupId)//find and insert by object
 {
+    cout << "add user to group was entered" << endl;
     if((groupId <= 0) || (userId <= 0))
     {
         return StatusType::INVALID_INPUT;
     }
-
-
+    cout << "the input was valid" << endl;
 
     try
     {
+        cout << " the first try was entered" << endl;
         User* temp_user = new User(userId, false);
         Group* temp_group = new Group(groupId, false ,0);
+        cout << "the temps were made" << endl;
         Node<User>* userNode = m_users.findObject(m_users.getRoot(), temp_user);
+        cout << "user node was successful" << endl;
         Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), temp_group);
-
+        cout << "find objects worked" << endl;
         if(userNode->getValue()->getGroup() != nullptr)
         {
+            cout << "get Group pointed to nullptr" << endl;
             return StatusType::FAILURE;
         }
         try
         {
+            cout << "the second try was entered" << endl;
             groupNode->getValue()->getMembers()->setRoot(groupNode->getValue()->getMembers()->insertValue(//line was too long...
                     groupNode->getValue()->getMembers()->getRoot(),userNode->getValue()));
 
@@ -230,14 +237,17 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
                     groupNode->getValue()->setIsVip(true);
                 }
             }
-
+            cout << "the for in the try was entered" << endl;
             for(int i = 0; i < 4; i++)
             {
                 Genre genre = static_cast<Genre>(i);
                 int viewsToAdd = userNode->getValue()->getMoviesUserWatchedInGenre(genre);
                 groupNode->getValue()->updateMoviesGroupWatchedInGenre(genre, viewsToAdd);
             }
+            cout << "the for in the try was exited" << endl;
             groupNode->getValue()->updateGroupSize();
+            cout << "the group size was updated" << endl;
+
             delete temp_group;
             delete temp_user;
         }
@@ -252,7 +262,6 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
     {
         return StatusType::FAILURE;
     }
-
 
     return StatusType::SUCCESS;
 }
@@ -420,7 +429,7 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
     try
     {
         User* tmpUser = new User(userId, false);
-        Movie* tmpMovie = new Movie(movieId, 0, false, Genre::COMEDY);
+        Movie* tmpMovie = new Movie(movieId, 0, false, Genre::NONE);
         Node<User>* userNode = m_users.findObject(m_users.getRoot(), tmpUser);
         Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), tmpMovie);
 
@@ -429,7 +438,6 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 
         if(movieNode->getValue()->getVipOnly() == true && userNode->getValue()->getIsVip() == false)
         {
-            cout << "vip if " << endl;
             return StatusType::FAILURE;
         }
         movieNode->getValue()->addRating(rating);

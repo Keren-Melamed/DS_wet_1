@@ -105,3 +105,7 @@ void Group::addViewToMembers(Node<User>* node, Genre genre)
     addViewToMembers(node->getRightNode(), genre);
 }
 
+void Group::print(ostream &os) const
+{
+    os << m_group_id << " ";
+}

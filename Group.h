@@ -22,6 +22,8 @@ class Group{
         bool operator<(const Group& other) const;
         bool operator>(const Group& other) const;
 
+        void print(ostream &os) const;
+
         Group(int group_id, bool isVip, int group_size);
 
         ~Group() = default;
@@ -47,6 +49,7 @@ class Group{
         void addViewToMembers(Node<User>* Node, Genre genre);
 
         bool getIsVip() const;
+
 };
 
 #endif
