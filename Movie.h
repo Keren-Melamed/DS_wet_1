@@ -32,8 +32,12 @@ class Movie
         Genre getGenre() const;
 
         friend bool operator==(const Movie& a, const Movie& b);
-        bool operator<(const Movie& other) const;
-        bool operator>(const Movie& other) const;
+        friend bool operator<(const Movie& a, const Movie& b);
+        friend bool operator>(const Movie& a, const Movie& b);
+
+
+        //bool operator<(const Movie& other) const;
+        //bool operator>(const Movie& other) const;
 
     private:
 
