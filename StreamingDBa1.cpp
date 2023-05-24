@@ -22,7 +22,7 @@ void streaming_database::changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* 
     Genre genre = node->getValue()->getGenre();
     bool vip = node->getValue()->getVipOnly();
     Movie* movieToAdd = new Movie(id, views, vip, genre, true);
-    newTree->setRoot(newTree->insertValue(newTree->getRoot(), movieToAdd));
+    newTree->insertValue(movieToAdd);
 
     changeMovieFlags(newTree, node->getLeftNode(), flag);
 
@@ -38,7 +38,6 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
 
     Movie** movieArray = new Movie*[sizeOfArray];
     newTree->treeToArrayInOrderRight(newTree->getRoot(), movieArray, sizeOfArray, counter);
-    //^^^^^ when we send the newTree to be made into an array we put in into the array by inorder and not from biggest to smallest
 
     for (int i = 0; i < sizeOfArray; ++i) {
         output[i] = movieArray[i]->getMovieId();
@@ -50,14 +49,12 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
 
 void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 {
-    m_movies_by_genre[(int) genre]->setRoot(m_movies_by_genre[(int) genre]->
-                                            insertValue(m_movies_by_genre[(int) genre]->getRoot(), movie));
+    m_movies_by_genre[(int) genre]->insertValue(movie);
 }
 
 void streaming_database::removeMovieFromGenreTree(Genre genre, Movie* movie)
 {
-    m_movies_by_genre[(int) genre]->setRoot(m_movies_by_genre[(int) genre]->removeValue
-                                            (m_movies_by_genre[(int) genre]->getRoot(), movie));
+    m_movies_by_genre[(int) genre]->removeValue(movie);/////////////////////////////
 }
 
 StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bool vipOnly)//insert by object
@@ -67,8 +64,8 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     }
     try{
         Movie* movie = new Movie(movieId, views, vipOnly, genre);
-
-        m_movies.setRoot(m_movies.insertValue(m_movies.getRoot(), movie));
+        m_movies.findObject(m_movies.getRoot(), movie);
+        m_movies.insertValue(movie);
 
         addMovieToGenreTree(genre, movie);
 
@@ -95,7 +92,7 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
     try{
         Movie* temp = new Movie(movieId, 0, false, Genre::NONE);
         Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), temp);
-        m_movies.setRoot(m_movies.removeValue(m_movies.getRoot(), movieNode->getValue()));
+        m_movies.removeValue(movieNode->getValue());
         removeMovieFromGenreTree(movieNode->getValue()->getGenre(), movieNode->getValue());
         m_movies_in_genre[(int) movieNode->getValue()->getGenre()] -= 1;
         delete temp;
@@ -116,7 +113,8 @@ StatusType streaming_database::add_user(int userId, bool isVip)//insert by objec
     }
     try{
         User* user = new User(userId, isVip);
-        m_users.setRoot(m_users.insertValue(m_users.getRoot(), user));
+        m_users.findObject(m_users.getRoot(), user);
+        m_users.insertValue(user);
         //delete user; causes tests to fail
     }
 
@@ -142,11 +140,11 @@ StatusType streaming_database::remove_user(int userId)//find by object
         if(userNode->getValue()->getGroup() != nullptr)
         {
             AVLTree<User> *membersTree = (userNode->getValue()->getGroup()->getMembers());
-            membersTree->setRoot(membersTree->removeValue(membersTree->getRoot(), userNode->getValue()));
+            membersTree->removeValue(userNode->getValue());
             //delete membersTree; causes tests to fail
         }
 
-        m_users.setRoot(m_users.removeValue(m_users.getRoot(), userNode->getValue()));
+        m_users.removeValue(userNode->getValue());
         delete temp;
     }
 
@@ -163,7 +161,8 @@ StatusType streaming_database::add_group(int groupId)//insert by object
     }
     try{
         Group* group = new Group(groupId, false, 0);
-        m_groups.setRoot(m_groups.insertValue(m_groups.getRoot(), group));
+        m_groups.findObject(m_groups.getRoot(), group);
+        m_groups.insertValue(group);
         //delete group; causes tests to fail
     }
 
@@ -187,7 +186,7 @@ StatusType streaming_database::remove_group(int groupId)//remove by object
     {
         Group* temp = new Group(groupId, false, 0);
         Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), temp);
-        m_groups.setRoot(m_groups.removeValue(m_groups.getRoot(), groupNode->getValue()));
+        m_groups.removeValue(groupNode->getValue());
         groupNode->getValue()->dismantleGroup(groupNode->getValue()->getMembers()->getRoot());
         delete temp;
     }
@@ -202,33 +201,27 @@ StatusType streaming_database::remove_group(int groupId)//remove by object
 
 StatusType streaming_database::add_user_to_group(int userId, int groupId)//find and insert by object
 {
-    cout << "add user to group was entered" << endl;
     if((groupId <= 0) || (userId <= 0))
     {
         return StatusType::INVALID_INPUT;
     }
-    cout << "the input was valid" << endl;
 
     try
     {
-        cout << " the first try was entered" << endl;
         User* temp_user = new User(userId, false);
         Group* temp_group = new Group(groupId, false ,0);
-        cout << "the temps were made" << endl;
         Node<User>* userNode = m_users.findObject(m_users.getRoot(), temp_user);
-        cout << "user node was successful" << endl;
         Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), temp_group);
-        cout << "find objects worked" << endl;
         if(userNode->getValue()->getGroup() != nullptr)
         {
-            cout << "get Group pointed to nullptr" << endl;
             return StatusType::FAILURE;
         }
         try
         {
-            cout << "the second try was entered" << endl;
-            groupNode->getValue()->getMembers()->setRoot(groupNode->getValue()->getMembers()->insertValue(//line was too long...
-                    groupNode->getValue()->getMembers()->getRoot(),userNode->getValue()));
+            //add find to check if user is already in group
+            groupNode->getValue()->getMembers()->findObject(groupNode->getValue()->getMembers()->getRoot(),
+                                                            userNode->getValue());
+            groupNode->getValue()->getMembers()->insertValue(userNode->getValue());
 
             Group *pointerGroup = (groupNode->getValue());
             userNode->getValue()->setGroup(pointerGroup);
@@ -237,16 +230,13 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
                     groupNode->getValue()->setIsVip(true);
                 }
             }
-            cout << "the for in the try was entered" << endl;
             for(int i = 0; i < 4; i++)
             {
                 Genre genre = static_cast<Genre>(i);
                 int viewsToAdd = userNode->getValue()->getMoviesUserWatchedInGenre(genre);
                 groupNode->getValue()->updateMoviesGroupWatchedInGenre(genre, viewsToAdd);
             }
-            cout << "the for in the try was exited" << endl;
             groupNode->getValue()->updateGroupSize();
-            cout << "the group size was updated" << endl;
 
             delete temp_group;
             delete temp_user;

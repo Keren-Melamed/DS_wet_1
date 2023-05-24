@@ -123,7 +123,7 @@ class Node {
 
 template<class T>
 Node<T>::Node(T* value) :
-    m_leftNode(nullptr), m_rightNode(nullptr), m_value(value), m_height(1)
+    m_leftNode(nullptr), m_rightNode(nullptr), m_value(value), m_height(0)//height was prev 1
 {}
 
 template<class T>

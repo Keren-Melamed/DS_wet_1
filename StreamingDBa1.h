@@ -25,13 +25,7 @@
 class streaming_database {
 private:
 
-    AVLTree<User> m_users;
-    AVLTree<Movie> m_movies;
-    AVLTree<Group> m_groups;
-    AVLTree<Movie> m_fantasy_movies;
-    AVLTree<Movie> m_comedy_movies;
-    AVLTree<Movie> m_action_movies;
-    AVLTree<Movie> m_drama_movies;
+
     int m_movies_in_genre[4] = {0};
 
 
@@ -51,7 +45,13 @@ private:
 public:
     // <DO-NOT-MODIFY> {
 
-
+    AVLTree<User> m_users;
+    AVLTree<Movie> m_movies;
+    AVLTree<Group> m_groups;
+    AVLTree<Movie> m_fantasy_movies;
+    AVLTree<Movie> m_comedy_movies;
+    AVLTree<Movie> m_action_movies;
+    AVLTree<Movie> m_drama_movies;
 
 
     streaming_database();

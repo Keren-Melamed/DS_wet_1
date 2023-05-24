@@ -25,4 +25,8 @@ public:
     NodeDoesntExist() : AVLTreeException("AVLTree Error: node doesnt exist"){}
 };
 
+class InvalidKey : public std::exception {};
+
+class InvalidNode : public std::exception {};
+
 #endif
