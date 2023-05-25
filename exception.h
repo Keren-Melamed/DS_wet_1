@@ -3,7 +3,6 @@
 
 #include <stdexcept>
 #include <exception>
-#include <string>
 
 class AVLTreeException : public std::runtime_error {
 public:
@@ -24,5 +23,9 @@ class NodeDoesntExist : public AVLTreeException {
 public:
     NodeDoesntExist() : AVLTreeException("AVLTree Error: node doesnt exist"){}
 };
+
+class InvalidKey : public std::exception {};
+
+class InvalidNode : public std::exception {};
 
 #endif

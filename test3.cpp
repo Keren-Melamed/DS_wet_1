@@ -1,147 +1,411 @@
-#include "AVLTree.h"
-#include "User.h"
-#include "Group.h"
+#include "StreamingDBa1.h"
+
 
 using namespace std;
 
 
 int main()
 {
-    Group* a = new Group(3906, false, 0);
-    Group* b = new Group(3182, false, 0);
-    Group* c = new Group(8180, false, 0);
+    Group* a = new Group(7703, false, 0);
+    Group* b = new Group(6727, false, 0);
+    Group* c = new Group(9143, false, 0);
     Group* d = new Group(2254, false, 0);
 
-
-    User* aa = new User(5740, false);
-    User* bb = new User(5046, true);
-    User* gg = new User(5450, true);
-    User* cc = new User(3655, true);
-    User* dd = new User(6007, true);
-    User* ee = new User(5973, false);
-    User* ff = new User(1211, false);
-    User* hh = new User(3931, true);
-    User* ii = new User(188, false);
-    User* jj = new User(2013, false);
+    Group* e = new Group(6567, false, 0);
 
 
+    User* aa = new User(2494, false);
+    User* bb = new User(1001, false);
+    User* cc = new User(5369, false);
+    User* dd = new User(5813, false);
+    User* ee = new User(1706, false);
+    User* ff = new User(2673, false);
+    User* gg = new User(1912, false);
+    User* hh = new User(6667, false);
+    User* ii = new User(7624, false);
+    User* jj = new User(1001, false);
+
+    User* kk = new User(9744, false);
 
 
-    AVLTree<Group> groupTree;
-    AVLTree<User> userTree;
+    streaming_database* database = new streaming_database();
+    StatusType tmp;
+
+    /*
+    cout << endl << "now adding group e: " << e->getGroupId() << endl;
+    tmp = database->add_group(e->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "group e: " << e->getGroupId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "group e: " << e->getGroupId() << " wasn't added" << endl;
+    }
+    cout << "this is the roots' id " << database->m_groups.getRoot()->getValue()->getGroupId() << endl;
+    */
+
+    /*
+    cout << endl << "now adding user kk: " << kk->getId() << endl;
+    tmp = database->add_user(kk->getId(), kk->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user kk: " << kk->getId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "user kk: " << kk->getId() << " wasn't added" << endl;
+    }*/
+
+    /*
+    cout << endl << "now adding user kk: " << kk->getId() << " to group e: "<< e->getGroupId() << endl;
+    tmp = database->add_user_to_group(kk->getId(), e->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user kk: " << kk->getId() << " was successfully added to group e: " <<e->getGroupId() << endl;
+    }
+    else
+    {
+        cout << "user kk: " << kk->getId() << " wasn't added to group e: " << e->getGroupId() << endl;
+    }
+
+
 
     cout << endl << "now adding group a: " << a->getGroupId() << endl;
-    groupTree.setRoot(groupTree.insertValue(groupTree.getRoot(), a));
+    
+    tmp = database->add_group(a->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "group a: " << a->getGroupId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "group a: " << a->getGroupId() << " wasn't added" << endl;
+    }
+    cout << "this is the roots' id " << database->m_groups.getRoot()->getValue()->getGroupId()
+    << " and this is its height: " << database->m_groups.getRoot()->getHeight() << endl;
+    cout << "this is the roots' rights'  id " << database->m_groups.getRoot()->getRightNode()->getValue()->getGroupId()
+    << " and this is its height: " << database->m_groups.getRoot()->getRightNode()->getHeight() << endl;
 
     cout << endl << "now adding group b: " << b->getGroupId() << endl;
-    groupTree.setRoot(groupTree.insertValue(groupTree.getRoot(), b));
+    tmp = database->add_group(b->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "group b: " << b->getGroupId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "group b: " << b->getGroupId() << " wasn't added" << endl;
+    }
+    cout << endl << "this is the roots' id " << database->m_groups.getRoot()->getValue()->getGroupId()
+            << " and this is its height: " << database->m_groups.getRoot()->getHeight()
+            << " and this is its bf: " << database->m_groups.balanceFactor(database->m_groups.getRoot()) << endl;
+
+    //cout << "this is the roots' rights'  id " << database->m_groups.getRoot()->getRightNode()->getValue()->getGroupId() << endl;
+    cout << "this is the roots' lefts' id: " << database->m_groups.getRoot()->getLeftNode()->getValue()->getGroupId()
+            << " and this is its height: " << database->m_groups.getRoot()->getLeftNode()->getHeight() << endl;
+    cout << "this is the roots' right' id: " << database->m_groups.getRoot()->getRightNode()->getValue()->getGroupId()
+         << " and this is its height: " << database->m_groups.getRoot()->getRightNode()->getHeight() << endl;
+    //cout << "this is the roots' lefts' rights' id: " << database->m_groups.getRoot()->getLeftNode()->getRightNode()->getValue()->getGroupId()
+           // <<" and this is its height: " << database->m_groups.getRoot()->getLeftNode()->getRightNode()->getHeight() << endl;
+
+
+    */
 
     cout << endl << "now adding user aa: " << aa->getId() << endl;
-    userTree.setRoot(userTree.insertValue(userTree.getRoot(), aa));
-
-    cout << endl << "now adding user aa: " << aa->getId() << " to group a: "<< a->getGroupId() << endl;
-    a->getMembers()->setRoot(a->getMembers()->insertValue(a->getMembers()->getRoot(), aa));
-
-    cout << endl << "now adding user bb: " << bb->getId() << endl;
-    userTree.setRoot(userTree.insertValue(userTree.getRoot(), bb));
+    tmp = database->add_user(aa->getId(), aa->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user aa: " << aa->getId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "user aa: " << aa->getId() << " wasn't added" << endl;
+    }
 
     cout << endl << "now removing user aa: " << aa->getId() << endl;////////////////might be a problem here
-    userTree.setRoot(userTree.removeValue(userTree.getRoot(), aa));
+    tmp = database->remove_user(aa->getId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user aa: " << aa->getId() << " was successfully removed" << endl;
+    }
+    else
+    {
+        cout << "user aa: " << aa->getId() << " didnt exist or wasn't removed" << endl;
+    }
     cout << endl << "this is the tree inorder:" << endl;
-    userTree.inOrder(cout, userTree.getRoot());
+    database->m_users.inOrder(cout, database->m_users.getRoot());
     cout << endl;
 
-    cout << endl << "now adding user gg: " << gg->getId() << endl;
-    userTree.setRoot(userTree.insertValue(userTree.getRoot(), gg));
+
+    /*
+    cout << endl << "now adding group c: " << c->getGroupId() << endl;
+    tmp = database->add_group(c->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "group c: " << c->getGroupId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "group c: " << c->getGroupId() << " wasn't added" << endl;
+    }
+    //cout << "this is the roots' id " << database->m_groups.getRoot()->getValue()->getGroupId() << endl;
+    //cout << "this is the roots' rights'  id " << database->m_groups.getRoot()->getRightNode()->getValue()->getGroupId() << endl;
+
+    /*
+    cout << endl << "now adding user aa: " << aa->getId() << " to group a: "<< a->getGroupId() << endl;
+    tmp = database->add_user_to_group(aa->getId(), a->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user aa: " << aa->getId() << " was successfully added to group a: " <<a->getGroupId() << endl;
+    }
+    else
+    {
+        cout << "user aa: " << aa->getId() << " wasn't added to group a: " << a->getGroupId() << endl;
+    }
+    */
+    cout << endl << "now adding user bb: " << bb->getId() << endl;
+    tmp = database->add_user(bb->getId(), bb->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user bb: " << bb->getId() << " was successfully added" << endl;
+    }
+    else 
+    {
+        cout << "user bb: " << bb->getId() << " wasn't added" << endl;
+    }
 
     cout << endl << "now adding user cc: " << cc->getId() << endl;
-    userTree.setRoot(userTree.insertValue(userTree.getRoot(), cc));
+    tmp = database->add_user(cc->getId(), cc->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user cc: " << cc->getId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "user cc: " << cc->getId() << " wasn't added" << endl;
+    }
 
     cout << endl << "now adding user dd: " << dd->getId() << endl;
-    userTree.setRoot(userTree.insertValue(userTree.getRoot(), dd));
+    tmp = database->add_user(dd->getId(), dd->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user dd: " << dd->getId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "user dd: " << dd->getId() << " wasn't added" << endl;
+    }
+
 
     cout << endl << "now adding user ee: " << ee->getId() << endl;
-    userTree.setRoot(userTree.insertValue(userTree.getRoot(), ee));
+    tmp = database->add_user(ee->getId(), ee->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user ee: " << ee->getId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "user ee: " << ee->getId() << " wasn't added" << endl;
+    }
+
+    cout << endl << "now removing user dd: " << dd->getId() << endl;////////////////might be a problem here
+    tmp = database->remove_user(dd->getId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user dd: " << dd->getId() << " was successfully removed" << endl;
+    }
+    else
+    {
+        cout << "user dd: " << dd->getId() << " didnt exist or wasn't removed" << endl;
+    }
+    cout << endl << "this is the tree inorder:" << endl;
+    database->m_users.inOrder(cout, database->m_users.getRoot());
+    cout << endl;
 
     cout << endl << "now adding user ff: " << ff->getId() << endl;
-    userTree.setRoot(userTree.insertValue(userTree.getRoot(), ff));
+    tmp = database->add_user(ff->getId(), ff->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user ff: " << ff->getId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "user ff: " << ff->getId() << " wasn't added" << endl;
+    }
 
-    cout << endl << "now adding group c: " << c->getGroupId() << endl;
-    groupTree.setRoot(groupTree.insertValue(groupTree.getRoot(), c));
-
+    cout << endl << "now adding user gg: " << gg->getId() << endl;
+    tmp = database->add_user(gg->getId(), gg->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user gg: " << gg->getId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "user gg: " << gg->getId() << " wasn't added" << endl;
+    }
+    /*
     cout << endl << "now adding user ee: " << ee->getId() << " to group c: "<< c->getGroupId() << endl;
-    c->getMembers()->setRoot(c->getMembers()->insertValue(c->getMembers()->getRoot(), ee));
+    tmp = database->add_user_to_group(ee->getId(), c->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user ee: " << ee->getId() << " was successfully added to group c: " <<c->getGroupId() << endl;
+    }
+    else
+    {
+        cout << "user ee: " << ee->getId() << " wasn't added to group c: " << c->getGroupId() << endl;
+    }
 
     cout << endl << "now adding group d: " << d->getGroupId() << endl;
-    groupTree.setRoot(groupTree.insertValue(groupTree.getRoot(), d));
+    tmp = database->add_group(d->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "group d: " << d->getGroupId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "group d: " << d->getGroupId() << " wasn't added" << endl;
+    }
 
     cout << endl << "now removing user bb: " << bb->getId() << endl;
-    userTree.setRoot(userTree.removeValue(userTree.getRoot(), bb));
+    tmp = database->remove_user(bb->getId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user bb: " << bb->getId() << " was successfully removed" << endl;
+    }
+    else
+    {
+        cout << "user bb: " << bb->getId() << " didnt exist or wasn't removed" << endl;
+    }
     cout << endl << "this is the tree inorder:" << endl;
-    userTree.inOrder(cout, userTree.getRoot());
+    database->m_users.inOrder(cout, database->m_users.getRoot());
     cout << endl;
 
     cout << endl << "now removing group d: " << d->getGroupId() << endl;
-    groupTree.setRoot(groupTree.removeValue(groupTree.getRoot(), d));
+    tmp = database->remove_group(d->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "group d: " << d->getGroupId() << " was successfully removed" << endl;
+    }
+    else
+    {
+        cout << "group d: " << d->getGroupId() << " didnt exist or wasn't removed" << endl;
+    }
     cout << endl << "this is the tree inorder:" << endl;
-    groupTree.inOrder(cout, groupTree.getRoot());
+    database->m_groups.inOrder(cout, database->m_groups.getRoot());
     cout << endl;
 
     cout << endl << "now removing group b: " << b->getGroupId() << endl;
-    groupTree.setRoot(groupTree.removeValue(groupTree.getRoot(), b));
+    tmp = database->remove_group(b->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "group b: " << b->getGroupId() << " was successfully removed" << endl;
+    }
+    else
+    {
+        cout << "group b: " << b->getGroupId() << " didnt exist or wasn't removed" << endl;
+    }
     cout << endl << "this is the tree inorder:" << endl;
-    groupTree.inOrder(cout, groupTree.getRoot());
+    database->m_groups.inOrder(cout, database->m_groups.getRoot());
     cout << endl;
 
     cout << endl << "now adding user ff: " << ff->getId() << " to group a: "<< a->getGroupId() << endl;
-    a->getMembers()->setRoot(a->getMembers()->insertValue(a->getMembers()->getRoot(), ff));
+    tmp = database->add_user_to_group(ff->getId(), a->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user ee: " << ff->getId() << " was successfully added to group a: " <<a->getGroupId() << endl;
+    }
+    else
+    {
+        cout << "user ee: " << ff->getId() << " wasn't added to group a: " << a->getGroupId() << endl;
+    }
 
     cout << endl << "now adding user cc: " << cc->getId() << " to group c: "<< c->getGroupId() << endl;
-    c->getMembers()->setRoot(c->getMembers()->insertValue(c->getMembers()->getRoot(), cc));
-
-    try {
-        cout << endl << "now adding user ff: " << ff->getId() << " to group a: " << a->getGroupId()
-             << endl;//need to check
-        userTree.findObject(userTree.getRoot(), ff);
-        groupTree.findObject(groupTree.getRoot(), a);
-        a->getMembers()->setRoot(a->getMembers()->insertValue(a->getMembers()->getRoot(), ff));
-    }
-    catch(NodeAlreadyExists& e)
+    tmp = database->add_user_to_group(cc->getId(), c->getGroupId());
+    if (tmp == StatusType::SUCCESS)
     {
-        cout << "user was already in group" << endl;
+        cout << "user cc: " << cc->getId() << " was successfully added to group c: " <<c->getGroupId() << endl;
     }
+    else
+    {
+        cout << "user cc: " << cc->getId() << " wasn't added to group c: " << c->getGroupId() << endl;
+    }
+
+    cout << endl << "now adding user ff: " << ff->getId() << " to group a: " << a->getGroupId();
+    tmp = database->add_user_to_group(ff->getId(), a->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user ff: " << ff->getId() << " was successfully added to group a: " <<a->getGroupId() << endl;
+    }
+    else
+    {
+        cout << "user ff: " << ff->getId() << " wasn't added to group a: " << a->getGroupId() << endl;
+    }
+    */
     cout << endl << "now adding user hh: " << hh->getId() << endl;
-    userTree.setRoot(userTree.insertValue(userTree.getRoot(), hh));
+    tmp = database->add_user(hh->getId(), hh->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user hh: " << hh->getId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "user hh: " << hh->getId() << " wasn't added" << endl;
+    }
 
     cout << endl << "now adding user ii: " << ii->getId() << endl;
-    userTree.setRoot(userTree.insertValue(userTree.getRoot(), ii));
-
-    try { // should fail cause the group isn't here
-        cout << endl << "now adding user jj: " << jj->getId() << " to group b: " << b->getGroupId() << endl;
-        userTree.findObject(userTree.getRoot(), jj);
-        groupTree.findObject(groupTree.getRoot(), b);
-        b->getMembers()->setRoot(b->getMembers()->insertValue(b->getMembers()->getRoot(), jj));
-    }
-    catch(NodeDoesntExist& e)
+    tmp = database->add_user(ii->getId(), ii->getIsVip());
+    if (tmp == StatusType::SUCCESS)
     {
-        cout << "the user or the group dont exist" << endl;
+        cout << "user ii: " << ii->getId() << " was successfully added" << endl;
     }
-
-    try {
-        cout << endl << "now removing group b: " << b->getGroupId() << endl; // should fail
-        groupTree.findObject(groupTree.getRoot(), b);
-        groupTree.setRoot(groupTree.removeValue(groupTree.getRoot(), b));
-    }
-    catch(NodeDoesntExist& e)
+    else
     {
-        cout << "the group doesnt exist" << endl;
+        cout << "user ii: " << ii->getId() << " wasn't added" << endl;
     }
 
+    cout << endl << "now adding user jj: " << jj->getId() << endl;
+    tmp = database->add_user(jj->getId(), jj->getIsVip());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user jj: " << jj->getId() << " was successfully added" << endl;
+    }
+    else
+    {
+        cout << "user jj: " << jj->getId() << " wasn't added" << endl;
+    }
+
+    // should fail cause the group isn't here
+    /*
+    cout << endl << "now adding user jj: " << jj->getId() << " to group b: " << b->getGroupId() << endl;
+    tmp = database->add_user_to_group(jj->getId(), b->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "user jj: " << jj->getId() << " was successfully added to group b: " <<b->getGroupId() << endl;
+    }
+    else
+    {
+        cout << "user jj: " << jj->getId() << " wasn't added to group b: " << b->getGroupId() << endl;
+    }
+
+    cout << endl << "now removing group b: " << b->getGroupId() << endl; // should fail
+    tmp = database->remove_group(b->getGroupId());
+    if (tmp == StatusType::SUCCESS)
+    {
+        cout << "group b: " << b->getGroupId() << " was successfully removed" << endl;
+    }
+    else
+    {
+        cout << "group b: " << b->getGroupId() << " didnt exist or wasn't removed" << endl;
+    }
     cout << endl << "this is the tree inorder:" << endl;
-    groupTree.inOrder(cout, groupTree.getRoot());
+    database->m_groups.inOrder(cout, database->m_groups.getRoot());
     cout << endl;
+    */
 
 
+    cout << endl << "test ended" << endl;
     return 0;
 }
 
+//at line 43 remove_group 3182

@@ -6,11 +6,10 @@ Group::Group(int group_id, bool isVip, int group_size):
     m_members.setRoot(nullptr);
 }
 
-/*Group::~Group(){
-    //free(m_members); the tree should delete automatically with the d'tor
-    free(m_movies_group_watched);
-}*/
-
+Group::~Group()
+{
+    dismantleGroup(m_members.getRoot());
+}
 
 int Group::getGroupId() const
 {
@@ -109,3 +108,5 @@ void Group::print(ostream &os) const
 {
     os << m_group_id << " ";
 }
+
+

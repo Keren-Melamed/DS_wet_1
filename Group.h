@@ -26,7 +26,7 @@ class Group{
 
         Group(int group_id, bool isVip, int group_size);
 
-        ~Group() = default;
+        ~Group();
 
         Group(const Group& group) = default; //might need to be const group&
 

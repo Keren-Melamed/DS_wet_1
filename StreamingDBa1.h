@@ -25,15 +25,18 @@
 class streaming_database {
 private:
 
+
+    int m_movies_in_genre[4] = {0};
+
+    /*
     AVLTree<User> m_users;
-    AVLTree<Movie> m_movies;
     AVLTree<Group> m_groups;
+    AVLTree<Movie> m_movies;
     AVLTree<Movie> m_fantasy_movies;
     AVLTree<Movie> m_comedy_movies;
     AVLTree<Movie> m_action_movies;
     AVLTree<Movie> m_drama_movies;
-    int m_movies_in_genre[4] = {0};
-
+    */
 
     void movieTreeToArray(Genre genre, int *const output, int* counter);
 
@@ -51,8 +54,13 @@ private:
 public:
     // <DO-NOT-MODIFY> {
 
-
-
+    AVLTree<User> m_users;
+    AVLTree<Group> m_groups;
+    AVLTree<Movie> m_movies;
+    AVLTree<Movie> m_fantasy_movies;
+    AVLTree<Movie> m_comedy_movies;
+    AVLTree<Movie> m_action_movies;
+    AVLTree<Movie> m_drama_movies;
 
     streaming_database();
 
