@@ -56,6 +56,17 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
         output[i] = movieArray[i]->getMovieId();
     }
 
+    /////////////////////////////////////////////
+    try
+    {
+        changeMovieFlags(newTree, m_movies_by_genre[(int) genre]->getRoot(), false);
+    }
+    catch(BadAllocation& e)
+    {
+        throw BadAllocation();
+    }
+    /////////////////////////////////////////////
+    
     delete[] movieArray;
     delete newTree;
 }
@@ -74,7 +85,15 @@ void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 
 void streaming_database::removeMovieFromGenreTree(Genre genre, Movie* movie)
 {
-    m_movies_by_genre[(int) genre]->removeValue(movie);/////////////////////////////
+    Node<Movie>* movieNode = m_movies_by_genre[(int) genre]->findObject(m_movies_by_genre[(int) genre]->getRoot(), movie);
+    
+    if(movieNode == nullptr)
+    {
+        cout<<"movie not found in genre tree"<<endl;
+        return;
+    }
+    m_movies_by_genre[(int) genre]->removeValue(movie);
+
 }
 
 StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bool vipOnly)//insert by object
@@ -109,6 +128,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 
 StatusType streaming_database::remove_movie(int movieId)//insert by object
 {
+    
     if(movieId <= 0)
     {
         return StatusType::INVALID_INPUT;
@@ -119,13 +139,14 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
     Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), temp);
     delete temp;
     if(movieNode != nullptr)
-    {
+    {   
         m_movies.removeValue(movieNode->getValue());
-        removeMovieFromGenreTree(movieNode->getValue()->getGenre(), movieNode->getValue());
+        removeMovieFromGenreTree(movieNode->getValue()->getGenre(), temp);
         m_movies_in_genre[(int) movieNode->getValue()->getGenre()] -= 1;
     }
     else
     {
+
         return StatusType::FAILURE;
     }
 
@@ -150,11 +171,13 @@ StatusType streaming_database::add_user(int userId, bool isVip)//insert by objec
         }
         catch(BadAllocation& e)
         {
+            cout<<"try -> bad allocation"<<endl;
             return StatusType::ALLOCATION_ERROR;
         }
     }
     else
     {
+        cout<<"try -> bad allocation"<<endl;
         return StatusType::ALLOCATION_ERROR;
     }
     return StatusType::SUCCESS;
