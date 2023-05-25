@@ -4,7 +4,8 @@
 #include "Node.h"
 #include <iostream>
 #include "exception.h"
- 
+#include "Movie.h"
+
 using namespace std;
 
 template<class T>
@@ -61,7 +62,9 @@ class AVLTree
         * @return
         *       a pointer to the node that is to be put in the appropriate spot
         */
-        Node<T>* removeValue(Node<T>* node, T* value);
+        void removeValue(T* value);
+
+        Node<T>* removeValueHelper(Node<T>* node, T* value);
 
         /*
         * inserts node into the tree with the corresponding value and rebalances it via recursion
@@ -70,7 +73,9 @@ class AVLTree
         * @return
         *       a pointer to the node that is to be put in the appropriate spot
         */
-        Node<T>* insertValue(Node<T>* node, T* value);
+        void insertValue(T *value);
+
+        Node<T>* insertValueHelper(Node<T>* node, T* value);
 
         /*
         * balances the tree from this root downwards
@@ -78,13 +83,9 @@ class AVLTree
         * @return
         *       a pointer to the node that is to be put in the appropriate spot
         */
-        Node<T>* balance(Node<T>* node, T* value);
+        Node<T>* balance(Node<T>* node);
 
         Node<T>* findObject(Node<T>* node, T* value);
-
-        void setRightNode(Node<T>* parent, T* value);
-    
-        void setLeftNode(Node<T>* parent, T* value);
 
         ostream& inOrder(ostream& os, Node<T>* node) const;
 
@@ -98,6 +99,18 @@ class AVLTree
 
 
     private:
+
+        static int max(int a, int b)
+        {
+            return (a > b) ? a : b;
+        }
+
+        Node<T>* findFather(T* value);
+        Node<T>* findFatherHelper(T* value, Node<T>* node);
+
+        Node<T>* getNextMinValue(Node<T>* node);
+
+        Node<T>* findObjectHelper(Node<T>* node, T* value);
 
         void numOfNodes(Node<T>* node, int* counter);
         Node<T>* nodeWithMinimumValue(Node<T>* node);
@@ -161,15 +174,76 @@ void AVLTree<T>::deleteNodes(Node<T> *node)
 
 
 template<class T>
-void AVLTree<T>::setRightNode(Node<T>* parent, T* value)
+Node<T>* AVLTree<T>::getNextMinValue(Node<T>* node)
 {
-    parent->setRightNode(insertValue(parent->getRightNode(), value));
+    if(node == nullptr)
+    {
+        return nullptr;
+    }
+    if(node->getRightNode() == nullptr)
+    {
+        return node;
+    }
+    else
+    {
+        Node<T>* current = node->getRightNode();
+        while(current->getLeftNode() != nullptr)
+        {
+            current = current->getLeftNode();
+        }
+        return current;
+    }
 }
 
 template<class T>
-void AVLTree<T>::setLeftNode(Node<T>* parent, T* value)
+Node<T>* AVLTree<T>::findFatherHelper(T* value, Node<T>* node)
 {
-    parent->setLeftNode(insertValue(parent->getLeftNode(), value));
+    if( node == nullptr || *value == *(node->getValue()))
+    {
+        return nullptr;
+    }
+    else if(*value < *(node->getValue()))
+    {
+        if (node->getLeftNode() != nullptr)
+        {
+            if (*(node->getLeftNode()->getValue()) == *value)
+            {
+                return node;
+            }
+            else
+            {
+                return findFatherHelper(value, node->getLeftNode());
+            }
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+    else
+    {
+        if(node->getRightNode() != nullptr)
+        {
+            if(*(node->getRightNode()->getValue()) == *value)
+            {
+                return node;
+            }
+            else
+            {
+                return findFatherHelper(value, node->getRightNode());
+            }
+        }
+        else
+        {
+            return  nullptr;
+        }
+    }
+}
+
+template<class T>
+Node<T>* AVLTree<T>::findFather(T* value)
+{
+    return findFatherHelper(value, m_root);
 }
 
 template<class T>
@@ -187,6 +261,24 @@ void AVLTree<T>::setRoot(Node<T>* root)
 template<class T>
 int AVLTree<T>::calculateHeight(Node<T>* node) const
 {
+    if(node->getLeftNode() == nullptr && node->getRightNode() == nullptr)
+    {
+        return 0;
+    }
+
+    else if(node->getLeftNode() == nullptr && node->getRightNode() != nullptr)
+    {
+        return (node->getRightNode()->getHeight() + 1);
+    }
+    else if(node->getLeftNode() != nullptr && node->getRightNode() == nullptr)
+    {
+        return (node->getLeftNode()->getHeight() + 1);
+    }
+    else
+    {
+        return (max(node->getLeftNode()->getHeight(), node->getRightNode()->getHeight()) + 1);
+    }
+    /*
     int left, right;
     if(node->getLeftNode() == NULL)
     {
@@ -208,7 +300,7 @@ int AVLTree<T>::calculateHeight(Node<T>* node) const
 
     if (left == 0 && right == 0)
     {
-        return 1;//maybe 0
+        return 1;
     }
 
     else if (left >= right)
@@ -219,12 +311,29 @@ int AVLTree<T>::calculateHeight(Node<T>* node) const
     {
         return (1 + node->getRightNode()->getHeight());
     }
+     */
 }
 
 template<class T>
 int AVLTree<T>::balanceFactor(Node<T>* node)
 {
-    if(node == NULL)
+    if(node->getLeftNode() == nullptr && node->getRightNode() == nullptr)
+    {
+        return 0;
+    }
+    else if(node->getLeftNode() == nullptr && node->getRightNode() != nullptr)
+    {
+        return (-1 - node->getRightNode()->getHeight());
+    }
+    else if(node->getLeftNode() != nullptr && node->getRightNode() == nullptr)
+    {
+        return (node->getLeftNode()->getHeight() + 1);
+    }
+    else
+    {
+        return(node->getLeftNode()->getHeight() - node->getRightNode()->getHeight());
+    }
+    /*if(node == NULL)
     {
         return 0;
     }
@@ -249,6 +358,7 @@ int AVLTree<T>::balanceFactor(Node<T>* node)
         right = node->getRightNode()->getHeight();
     }
     return (left - right);
+     */
 }
 
 template<class T>
@@ -261,8 +371,80 @@ Node<T>* AVLTree<T>::nodeWithMinimumValue(Node<T>* node)
 }
 
 template<class T>
-Node<T>* AVLTree<T>::removeValue(Node<T>* node, T* value)
+Node<T>* AVLTree<T>::removeValueHelper(Node<T>* node, T* value)
 {
+    if(node == nullptr)
+    {
+        return node;
+    }
+    if(*value > *(node->getValue()))
+    {
+        node->setRightNode(removeValueHelper(node->getRightNode(), value));
+    }
+    else if(*value < *(node->getValue()))
+    {
+        node->setLeftNode(removeValueHelper(node->getLeftNode(), value));
+    }
+    else
+    {
+        if(node->getLeftNode() == nullptr || node->getRightNode() == nullptr)
+        {
+            Node<T>* child = node->getLeftNode() ? node->getLeftNode(): node->getRightNode();
+
+            if(child == nullptr)
+            {
+                child = node;
+                node = nullptr;
+            }
+            else
+            {
+                Node<T>* father = findFather(node->getValue());
+                if(father == nullptr)
+                {
+                    Node<T>* temp = node;
+                    node = child;
+                    child = temp;
+                }
+                else
+                {
+                    Node<T>* temp = child;
+                    bool doesRightExist = (father->getRightNode() != nullptr);
+                    bool doesLeftExist = (father->getLeftNode() != nullptr);
+                    if(doesLeftExist && father->getLeftNode()->getValue() == node->getValue())
+                    {
+                        father->setLeftNode(temp);
+                    }
+                    if(doesRightExist && father->getRightNode()->getValue() == node->getValue())
+                    {
+                        father->setRightNode(temp);
+                    }
+
+                    child = node;
+                    node = temp;
+                }
+            }
+            delete child;
+        }
+
+        else
+        {
+            Node<T>* minVal = getNextMinValue(node);
+
+            node->setValue(minVal->getValue());
+            node->setRightNode(removeValueHelper(node->getRightNode(), minVal->getValue()));
+        }
+    }
+
+    if(node == nullptr)
+    {
+        return node;
+    }
+    node->setHeight(calculateHeight(node));
+
+    node = balance(node);
+
+    return node;
+    /*
     if(node == NULL)
     {
         // throw NodeDoesntExist(); //breaks the code so removed, additionally, I got rid of the throw because we always call
@@ -311,61 +493,113 @@ Node<T>* AVLTree<T>::removeValue(Node<T>* node, T* value)
     node = deletionBalance(node);
 
     return node;
+     */
 }
 
 template<class T>
-Node<T>* AVLTree<T>::insertValue(Node<T>* node, T* value)
+void AVLTree<T>::removeValue(T *value)
 {
-    //cout << "insert value was reached" << endl;
-    if(node == NULL)
+    m_root = removeValueHelper(m_root, value);
+}
+
+template<class T>
+Node<T>* AVLTree<T>::insertValueHelper(Node<T>* node, T* value)
+{
+    if(node == nullptr)
     {
         node = new Node<T>(value);
-        if(node == NULL)
+        if(node == nullptr)
         {
-            //cout << "the value addition allocation failed" << endl;
             throw BadAllocation();
         }
         return node;
     }
-    //cout << "checking if the value is equal" << endl;
-    if(*(node->getValue()) == *value)
-    {
-        //cout << "the value already exists" << endl;
-        throw NodeAlreadyExists();
-    }
 
-    //cout << "checking if the value is smaller" << endl;
-    if (*(node->getValue()) > *value )
+    else if (*(node->getValue()) > *value )
     {
-        setLeftNode(node, value);
-
+        //cout << "the inserted value was smaller" << endl;
+        node->setLeftNode(insertValueHelper(node->getLeftNode(), value));//doesnt add new nodes
     }
 
     else if (*(node->getValue()) < *value)
     {
-        //cout << "the value was bigger" << endl;
-        setRightNode(node, value);
+        //cout << "the inserted value was bigger" << endl;
+        Node<T>* tmp = insertValueHelper(node->getRightNode(), value);//doesnt add new nodes
+        node->setRightNode(tmp);
     }
 
-    //cout << "rebalancing the tree" << endl;
-    node = balance(node, value);
+    //node = balance(node, value);
 
-    //cout << "calculating the height" << endl;
     node->setHeight(calculateHeight(node));
-
-    //cout << "rebalancing the tree again" << endl;
-    node = balance(node, value);
-
-    //cout << "the value was added" << endl;
-    return node;
+    return balance(node);;
 }
 
 template<class T>
-Node<T>* AVLTree<T>::balance(Node<T>* node, T* value)
+void AVLTree<T>::insertValue(T* value)
 {
-    int balance = balanceFactor(node);
+    m_root = insertValueHelper(m_root, value);
+}
 
-	if (balance > 1 && *value < *(node->getLeftNode()->getValue()))
+template<class T>
+Node<T>* AVLTree<T>::balance(Node<T>* node)
+{
+    //cout << endl << "balance was called" << endl;
+    if(node == nullptr)
+    {
+        return nullptr;
+    }
+    int balance = balanceFactor(node);
+    //cout << "this is the balance in balance func" << balance << endl;
+    if(balance > 1)
+    {
+        //cout << "first if was entered" << endl;
+        if(balanceFactor(node->getLeftNode()) > -1)
+        {
+            //cout << "first nested if was entered" << endl;
+            return (rotateRight(node));
+        }
+        else if(balanceFactor(node->getLeftNode()) == -1)
+        {
+            //cout << "first nested else if was entered" << endl;
+            node->setLeftNode(rotateLeft(node->getLeftNode()));
+            return rotateRight(node);
+        }
+        else
+        {
+            //cout << "first nested else was entered" << endl;
+            //cout << "invalid balance factors in tree" << endl;
+            return node;
+        }
+    }
+    else if(balance < -1)
+    {
+        //cout << "second if was entered" << endl;
+        if(balanceFactor(node->getRightNode()) < 1)
+        {
+            //cout << "second nested if was entered" << endl;
+            return rotateLeft(node);
+        }
+        else if(balanceFactor(node->getRightNode()) == 1)
+        {
+            //cout << "second nested else if was entered" << endl;
+            node->setRightNode(rotateRight(node->getRightNode()));
+            return rotateLeft(node);
+        }
+        else
+        {
+            //cout << "second nested else was entered" << endl;
+            //cout << "invalid balance factors in tree" << endl;
+            return node;
+        }
+    }
+    else
+    {
+        //cout << "nothing happened" << endl;
+        return node;
+    }
+
+
+	/*if (balance > 1 && *value < *(node->getLeftNode()->getValue()))
     {
 		return rotateRight(node);
     }
@@ -385,7 +619,7 @@ Node<T>* AVLTree<T>::balance(Node<T>* node, T* value)
 	{
 		node->setRightNode(rotateRight(node->getRightNode()));
 		return rotateLeft(node);
-	}
+	}*/
 
     return node;
 }
@@ -433,9 +667,36 @@ Node<T>* AVLTree<T>::deletionBalance(Node<T>* node)
 }
 
 template<class T>
+Node<T>* AVLTree<T>::findObjectHelper(Node<T>* node, T* value)
+{
+    if(node == nullptr )
+    {
+        return nullptr;
+    }
+    else if(*(node->getValue()) == *value)
+    {
+        return node;
+    }
+    else if(*value < *(node->getValue()))
+    {
+        return findObjectHelper(node->getLeftNode(), value);
+    }
+    else
+    {
+        return findObjectHelper(node->getRightNode(), value);
+    }
+}
+
+template<class T>
 Node<T>* AVLTree<T>::findObject(Node<T>* node, T* value)
 {
+    return findObjectHelper(node, value);
+    /*
     if(node == NULL)
+    {
+        throw NodeDoesntExist();
+    }
+    if(node->getValue() == nullptr)
     {
         throw NodeDoesntExist();
     }
@@ -453,12 +714,28 @@ Node<T>* AVLTree<T>::findObject(Node<T>* node, T* value)
     else
     {
         return findObject((node->getRightNode()), value);
-    }
+    }*/
 }
 
 template<class T>
 Node<T>* AVLTree<T>::rotateLeft(Node<T>* parent)
 {
+    if(parent == nullptr || parent->getRightNode() == nullptr)
+    {
+        return parent;
+    }
+    Node<T>* parentRight = parent->getRightNode();
+    Node<T>* parentRightLeft = parentRight->getLeftNode();
+
+    parentRight->setLeftNode(parent);
+    parent->setRightNode(parentRightLeft);
+
+    parent->setHeight(calculateHeight(parent));
+    parentRight->setHeight(calculateHeight(parentRight));
+
+    return parentRight;
+
+    /*
 	Node<T>* child = parent->getRightNode();
 	Node<T>* grandChild = child->getLeftNode();
 
@@ -474,12 +751,29 @@ Node<T>* AVLTree<T>::rotateLeft(Node<T>* parent)
 
 
 	return child;
+    */
 }
 
 template<class T>
 Node<T>* AVLTree<T>::rotateRight(Node<T>* parent)
 {
-    Node<T>* child = parent->getLeftNode();
+    if(parent == nullptr || parent->getLeftNode() == nullptr)
+    {
+        return parent;
+    }
+    Node<T>* parentLeft = parent->getLeftNode();
+    Node<T>* parentLeftRight = parentLeft->getRightNode();
+
+    parentLeft->setRightNode(parent);
+    parent->setLeftNode((parentLeftRight));
+
+    parent->setHeight(calculateHeight(parent));
+    parentLeft->setHeight(calculateHeight(parentLeft));
+
+    return parentLeft;
+
+
+    /*Node<T>* child = parent->getLeftNode();
 	Node<T>* grandChild = child->getRightNode();
 
 	child->setRightNode(parent);
@@ -493,6 +787,7 @@ Node<T>* AVLTree<T>::rotateRight(Node<T>* parent)
     }
 
 	return child;
+     */
 }
 
 template<class T>

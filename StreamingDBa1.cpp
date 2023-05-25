@@ -84,7 +84,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     }
     Movie* movie = new Movie(movieId, views, vipOnly, genre);
     Node<Movie>* tmp = m_movies.findObject(m_movies.getRoot(), movie);
-    if(tmp != nullptr)
+    if(tmp == nullptr)
     {
         try
         {
@@ -254,6 +254,14 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 
     if(userNode == nullptr || groupNode == nullptr)
     {
+        if(userNode == nullptr)
+        {
+            //cout << "the userNode was null" << endl;
+        }
+        if(groupNode == nullptr)
+        {
+            //cout << "the groupNode was null" << endl;
+        }
         delete temp_user;
         delete temp_group;
         return StatusType::FAILURE;
@@ -261,6 +269,8 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 
     if(userNode->getValue()->getGroup() != nullptr)
     {
+        delete temp_user;
+        delete temp_group;
         return StatusType::FAILURE;
     }
 
@@ -268,7 +278,10 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
     Node<User>* temp = groupNode->getValue()->getMembers()->findObject(groupNode->getValue()->getMembers()->getRoot(),
                                                                        userNode->getValue());
 
-    if(temp != nullptr){
+    if(temp != nullptr)
+    {
+        delete temp_user;
+        delete temp_group;
         return StatusType::FAILURE;
     }
 
@@ -276,7 +289,10 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
         groupNode->getValue()->getMembers()->insertValue(userNode->getValue());
     }
 
-    catch(BadAllocation& e){
+    catch(BadAllocation& e)
+    {
+        delete temp_user;
+        delete temp_group;
         return StatusType::ALLOCATION_ERROR;
     }
 
