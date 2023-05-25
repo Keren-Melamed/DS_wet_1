@@ -174,6 +174,9 @@ bool Movie::getFlag() const
     return m_flag;
 }
 
-
+void Movie::print(std::ostream &os) const
+{
+    os << m_movieId << " ";
+}
 
 
