@@ -117,12 +117,12 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
 
     Movie* temp = new Movie(movieId, 0, false, Genre::NONE);
     Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), temp);
+    delete temp;
     if(movieNode != nullptr)
     {
         m_movies.removeValue(movieNode->getValue());
         removeMovieFromGenreTree(movieNode->getValue()->getGenre(), movieNode->getValue());
         m_movies_in_genre[(int) movieNode->getValue()->getGenre()] -= 1;
-        delete temp;
     }
     else
     {

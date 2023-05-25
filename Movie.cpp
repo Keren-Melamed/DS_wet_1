@@ -102,6 +102,11 @@ bool operator>(const Movie &a, const Movie &b)
 {
     if(a.getFlag() != b.getFlag())
     {
+        std::cout << "the movie flags are different" << std::endl;
+    }
+    if(a == b)
+    {
+        return false;
     }
     if(a==b){
         return false;
