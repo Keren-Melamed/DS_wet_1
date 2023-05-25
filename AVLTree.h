@@ -198,7 +198,7 @@ Node<T>* AVLTree<T>::getNextMinValue(Node<T>* node)
 template<class T>
 Node<T>* AVLTree<T>::findFatherHelper(T* value, Node<T>* node)
 {
-    if( node == nullptr || *value == *(node->getValue()))
+    if(node == nullptr || *value == *(node->getValue()))
     {
         return nullptr;
     }
@@ -375,21 +375,25 @@ Node<T>* AVLTree<T>::removeValueHelper(Node<T>* node, T* value)
 {
     if(node == nullptr)
     {
+        //cout << "the node was nullptr" << endl;
         return node;
     }
     if(*value > *(node->getValue()))
     {
+        //cout << "the value was bigger" << endl;
         node->setRightNode(removeValueHelper(node->getRightNode(), value));
     }
     else if(*value < *(node->getValue()))
     {
+        //cout << "the value was smaller" << endl;
         node->setLeftNode(removeValueHelper(node->getLeftNode(), value));
     }
     else
     {
+        //cout << "the value was equal in size" << endl;
         if(node->getLeftNode() == nullptr || node->getRightNode() == nullptr)
         {
-            Node<T>* child = node->getLeftNode() ? node->getLeftNode(): node->getRightNode();
+            Node<T>* child = node->getLeftNode() ? node->getLeftNode() : node->getRightNode();
 
             if(child == nullptr)
             {
@@ -401,6 +405,7 @@ Node<T>* AVLTree<T>::removeValueHelper(Node<T>* node, T* value)
                 Node<T>* father = findFather(node->getValue());
                 if(father == nullptr)
                 {
+                    //cout << "the father was null" << endl;
                     Node<T>* temp = node;
                     node = child;
                     child = temp;
@@ -497,7 +502,7 @@ Node<T>* AVLTree<T>::removeValueHelper(Node<T>* node, T* value)
 }
 
 template<class T>
-void AVLTree<T>::removeValue(T *value)
+void AVLTree<T>::removeValue(T* value)
 {
     m_root = removeValueHelper(m_root, value);
 }

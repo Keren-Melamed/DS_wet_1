@@ -3,7 +3,6 @@
 
 #include <stdexcept>
 #include <exception>
-#include <string>
 
 class AVLTreeException : public std::runtime_error {
 public:
