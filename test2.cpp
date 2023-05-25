@@ -181,7 +181,7 @@ int main()
     output_t<int> tmpOut0 = database->get_all_movies_count(Genre::COMEDY);
     if(tmpOut0.status() == StatusType::SUCCESS)
     {
-        cout << "num of all comedy movies was received and its: " << tmpOut.ans() << endl;
+        cout << "num of all comedy movies was received and its: " << tmpOut0.ans() << endl;
     }
     else
     {
@@ -192,7 +192,7 @@ int main()
     output_t<int> tmpOut1 = database->get_all_movies_count(Genre::DRAMA);
     if(tmpOut1.status() == StatusType::SUCCESS)
     {
-        cout << "num of all drama movies was received and its: " << tmpOut.ans() << endl;
+        cout << "num of all drama movies was received and its: " << tmpOut1.ans() << endl;
     }
     else
     {
@@ -203,7 +203,7 @@ int main()
     output_t<int> tmpOut2 = database->get_all_movies_count(Genre::ACTION);
     if(tmpOut2.status() == StatusType::SUCCESS)
     {
-        cout << "num of all action movies was received and its: " << tmpOut.ans() << endl;
+        cout << "num of all action movies was received and its: " << tmpOut2.ans() << endl;
     }
     else
     {
@@ -214,7 +214,7 @@ int main()
     output_t<int> tmpOut3 = database->get_all_movies_count(Genre::FANTASY);
     if(tmpOut3.status() == StatusType::SUCCESS)
     {
-        cout << "num of all fantasy movies was received and its: " << tmpOut.ans() << endl;
+        cout << "num of all fantasy movies was received and its: " << tmpOut3.ans() << endl;
     }
     else
     {
@@ -225,12 +225,27 @@ int main()
     output_t<int> tmpOut4 = database->get_all_movies_count(Genre::NONE);
     if(tmpOut4.status() == StatusType::SUCCESS)
     {
-        cout << "num of ALL movies was received and its: " << tmpOut.ans() << endl;
+        cout << "num of ALL movies was received and its: " << tmpOut4.ans() << endl;
     }
     else
     {
         cout << "num of ALL movies was not received..." << endl;
     }
+
+    cout << endl << "this is the movie tree inorder:" << endl;
+    database->m_movies.preOrder(cout, database->m_movies.getRoot());
+
+    cout << endl << "this is the comedy movie tree inorder:" << endl;
+    database->m_comedy_movies.preOrder(cout, database->m_movies.getRoot());
+
+    cout << endl << "this is the movie tree inorder:" << endl;
+    database->m_action_movies.preOrder(cout, database->m_movies.getRoot());
+
+    cout << endl << "this is the movie tree inorder:" << endl;
+    database->m_movies.preOrder(cout, database->m_movies.getRoot());
+
+    cout << endl << "this is the movie tree inorder:" << endl;
+    database->m_movies.preOrder(cout, database->m_movies.getRoot());
 
 
 
