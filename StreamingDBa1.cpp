@@ -8,7 +8,10 @@
 
 streaming_database::streaming_database() = default;
 
-streaming_database::~streaming_database() = default;
+streaming_database::~streaming_database()
+{
+    m_movies.setAllToNullptr(m_movies.getRoot());
+}
 
 void streaming_database::changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* node, bool flag)
 {
@@ -224,6 +227,7 @@ StatusType streaming_database::remove_group(int groupId)//remove by object
     Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), temp);
 
     if(groupNode == nullptr){
+        //cout << "group wasn't found" << endl;
         return StatusType::FAILURE;
     }
 

@@ -97,6 +97,7 @@ class AVLTree
 
         void deleteNodes(Node<T>* node);
 
+        void setAllToNullptr(Node<T> *node);
 
     private:
 
@@ -123,6 +124,7 @@ class AVLTree
         Node<T>* rotateRight(Node<T>* parent);
         
         Node<T>* m_root;
+
 };
 
 
@@ -165,7 +167,7 @@ void AVLTree<T>::deleteNodes(Node<T> *node)
 
     deleteNodes(node->getLeftNode());
     deleteNodes(node->getRightNode());
-    delete node->getValue();// doesnt delete the tree in group and was somehow causing a seg fault....(double free to be exact)
+    delete node->getValue();// might cause -> doesnt delete the tree in group and was somehow causing a seg fault....(double free to be exact)
     delete node;
 }
 
@@ -676,20 +678,26 @@ Node<T>* AVLTree<T>::findObjectHelper(Node<T>* node, T* value)
 {
     if(node == nullptr )
     {
+        //cout << "we reached a nullptr" << endl;
         return nullptr;
     }
     else if(*(node->getValue()) == *value)
     {
+        //cout <<" we found a node with an equal value" << endl;
         return node;
     }
     else if(*value < *(node->getValue()))
     {
+        //cout << "the node's value was bigger" << endl;
         return findObjectHelper(node->getLeftNode(), value);
     }
-    else
+    else if(*value > *(node->getValue()))
     {
+        //cout << "the node's value was smaller" << endl;
         return findObjectHelper(node->getRightNode(), value);
     }
+    //cout << "no condition was met, so return nullptr" << endl;
+    return nullptr;
 }
 
 template<class T>
@@ -832,6 +840,19 @@ void AVLTree<T>::numOfNodes(Node<T> *node, int* counter)
     }
 }
 
+template<class T>
+void AVLTree<T>::setAllToNullptr(Node<T>* node)
+{
+    if(node->getLeftNode() != nullptr)
+    {
+        setAllToNullptr(node->getLeftNode());
+    }
+    if(node->getRightNode() != nullptr)
+    {
+        setAllToNullptr(node->getRightNode());
+    }
+    node->setValue(nullptr);
+}
 
 /************************AVLTree Print Functions*************************/
 
