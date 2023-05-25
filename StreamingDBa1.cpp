@@ -55,7 +55,6 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
     for (int i = 0; i < sizeOfArray; ++i) {
         output[i] = movieArray[i]->getMovieId();
     }
-
     /////////////////////////////////////////////
     try
     {
@@ -178,7 +177,7 @@ StatusType streaming_database::add_user(int userId, bool isVip)//insert by objec
     else
     {
         cout<<"try -> bad allocation"<<endl;
-        return StatusType::ALLOCATION_ERROR;
+        return StatusType::FAILURE;
     }
     return StatusType::SUCCESS;
 }
@@ -195,18 +194,13 @@ StatusType streaming_database::remove_user(int userId)//find by object
     if(userNode != nullptr)
     {
         if(userNode->getValue()->getGroup() != nullptr)
-        {AVLTree<User> *membersTree = (userNode->getValue()->getGroup()->getMembers());
-        try{
+        {
+            AVLTree<User> *membersTree = (userNode->getValue()->getGroup()->getMembers());
             membersTree->removeValue(userNode->getValue());
             //delete membersTree; causes tests to fail
         }
-        catch (BadAllocation& e)
-        {
-            return StatusType::ALLOCATION_ERROR;
-        }
-            m_users.removeValue(userNode->getValue());
-            delete temp;
-        }
+        m_users.removeValue(userNode->getValue());
+        delete temp;
     }
     else
     {
