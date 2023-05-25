@@ -28,7 +28,6 @@ private:
 
     int m_movies_in_genre[4] = {0};
 
-
     void movieTreeToArray(Genre genre, int *const output, int* counter);
 
     void addMovieToGenreTree(Genre genre, Movie *movie);

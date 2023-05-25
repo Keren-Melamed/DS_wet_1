@@ -35,7 +35,7 @@ class Movie
         friend bool operator<(const Movie& a, const Movie& b);
         friend bool operator>(const Movie& a, const Movie& b);
 
-        void print(std::ostream& os) const;
+
         //bool operator<(const Movie& other) const;
         //bool operator>(const Movie& other) const;
 
