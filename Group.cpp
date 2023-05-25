@@ -6,11 +6,10 @@ Group::Group(int group_id, bool isVip, int group_size):
     m_members.setRoot(nullptr);
 }
 
-/*Group::~Group(){
-    //free(m_members); the tree should delete automatically with the d'tor
-    free(m_movies_group_watched);
-}*/
-
+Group::~Group()
+{
+    dismantleGroup(m_members.getRoot());
+}
 
 int Group::getGroupId() const
 {
@@ -61,13 +60,13 @@ int Group::getGroupSize() const
     return m_group_size;
 }
 
-void Group::dismantleGroup(Node<User>* user)
+void Group::dismantleGroup(Node<User>* userNode)
 {
-    if(user != nullptr)
+    if(userNode != nullptr)
     {
-        user->getValue()->setGroup(nullptr);//user is actually a node in a tree so to access it we need to use getValue
-        dismantleGroup(user->getLeftNode());
-        dismantleGroup(user->getRightNode());
+        userNode->getValue()->setGroup(nullptr);//user is actually a node in a tree so to access it we need to use getValue
+        dismantleGroup(userNode->getLeftNode());
+        dismantleGroup(userNode->getRightNode());
     }
 }
 
@@ -109,3 +108,5 @@ void Group::print(ostream &os) const
 {
     os << m_group_id << " ";
 }
+
+
