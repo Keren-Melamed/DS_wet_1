@@ -9,6 +9,7 @@ Group::Group(int group_id, bool isVip, int group_size):
 Group::~Group()
 {
     dismantleGroup(m_members.getRoot());
+    m_members.setAllToNullptr(m_members.getRoot());
 }
 
 int Group::getGroupId() const

@@ -538,7 +538,7 @@ Node<T>* AVLTree<T>::insertValueHelper(Node<T>* node, T* value)
     //node = balance(node, value);
 
     node->setHeight(calculateHeight(node));
-    return balance(node);;
+    return balance(node);
 }
 
 template<class T>
@@ -843,6 +843,10 @@ void AVLTree<T>::numOfNodes(Node<T> *node, int* counter)
 template<class T>
 void AVLTree<T>::setAllToNullptr(Node<T>* node)
 {
+    if(node == nullptr)
+    {
+        return;
+    }
     if(node->getLeftNode() != nullptr)
     {
         setAllToNullptr(node->getLeftNode());
