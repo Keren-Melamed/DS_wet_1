@@ -97,13 +97,14 @@ void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 void streaming_database::removeMovieFromGenreTree(Genre genre, Movie* movie)
 {
     Node<Movie>* movieNode = m_movies_by_genre[(int) genre]->findObject(m_movies_by_genre[(int) genre]->getRoot(), movie);
-    
     if(movieNode == nullptr)
     {
-        cout<<"movie not found in genre tree"<<endl;
         return;
     }
-    m_movies_by_genre[(int) genre]->removeValue(movie);
+    
+    m_movies_by_genre[(int) genre]->removeValue(movieNode->getValue());
+    return;
+   
 
 }
 
@@ -148,21 +149,22 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
 
     Movie* temp = new Movie(movieId, 0, false, Genre::NONE);
     Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), temp);
-    delete temp;
-    if(movieNode != nullptr)
-    {   
-        m_movies.removeValue(movieNode->getValue());
-        removeMovieFromGenreTree(movieNode->getValue()->getGenre(), temp);
-        m_movies_in_genre[(int) movieNode->getValue()->getGenre()] -= 1;
-    }
-    else
-    {
 
+    if(movieNode == nullptr){
+        delete temp;
         return StatusType::FAILURE;
     }
 
-
-    return StatusType::SUCCESS;
+    else
+    {   
+        Genre temp_genre = movieNode->getValue()->getGenre();
+        m_movies.removeValue(movieNode->getValue());
+        
+        removeMovieFromGenreTree(temp_genre, temp);
+        m_movies_in_genre[(int) temp_genre] -= 1;
+        delete temp;
+        return StatusType::SUCCESS;
+    }
 }
 
 StatusType streaming_database::add_user(int userId, bool isVip)//insert by object
