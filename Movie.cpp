@@ -103,6 +103,10 @@ bool operator>(const Movie &a, const Movie &b)
     if(a.getFlag() != b.getFlag())
     {
     }
+    if(a==b){
+        return false;
+    }
+
     bool tmp = (a < b);
     return (!tmp);//I feel like this should work
 }
@@ -169,6 +173,10 @@ bool Movie::getFlag() const
     return m_flag;
 }
 
+void Movie::print(std::ostream &os) const
+{
+    os << m_movieId << " ";
+}
 
 
 
