@@ -52,7 +52,7 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
 
     AVLTree<Movie>* newTree = new AVLTree<Movie>;
     try
-    {
+    
     {
         changeMovieFlags(newTree, m_movies_by_genre[(int) genre]->getRoot(), true);
     }
