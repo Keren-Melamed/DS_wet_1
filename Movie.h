@@ -7,9 +7,9 @@
 class Movie
 {
     public:
-        Movie();
+        Movie() = delete;
 
-        Movie(int movieID, int views, bool vipOnly, Genre genre, bool flag = false);
+        Movie(int movieID, int views, bool vipOnly, Genre genre, double rating, bool flag = false);
 
         ~Movie() = default;
 

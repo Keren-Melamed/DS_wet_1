@@ -47,12 +47,14 @@ private:
     AVLTree<Movie>* m_movies_by_genre[5] = {&m_comedy_movies, &m_drama_movies, &m_action_movies,
                                             &m_fantasy_movies, &m_movies};
 
-    void changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* node, bool flag);
-
+    
 
 
 public:
     // <DO-NOT-MODIFY> {
+
+    void createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre, bool flag);
+
 
     AVLTree<User> m_users;
     AVLTree<Movie> m_movies;

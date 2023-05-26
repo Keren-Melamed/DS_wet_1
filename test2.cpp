@@ -1,268 +1,214 @@
+#include <iostream>
 #include "StreamingDBa1.h"
 
-using namespace std;
-
-int main()
-{
-    User* a = new User(1000, false);
-
-    Movie* aa = new Movie(2000, 0, false, Genre::ACTION);
-    Movie* bb = new Movie(2001, 27, true, Genre::ACTION);
-    Movie* cc = new Movie(2002, 12, false, Genre::COMEDY);
-    Movie* dd = new Movie(2003, 42, true, Genre::COMEDY);
-    Movie* ee = new Movie(2004, 17, false, Genre::COMEDY);
-    Movie* ff = new Movie(2005, 22, false, Genre::COMEDY);
-    Movie* gg = new Movie(2006, 81, true, Genre::DRAMA);
+void get_all_movies_aux(streaming_database *obj, int genre);
+void my_query_get_all_movies_aux(streaming_database *obj, Genre genre);
 
 
-
-
-    Group* aaa = new Group(3000, false, 0);
-
-
-    StatusType tmpStatus = StatusType::FAILURE;
-    streaming_database* database = new streaming_database();
-
-    cout << endl << "now adding user a: " << a->getId() << endl;
-    tmpStatus = database->add_user(a->getId(), a->getIsVip());
-    if (tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "user a: " <<a->getId() << " was successfully added" << endl;
-    }
-    else
-    {
-        cout << "user a: " << a->getId() << " wasn't added" << endl;
-    }
-
-    cout <<endl <<  "now adding movie aa: " << aa->getMovieId() << endl;
-    tmpStatus = database->add_movie(aa->getMovieId(), aa->getGenre(), aa->getViews(), aa->getVipOnly());
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "the movie: " << aa->getMovieId() << " was added successfully" << endl;
-    }
-    else
-    {
-        cout << "the movie: " << aa->getMovieId() << " wasn't added" << endl;
-    }
-
-    cout <<endl <<  "now adding movie bb: " << bb->getMovieId() << endl;
-    tmpStatus = database->add_movie(bb->getMovieId(), bb->getGenre(), bb->getViews(), bb->getVipOnly());
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "the movie: " << bb->getMovieId() << " was added successfully" << endl;
-    }
-    else
-    {
-        cout << "the movie: " << bb->getMovieId() << " wasn't added" << endl;
-    }
-
-    cout <<endl <<  "now adding movie cc: " << cc->getMovieId() << endl;
-    tmpStatus = database->add_movie(cc->getMovieId(), cc->getGenre(), cc->getViews(), cc->getVipOnly());
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "the movie: " << cc->getMovieId() << " was added successfully" << endl;
-    }
-    else
-    {
-        cout << "the movie: " << cc->getMovieId() << " wasn't added" << endl;
-    }
-
-    cout <<endl <<  "now adding movie dd: " << dd->getMovieId() << endl;
-    tmpStatus = database->add_movie(dd->getMovieId(), dd->getGenre(), dd->getViews(), dd->getVipOnly());
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "the movie: " << dd->getMovieId() << " was added successfully" << endl;
-    }
-    else
-    {
-        cout << "the movie: " << dd->getMovieId() << " wasn't added" << endl;
-    }
-
-    cout <<endl <<  "now adding movie ee: " << ee->getMovieId() << endl;
-    tmpStatus = database->add_movie(ee->getMovieId(), ee->getGenre(), ee->getViews(), ee->getVipOnly());
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "the movie: " << ee->getMovieId() << " was added successfully" << endl;
-    }
-    else
-    {
-        cout << "the movie: " << ee->getMovieId() << " wasn't added" << endl;
-    }
-
-    cout <<endl <<  "now adding movie ff: " << ff->getMovieId() << endl;
-    tmpStatus = database->add_movie(ff->getMovieId(), ff->getGenre(), ff->getViews(), ff->getVipOnly());
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "the movie: " << ff->getMovieId() << " was added successfully" << endl;
-    }
-    else
-    {
-        cout << "the movie: " << ff->getMovieId() << " wasn't added" << endl;
-    }
-
-    cout <<endl <<  "now adding movie gg: " << gg->getMovieId() << endl;
-    tmpStatus = database->add_movie(gg->getMovieId(), gg->getGenre(), gg->getViews(), gg->getVipOnly());
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "the movie: " << gg->getMovieId() << " was added successfully" << endl;
-    }
-    else
-    {
-        cout << "the movie: " << gg->getMovieId() << " wasn't added" << endl;
-    }
-
-    cout << endl << "now adding group aaa: " << aaa->getGroupId() << endl;
-    tmpStatus = database->add_group(aaa->getGroupId());
-    if (tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "group aaa: " << aaa->getGroupId() << " was successfully added" << endl;
-    }
-    else
-    {
-        cout << "group aaa: " << aaa->getGroupId() << " wasn't added" << endl;
-    }
-
-    cout << endl << "now adding user a: " << a->getId() << " to group aaa: "<< aaa->getGroupId() << endl;
-    tmpStatus = database->add_user_to_group(a->getId(), aaa->getGroupId());
-    if (tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "user a: " << a->getId() << " was successfully added to group aaa: " <<aaa->getGroupId() << endl;
-    }
-    else
-    {
-        cout << "user a: " << a->getId() << " wasn't added to group aaa: " << aaa->getGroupId() << endl;
-    }
-
-    cout << endl <<"now rating movie aa: " << aa->getMovieId() << endl;
-    tmpStatus = database->rate_movie(a->getId(), aa->getMovieId(), 80);
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "movie aa: " << aa->getMovieId() << " was rated successfully" << endl;
-    }
-    else
-    {
-        cout << "movie aa: " << aa->getMovieId() << " was not rated" << endl;
-    }
-
-    cout << endl << "user a: " << a->getId() << " is now watching movie aa: " << aa->getMovieId() << endl;
-    tmpStatus = database->user_watch(a->getId(), aa->getMovieId());
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "movie aa: " << aa->getMovieId() << " was successfully watched by user a: " << a->getId() << endl;
-    }
-    else
-    {
-        cout << "movie aa: " << aa->getMovieId() << " was not watched by user a: " << a->getId() << endl;
-    }
-
-    cout << endl <<"group aaa: " << aaa->getGroupId() << " is now watching movie aa: " << aa->getMovieId() << endl;
-    tmpStatus = database->group_watch(aaa->getGroupId(), aa->getMovieId());
-    if(tmpStatus == StatusType::SUCCESS)
-    {
-        cout << "movie aa: " << aa->getMovieId() << " was successfully watched by group aaa: " << aaa->getGroupId() << endl;
-    }
-    else
-    {
-        cout << "movie aa: " << aa->getMovieId() << " was not watched by group aaa: " << aaa->getGroupId() << endl;
-    }
-
-    cout << endl << "getting num of views in all movies for a: "<< a->getId() << endl;
-    output_t<int> tmpOut = database->get_num_views(a->getId(), Genre::NONE);
-    if(tmpOut.status() == StatusType::SUCCESS)
-    {
-        cout << "num of views was received and its: " << tmpOut.ans() << endl;
-    }
-    else
-    {
-        cout << "num of views was not received..." << endl;
-    }
-
-    cout << endl << "getting all comedy movies count = Genre comedy" << endl;
-    output_t<int> tmpOut0 = database->get_all_movies_count(Genre::COMEDY);
-    if(tmpOut0.status() == StatusType::SUCCESS)
-    {
-        cout << "num of all comedy movies was received and its: " << tmpOut0.ans() << endl;
-    }
-    else
-    {
-        cout << "num of comedy movies was not received..." << endl;
-    }
-
-    cout << endl << "getting all drama movie count = Genre drama" << endl;
-    output_t<int> tmpOut1 = database->get_all_movies_count(Genre::DRAMA);
-    if(tmpOut1.status() == StatusType::SUCCESS)
-    {
-        cout << "num of all drama movies was received and its: " << tmpOut1.ans() << endl;
-    }
-    else
-    {
-        cout << "num of all drama movies was not received..." << endl;
-    }
-
-    cout << endl << "getting all action movie count = Genre action" << endl;
-    output_t<int> tmpOut2 = database->get_all_movies_count(Genre::ACTION);
-    if(tmpOut2.status() == StatusType::SUCCESS)
-    {
-        cout << "num of all action movies was received and its: " << tmpOut2.ans() << endl;
-    }
-    else
-    {
-        cout << "num of all action was not received..." << endl;
-    }
-
-    cout << endl << "getting all fantasy count = Genre fantasy" << endl;
-    output_t<int> tmpOut3 = database->get_all_movies_count(Genre::FANTASY);
-    if(tmpOut3.status() == StatusType::SUCCESS)
-    {
-        cout << "num of all fantasy movies was received and its: " << tmpOut3.ans() << endl;
-    }
-    else
-    {
-        cout << "num of all fantasy movies was not received..." << endl;
-    }
-
-    cout << endl << "getting ALL movie count = Genre NONE" << endl;
-    output_t<int> tmpOut4 = database->get_all_movies_count(Genre::NONE);
-    if(tmpOut4.status() == StatusType::SUCCESS)
-    {
-        cout << "num of ALL movies was received and its: " << tmpOut4.ans() << endl;
-    }
-    else
-    {
-        cout << "num of ALL movies was not received..." << endl;
-    }
-
-    cout << endl << "this is the movie tree inorder:" << endl;
-    database->m_movies.preOrder(cout, database->m_movies.getRoot());
-
-    cout << endl << "this is the comedy movie tree inorder:" << endl;
-    database->m_comedy_movies.preOrder(cout, database->m_movies.getRoot());
-
-    cout << endl << "this is the movie tree inorder:" << endl;
-    database->m_action_movies.preOrder(cout, database->m_movies.getRoot());
-
-    cout << endl << "this is the movie tree inorder:" << endl;
-    database->m_movies.preOrder(cout, database->m_movies.getRoot());
-
-    cout << endl << "this is the movie tree inorder:" << endl;
-    database->m_movies.preOrder(cout, database->m_movies.getRoot());
-
-
-
-
-    delete a;
-
-    delete aa;
-    delete bb;
-    delete cc;
-    delete dd;
-    delete ee;
-    delete ff;
-    delete gg;
-
-    delete aaa;
-    delete database;
-    cout << endl << "ended" << endl;
-    return 0;
+void add_movie_aux(streaming_database *obj, int movieId, int genre, int views, bool isVip) {
+    obj->add_movie(movieId, static_cast<Genre>(genre), views, isVip);
 }
 
+void get_num_views_aux(streaming_database *obj, int movieId, int genre) {
+    output_t<int> count = obj->get_num_views(movieId, static_cast<Genre>(genre));
+    std::cout << count.ans() << std::endl;
+}
+
+void get_all_movies_count_aux(streaming_database *obj, int genre) {
+    cout<< (obj->get_all_movies_count(static_cast<Genre>(genre))).ans() <<endl;
+}
+
+void get_group_recommendation_aux(streaming_database *obj, int groupId) {
+    //cout<<"get group reccomandation to group "<< groupId <<" " << endl;
+    cout<< (obj->get_group_recommendation(groupId)).ans() <<endl;
+}
+
+void status_aux(StatusType status) {
+        switch (status)
+    {
+        case StatusType::SUCCESS:
+            cout<<"SUCCESS"<<endl;
+            break;
+        case StatusType::FAILURE:
+            cout<<"FAILURE"<<endl;
+            break;
+        case StatusType::ALLOCATION_ERROR:
+            cout<<"ALLOCATION_ERROR"<<endl;
+            break;
+        case StatusType::INVALID_INPUT:
+            cout<<"INVALID_INPUT"<<endl;
+            break;
+    }
+
+}
+
+void my_query_get_all_movies_aux(streaming_database *obj, Genre genre)
+{
+    output_t<int> count = obj->get_all_movies_count(genre);
+    int to_alloc = count.ans();
+    if (to_alloc == 0)
+    {
+        //if there are no movies we will allocate 1 so that we will get failure instead of invalid input
+        ++to_alloc;
+    }
+    // Allocate if okay
+    int *out_mem = nullptr;
+    if (count.status() == StatusType::SUCCESS)
+    {
+        out_mem = new int[to_alloc];
+        for (int i = 0; i < to_alloc; ++i) out_mem[i] = -1;
+    }
+    // Call function
+    StatusType status = obj->get_all_movies(genre, out_mem);
+//    print(cmd, status);
+    if (status == StatusType::SUCCESS) {
+        for (int i = 0; i < to_alloc; ++i)
+        {
+            std::cout << out_mem[i] << std::endl;
+        }
+    }
+    delete[] out_mem;
+}
+
+
+
+void test() {
+    streaming_database *obj = new streaming_database();
+/*
+    cout<<"57 - get all movies genre 0"<<endl;
+    get_all_movies_aux(obj, 1);
+    
+    cout<<"60 - get all movies count genre 2"<<endl;
+    get_all_movies_count_aux(obj, 2);
+
+    cout<<"63 - removing movie 4323 (never added)"<<endl;
+    obj->remove_movie(4323);//remove something that doesnt exist
+
+    cout<<"66 - get all movies all genres"<<endl;
+    get_all_movies_aux(obj, 4);
+
+    cout<<"69 - removing movie 4637 (never added)"<<endl;
+    obj->remove_movie(4637); //remove something that doesnt exist
+
+    cout<<"72 - get all movies count genre 1"<<endl;
+    get_all_movies_count_aux(obj, 1);
+
+    cout<<"75 - get all movies count genre 0"<<endl;
+    get_all_movies_count_aux(obj, 0);
+
+    cout<<"78 - get all movies genre 1"<<endl;
+    get_all_movies_aux(obj, 1);
+     
+    cout<<"81 - get all movies genre 2"<<endl;
+    get_all_movies_aux(obj, 2);
+
+    cout<<"84 - get all movies genre 3"<<endl;
+    get_all_movies_aux(obj, 3);
+
+    cout<<"87 - adding movie 1771 to genre 0"<<endl;
+    add_movie_aux(obj, 1771, 0, 77, true); //add genre 0
+
+    cout<<"90 - adding movie 4008 to genre 2"<<endl;
+    add_movie_aux(obj, 4008, 2, 8, true);//add genre 2
+
+    cout<<"93 - get all movies all genres"<<endl;
+    get_all_movies_aux(obj, 4);
+
+    cout<<"96 - get all movies count genre 0"<<endl;
+    get_all_movies_count_aux(obj, 0);
+
+    cout<<"99 - get all movies count genre 0"<<endl;
+    get_all_movies_count_aux(obj, 2);
+
+    cout<<"102 - removing 4008 from genre 2"<<endl;
+    obj->remove_movie(4008); //remove from genre 2
+
+    cout<<"105 - removing 1771 from genre 0"<<endl;
+    obj->remove_movie(1771); //remove from genre 0
+
+    cout<<"108 - adding movie 1376 to genre 3"<<endl;
+    add_movie_aux(obj, 1376, 3, 8, false); //add genre 3
+
+    cout<<"113 - get all movies count genre 2"<<endl;
+    get_all_movies_count_aux(obj, 2);
+
+    cout<<"114 - removing 2038 (never added)"<<endl;
+    obj->remove_movie(2038); //remove that doesnt exist
+
+    cout<<"117 - get all movies all genres"<<endl;
+    get_all_movies_aux(obj, 4);
+
+    cout<<"123 - get all movies genre 0"<<endl;
+    get_all_movies_aux(obj, 0);
+
+    cout<<"126 - get all movies genre 1"<<endl;
+    get_all_movies_aux(obj, 1);
+    
+    cout<<"129 - get all movies genre 2"<<endl;
+    get_all_movies_aux(obj, 2);
+
+    cout<<"132 - removing 1376 from genre 3"<<endl;
+    obj->remove_movie(1376); //remove genre 3
+
+    cout<<"135 - get all movies genre 1"<<endl;
+    get_all_movies_aux(obj, 1);
+
+    cout<<"138 - get all movies all genres"<<endl;
+    get_all_movies_aux(obj, 4);
+
+    cout<<"141 - get all movies all genres"<<endl;
+    get_all_movies_aux(obj, 4);
+
+    cout<<"144 - removing 6549 (never added)"<<endl;
+    obj->remove_movie(6549);
+   */
+    
+    status_aux(obj->add_group(3906));
+    status_aux(obj->add_group(3182));
+    status_aux(obj->add_user_to_group(6174, 3906));
+
+    status_aux(obj->add_user_to_group(5740, 3906));
+
+    status_aux(obj->group_watch(3182, 5069));
+    get_num_views_aux(obj, 5740, 2);
+    status_aux(obj->add_group(8180));
+    status_aux(obj->add_user_to_group(5973, 8180));
+
+    status_aux(obj->add_group(2254));
+
+    status_aux(obj->remove_group(2254));
+    status_aux(obj->remove_group(3182));
+
+
+    status_aux(obj->add_user_to_group(1211, 3906));
+    status_aux(obj->add_user_to_group(3655, 8180));
+    status_aux(obj->group_watch(3182, 1376));
+
+    status_aux(obj->add_user_to_group(1211, 3906));
+    
+    get_group_recommendation_aux(obj, 3906);
+   
+    status_aux(obj->add_user_to_group(2103, 3182));//user exists but group doesn't, should return failure but crashes
+
+    cout<<"didnt add user 2103 from group 3182"  <<endl;
+    //dies here!///////////////////////////////////////////////
+    status_aux(obj->remove_group(3182));
+ 
+    status_aux(obj->add_group(6737));
+  
+   
+    status_aux(obj->add_group(8818));
+   
+    get_group_recommendation_aux(obj, 8180);
+  
+    
+    delete obj;
+
+}
+
+
+int main() {
+
+    test();
+    return 0;
+}
