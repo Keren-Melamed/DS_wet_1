@@ -25,18 +25,15 @@
 class streaming_database {
 private:
 
-
     int m_movies_in_genre[4] = {0};
 
-    /*
-    AVLTree<User> m_users;
-    AVLTree<Group> m_groups;
+/*    AVLTree<User> m_users;
     AVLTree<Movie> m_movies;
+    AVLTree<Group> m_groups;
     AVLTree<Movie> m_fantasy_movies;
     AVLTree<Movie> m_comedy_movies;
     AVLTree<Movie> m_action_movies;
-    AVLTree<Movie> m_drama_movies;
-    */
+    AVLTree<Movie> m_drama_movies;*/
 
     void movieTreeToArray(Genre genre, int *const output, int* counter);
 
@@ -47,20 +44,19 @@ private:
     AVLTree<Movie>* m_movies_by_genre[5] = {&m_comedy_movies, &m_drama_movies, &m_action_movies,
                                             &m_fantasy_movies, &m_movies};
 
-    void changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* node, bool flag);
-
 
 
 public:
-    // <DO-NOT-MODIFY> {
+    void createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre, bool flag);
 
     AVLTree<User> m_users;
-    AVLTree<Group> m_groups;
     AVLTree<Movie> m_movies;
+    AVLTree<Group> m_groups;
     AVLTree<Movie> m_fantasy_movies;
     AVLTree<Movie> m_comedy_movies;
     AVLTree<Movie> m_action_movies;
     AVLTree<Movie> m_drama_movies;
+    // <DO-NOT-MODIFY> {
 
     streaming_database();
 

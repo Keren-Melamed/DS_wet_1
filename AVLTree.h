@@ -6,6 +6,8 @@
 #include "exception.h"
 #include "Movie.h"
 
+#include "Movie.h"
+
 using namespace std;
 
 template<class T>
@@ -280,41 +282,8 @@ int AVLTree<T>::calculateHeight(Node<T>* node) const
     {
         return (max(node->getLeftNode()->getHeight(), node->getRightNode()->getHeight()) + 1);
     }
-    /*
-    int left, right;
-    if(node->getLeftNode() == NULL)
-    {
-        left = 0;
-    }
-    else
-    {
-        left = node->getLeftNode()->getHeight();
-    }
+}     
 
-    if(node->getRightNode() == NULL)
-    {
-        right = 0;
-    }
-    else
-    {
-        right = node->getRightNode()->getHeight();
-    }
-
-    if (left == 0 && right == 0)
-    {
-        return 1;
-    }
-
-    else if (left >= right)
-    {
-        return (1 + node->getLeftNode()->getHeight());
-    }
-    else
-    {
-        return (1 + node->getRightNode()->getHeight());
-    }
-     */
-}
 
 template<class T>
 int AVLTree<T>::balanceFactor(Node<T>* node)
@@ -451,57 +420,8 @@ Node<T>* AVLTree<T>::removeValueHelper(Node<T>* node, T* value)
     node = balance(node);
 
     return node;
-    /*
-    if(node == NULL)
-    {
-        // throw NodeDoesntExist(); //breaks the code so removed, additionally, I got rid of the throw because we always call
-        //findValue beforehand, and it'll tell throw an exception if the node doesn't exist
-        return NULL;
-    }
-
-    else if(*value == *(node->getValue()))
-    {
-        if (node->getLeftNode() == NULL && node->getRightNode() == NULL)
-        {
-            return NULL;//might need to be nullptr
-        }
-        else if (node->getLeftNode() == NULL)
-        {
-            Node<T>* tmp = node->getRightNode();
-            delete (node);
-            tmp->setHeight(calculateHeight(tmp));
-            return tmp;
-        }
-        else if (node->getRightNode() == NULL)
-        {
-            Node<T>* tmp = node->getLeftNode();
-            delete node;
-            tmp->setHeight(calculateHeight(tmp));
-            return tmp;
-        }
-
-        Node<T> *tmp = nodeWithMinimumValue(node->getRightNode());
-        node->setValue(tmp->getValue());
-        node->setRightNode(removeValue(node->getRightNode(), tmp->getValue()));
-    }
-
-    else if(*value > *(node->getValue()))
-    {
-        node->setRightNode(removeValue(node->getRightNode(), value));
-    }
-
-    else //(*value < *(node->getValue()))
-    {
-        node->setLeftNode(removeValue(node->getLeftNode(), value));
-    }
-
-    node->setHeight(calculateHeight(node));
-
-    node = deletionBalance(node);
-
-    return node;
-     */
 }
+
 
 template<class T>
 void AVLTree<T>::removeValue(T* value)
@@ -606,27 +526,7 @@ Node<T>* AVLTree<T>::balance(Node<T>* node)
     }
 
 
-	/*if (balance > 1 && *value < *(node->getLeftNode()->getValue()))
-    {
-		return rotateRight(node);
-    }
 
-	if (balance < -1 && *value > *(node->getRightNode()->getValue()))
-    {
-		return rotateLeft(node);
-    }
-
-	if (balance > 1 && *value > *(node->getLeftNode()->getValue()))
-	{
-		node->setLeftNode(rotateLeft(node->getLeftNode()));
-		return rotateRight(node);
-	}
-
-	if (balance < -1 && *value < *(node->getRightNode()->getValue()))
-	{
-		node->setRightNode(rotateRight(node->getRightNode()));
-		return rotateLeft(node);
-	}*/
 
     return node;
 }
@@ -678,22 +578,22 @@ Node<T>* AVLTree<T>::findObjectHelper(Node<T>* node, T* value)
 {
     if(node == nullptr )
     {
-        //cout << "we reached a nullptr" << endl;
+        //cout << "value not found" <<endl;
         return nullptr;
     }
     else if(*(node->getValue()) == *value)
     {
-        //cout <<" we found a node with an equal value" << endl;
+        //cout << "the value was equal" <<endl;
         return node;
     }
     else if(*value < *(node->getValue()))
     {
-        //cout << "the node's value was bigger" << endl;
+        //cout << "the value was smaller" <<endl;
         return findObjectHelper(node->getLeftNode(), value);
     }
     else if(*value > *(node->getValue()))
     {
-        //cout << "the node's value was smaller" << endl;
+        //cout << "the value was bigger" <<endl;
         return findObjectHelper(node->getRightNode(), value);
     }
     //cout << "no condition was met, so return nullptr" << endl;
@@ -748,23 +648,6 @@ Node<T>* AVLTree<T>::rotateLeft(Node<T>* parent)
 
     return parentRight;
 
-    /*
-	Node<T>* child = parent->getRightNode();
-	Node<T>* grandChild = child->getLeftNode();
-
-	child->setLeftNode(parent);
-	parent->setRightNode(grandChild);
-
-	parent->setHeight(calculateHeight(parent));
-	child->setHeight(calculateHeight(child));
-    if( grandChild != nullptr)
-    {
-        grandChild->setHeight(calculateHeight(grandChild));
-    }
-
-
-	return child;
-    */
 }
 
 template<class T>
@@ -785,22 +668,6 @@ Node<T>* AVLTree<T>::rotateRight(Node<T>* parent)
 
     return parentLeft;
 
-
-    /*Node<T>* child = parent->getLeftNode();
-	Node<T>* grandChild = child->getRightNode();
-
-	child->setRightNode(parent);
-	parent->setLeftNode(grandChild);
-
-	parent->setHeight(calculateHeight(parent));
-	child->setHeight(calculateHeight(child));
-    if( grandChild != nullptr)
-    {
-        grandChild->setHeight(calculateHeight(grandChild));
-    }
-
-	return child;
-     */
 }
 
 template<class T>

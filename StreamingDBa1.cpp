@@ -13,18 +13,33 @@ streaming_database::~streaming_database()
     m_movies.setAllToNullptr(m_movies.getRoot());
 }
 
-void streaming_database::changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* node, bool flag)
+void streaming_database::createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre, bool flag)////// no rating
 {
     if(node == nullptr)
     {
         return;
     }
-    changeMovieFlags(newTree, node->getRightNode(), flag);
+    createTreeWithOppositeFlags(newTree, node->getRightNode(),treeGenre, flag);
 
     int id = node->getValue()->getMovieId(), views = node->getValue()->getViews();
     Genre genre = node->getValue()->getGenre();
     bool vip = node->getValue()->getVipOnly();
-    Movie* movieToAdd = new Movie(id, views, vip, genre, true);
+
+    Movie* tmpMovie = new Movie(id, views, vip, genre, 0, false);
+    Node<Movie>* movieNode = m_movies_by_genre[(int) genre]->findObject(
+            m_movies_by_genre[(int) treeGenre]->getRoot(), tmpMovie);
+    // searching for the movie to get its rating in the regular tree;
+    delete tmpMovie;
+
+    //we were adding in movies without the rating to the newTree(which is sorted by rating) hence why it wasn't working
+
+    id = movieNode->getValue()->getMovieId();
+    views = movieNode->getValue()->getViews();
+    genre = movieNode->getValue()->getGenre();
+    vip = movieNode->getValue()->getVipOnly();
+    double rating = movieNode->getValue()->getRating();
+
+    Movie* movieToAdd = new Movie(id, views, vip, genre, rating, true);
     try
     {
         newTree->insertValue(movieToAdd);
@@ -33,8 +48,7 @@ void streaming_database::changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* 
     {
         throw BadAllocation();
     }
-    changeMovieFlags(newTree, node->getLeftNode(), flag);
-
+    createTreeWithOppositeFlags(newTree, node->getLeftNode(), treeGenre, flag);
 }
 
 void streaming_database::movieTreeToArray(Genre genre, int *const output, int* counter)
@@ -45,17 +59,22 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
     AVLTree<Movie>* newTree = new AVLTree<Movie>;
     try
     {
-        changeMovieFlags(newTree, m_movies_by_genre[(int) genre]->getRoot(), true);
+        createTreeWithOppositeFlags(newTree, m_movies_by_genre[(int) genre]->getRoot(), genre, true);
     }
     catch(BadAllocation& e)
     {
         throw BadAllocation();
     }
 
+    cout << "this is the new tree in movieTreeToArray: " << endl;
+    newTree->inOrder(cout, newTree->getRoot());
+    cout << endl;
+
     Movie** movieArray = new Movie*[sizeOfArray];
     newTree->treeToArrayInOrderRight(newTree->getRoot(), movieArray, sizeOfArray, counter);
 
-    for (int i = 0; i < sizeOfArray; ++i) {
+    for (int i = 0; i < sizeOfArray; ++i)
+    {
         output[i] = movieArray[i]->getMovieId();
     }
 
@@ -77,7 +96,16 @@ void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 
 void streaming_database::removeMovieFromGenreTree(Genre genre, Movie* movie)
 {
-    m_movies_by_genre[(int) genre]->removeValue(movie);/////////////////////////////
+    Node<Movie>* movieNode = m_movies_by_genre[(int) genre]->findObject(m_movies_by_genre[(int) genre]->getRoot(), movie);
+    if(movieNode == nullptr)
+    {
+        return;
+    }
+    
+    m_movies_by_genre[(int) genre]->removeValue(movieNode->getValue());
+    return;
+   
+
 }
 
 StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bool vipOnly)//insert by object
@@ -85,7 +113,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     if((movieId <= 0) || (views < 0) || (genre == Genre::NONE)){
         return StatusType::INVALID_INPUT;
     }
-    Movie* movie = new Movie(movieId, views, vipOnly, genre);
+    Movie* movie = new Movie(movieId, views, vipOnly, genre, 0, false);
     Node<Movie>* tmp = m_movies.findObject(m_movies.getRoot(), movie);
     if(tmp == nullptr)
     {
@@ -112,28 +140,31 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 
 StatusType streaming_database::remove_movie(int movieId)//insert by object
 {
+    
     if(movieId <= 0)
     {
         return StatusType::INVALID_INPUT;
     }
 
 
-    Movie* temp = new Movie(movieId, 0, false, Genre::NONE);
+    Movie* temp = new Movie(movieId, 0, false, Genre::NONE, 0, false);
     Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), temp);
-    delete temp;
-    if(movieNode != nullptr)
-    {
-        m_movies.removeValue(movieNode->getValue());
-        removeMovieFromGenreTree(movieNode->getValue()->getGenre(), movieNode->getValue());
-        m_movies_in_genre[(int) movieNode->getValue()->getGenre()] -= 1;
-    }
-    else
-    {
+
+    if(movieNode == nullptr){
+        delete temp;
         return StatusType::FAILURE;
     }
 
-
-    return StatusType::SUCCESS;
+    else
+    {   
+        Genre temp_genre = movieNode->getValue()->getGenre();
+        m_movies.removeValue(movieNode->getValue());
+        
+        removeMovieFromGenreTree(temp_genre, temp);
+        m_movies_in_genre[(int) temp_genre] -= 1;
+        delete temp;
+        return StatusType::SUCCESS;
+    }
 }
 
 StatusType streaming_database::add_user(int userId, bool isVip)//insert by object
@@ -227,7 +258,6 @@ StatusType streaming_database::remove_group(int groupId)//remove by object
     Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), temp);
 
     if(groupNode == nullptr){
-        //cout << "group wasn't found" << endl;
         return StatusType::FAILURE;
     }
 
@@ -323,7 +353,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
     }
 
     User* tempUser = new User(userId, false);
-    Movie* tempMovie = new Movie(movieId, 0, false, Genre::NONE);
+    Movie* tempMovie = new Movie(movieId, 0, false, Genre::NONE, 0, false);
     Node<User>* userNode = m_users.findObject(m_users.getRoot(), tempUser);
     Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), tempMovie);
 
@@ -361,7 +391,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
     }
 
     Group* tempGroup = new Group(groupId, false ,0);
-    Movie* tempMovie = new Movie(movieId, 0, false, Genre::NONE);
+    Movie* tempMovie = new Movie(movieId, 0, false, Genre::NONE, 0, false);
     Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), tempGroup);
     Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), tempMovie);
 
@@ -383,7 +413,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
     groupNode->getValue()->addViewToMembers(groupNode->getValue()->getMembers()->getRoot() ,movieNode->getValue()->getGenre());
     groupNode->getValue()->updateMoviesGroupWatchedInGenre(movieNode->getValue()->getGenre(),
                                                            groupNode->getValue()->getGroupSize());
-
+   
     movieNode->getValue()->addViews(groupNode->getValue()->getGroupSize());
 
     delete tempMovie;
@@ -470,10 +500,10 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
     }
 
     User* tmpUser = new User(userId, false);
-    Movie* tmpMovie = new Movie(movieId, 0, false, Genre::NONE);
+    Movie* tmpMovie = new Movie(movieId, 0, false, Genre::NONE, 0, false);// views is 0 !!!!!!!!!!!!!!
     Node<User>* userNode = m_users.findObject(m_users.getRoot(), tmpUser);
     Node<Movie>* movieNode = m_movies.findObject(m_movies.getRoot(), tmpMovie);
-
+   
     if(userNode == nullptr || movieNode == nullptr)
     {
         delete tmpMovie;
@@ -504,7 +534,7 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 
     Group* tempGroup = new Group(groupId, false ,0);
     Node<Group> *groupNode = m_groups.findObject(m_groups.getRoot(), tempGroup);
-
+    
     if(groupNode == nullptr)
     {
         output_t<int> out(StatusType::FAILURE);
@@ -547,3 +577,5 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
     }
 
 }
+
+
