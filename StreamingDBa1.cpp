@@ -33,14 +33,6 @@ void streaming_database::changeMovieFlags(AVLTree<Movie>* newTree, Node<Movie>* 
     {
         throw BadAllocation();
     }
-    try
-    {
-        newTree->insertValue(movieToAdd);
-    }
-    catch(BadAllocation& e)
-    {
-        throw BadAllocation();
-    }
     changeMovieFlags(newTree, node->getLeftNode(), flag);
 
 }
@@ -67,16 +59,6 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
     for (int i = 0; i < sizeOfArray; ++i) {
         output[i] = movieArray[i]->getMovieId();
     }
-    /////////////////////////////////////////////
-    try
-    {
-        changeMovieFlags(newTree, m_movies_by_genre[(int) genre]->getRoot(), false);
-    }
-    catch(BadAllocation& e)
-    {
-        throw BadAllocation();
-    }
-    /////////////////////////////////////////////
     
     delete[] movieArray;
     delete newTree;
@@ -140,7 +122,6 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 
 StatusType streaming_database::remove_movie(int movieId)//insert by object
 {
-    
     if(movieId <= 0)
     {
         return StatusType::INVALID_INPUT;
@@ -278,19 +259,13 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 
     User* temp_user = new User(userId, false);
     Group* temp_group = new Group(groupId, false ,0);
+
     Node<User>* userNode = m_users.findObject(m_users.getRoot(), temp_user);
     Node<Group>* groupNode = m_groups.findObject(m_groups.getRoot(), temp_group);
 
+
     if(userNode == nullptr || groupNode == nullptr)
     {
-        if(userNode == nullptr)
-        {
-            //cout << "the userNode was null" << endl;
-        }
-        if(groupNode == nullptr)
-        {
-            //cout << "the groupNode was null" << endl;
-        }
         delete temp_user;
         delete temp_group;
         return StatusType::FAILURE;
@@ -327,6 +302,7 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 
     Group *pointerGroup = (groupNode->getValue());
     userNode->getValue()->setGroup(pointerGroup);
+
     if(groupNode->getValue()->getIsVip() == false){
         if(userNode->getValue()->getIsVip() == true){
             groupNode->getValue()->setIsVip(true);
@@ -518,6 +494,7 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
     {
         return StatusType::FAILURE;
     }
+
     movieNode->getValue()->addRating(rating);
     return StatusType::SUCCESS;
 

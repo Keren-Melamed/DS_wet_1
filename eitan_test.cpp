@@ -5,25 +5,53 @@ void get_all_movies_aux(streaming_database *obj, int genre);
 void my_query_get_all_movies_aux(streaming_database *obj, Genre genre);
 
 void get_all_movies_aux(streaming_database *obj, int genre) {
+    //cout<<"get all movies genre "<< genre << endl;
     my_query_get_all_movies_aux(obj, static_cast<Genre>(genre));
 }
 
 void add_movie_aux(streaming_database *obj, int movieId, int genre, int views, bool isVip) {
+    //cout<<"add movie "<<movieId<<" to genre "<< genre << endl;
     obj->add_movie(movieId, static_cast<Genre>(genre), views, isVip);
 }
 
 void get_num_views_aux(streaming_database *obj, int movieId, int genre) {
+    //cout<<"get num views "<<movieId << endl;
     output_t<int> count = obj->get_num_views(movieId, static_cast<Genre>(genre));
     std::cout << count.ans() << std::endl;
 }
 
 void get_all_movies_count_aux(streaming_database *obj, int genre) {
+    //cout<<"get all movies count of genre "<< genre <<" " << endl;
     cout<< (obj->get_all_movies_count(static_cast<Genre>(genre))).ans() <<endl;
 }
 
+void get_group_recommendation_aux(streaming_database *obj, int groupId) {
+    //cout<<"get group reccomandation to group "<< groupId <<" " << endl;
+    cout<< (obj->get_group_recommendation(groupId)).ans() <<endl;
+}
+
+void status_aux(StatusType status) {
+        switch (status)
+    {
+        case StatusType::SUCCESS:
+            cout<<"SUCCESS"<<endl;
+            break;
+        case StatusType::FAILURE:
+            cout<<"FAILURE"<<endl;
+            break;
+        case StatusType::ALLOCATION_ERROR:
+            cout<<"ALLOCATION_ERROR"<<endl;
+            break;
+        case StatusType::INVALID_INPUT:
+            cout<<"INVALID_INPUT"<<endl;
+            break;
+    }
+
+}
 
 void my_query_get_all_movies_aux(streaming_database *obj, Genre genre)
 {
+    cout<<"get all movies aux "<< endl;
     output_t<int> count = obj->get_all_movies_count(genre);
     int to_alloc = count.ans();
     if (to_alloc == 0)
@@ -54,107 +82,89 @@ void my_query_get_all_movies_aux(streaming_database *obj, Genre genre)
 void test() {
     streaming_database *obj = new streaming_database();
 
+    status_aux(obj->add_group(3906));
+    status_aux(obj->add_group(3182));
+    status_aux(obj->add_user_to_group(6174, 3906));
+    get_all_movies_aux(obj, 1);
+    status_aux(obj->add_user(5740, false));
     get_all_movies_count_aux(obj, 2);
-    obj->rate_movie(1634, 7872, 142);
-    obj->add_user_to_group(9305, 453);
-    obj->group_watch(7081, 5015);
-    obj->add_user(9617, false);
-    get_all_movies_count_aux(obj, 4);
-    add_movie_aux(obj, 8722, 2, 26, true);
-    obj->add_user_to_group(9617, 7367);
-    get_num_views_aux(obj, 9617, 3);
-    obj->add_group(8812);
-    obj->get_group_recommendation(8812);
-    obj->get_group_recommendation(8812);
-    obj->add_group(2461);
-    obj->rate_movie(9617, 8722, 29);
-    obj->get_group_recommendation(8812);
-    obj->add_group(8812);
-    obj->remove_group(8812);
-    get_all_movies_aux(obj, 1);
-    obj->add_user_to_group(9617, 2461);
-    get_num_views_aux(obj, 9617, 4);
-    add_movie_aux(obj, 9301, 2, 37, true);
-    add_movie_aux(obj, 5077, 3, 27, true);
-    add_movie_aux(obj, 8180, 3, 12, true);
-    obj->group_watch(2461, 8180);
-    get_all_movies_aux(obj, 3);
-    obj->group_watch(2461, 8722);
-    obj->remove_user(9617);
-    get_num_views_aux(obj, 6151, 3);
-    obj->add_user(3643, true);
-    obj->add_user(6854, true);
-    get_all_movies_aux(obj, 1);
-    obj->user_watch(3643, 8180);
-    obj->user_watch(3643, 8722);
-    get_all_movies_aux(obj, 1);
-    obj->add_group(2471);
-    add_movie_aux(obj, 3826, 2, 41, false);
-    add_movie_aux(obj, 1407, 2, 41, true);
-    cout<<"removing..."<<endl;
-    obj->remove_movie(5077);
-    obj->add_user(9314, false);
-    add_movie_aux(obj, 6434, 4, 37, false);
-    get_all_movies_aux(obj, 1);
-    obj->remove_group(2461);
-    obj->user_watch(9314, 9301);
-    obj->add_user(7091, false);
-    obj->rate_movie(6854, 6434, 78);
-    add_movie_aux(obj, 8523, 1, 78, false);
-    obj->add_group(4359);
-    add_movie_aux(obj, 716, 0, 33, false);
-    add_movie_aux(obj, 7289, 2, 91, true);
-    add_movie_aux(obj, 1575, 4, 61, false);
-
-    cout<<"all movies after remove"<<endl;
+    status_aux(obj->add_user_to_group(5740, 3906));
+    status_aux(obj->rate_movie(5740, 3637, 47));
+    status_aux(obj->add_user(5046, true));
+    status_aux(obj->user_watch(5046, 7603));
+    status_aux(obj->group_watch(3182, 5069));
+    get_num_views_aux(obj, 5740, 2);
+    status_aux(obj->remove_movie(4323));
     get_all_movies_aux(obj, 4);
-
-    cout<<"movies in 3 after remove"<<endl;
-    get_all_movies_aux(obj, 3);
-
-    get_all_movies_count_aux(obj, 3);
+    status_aux(obj->remove_user(5740));
+    status_aux(obj->user_watch(5046, 4834));
+    status_aux(obj->remove_movie(4637));
+    status_aux(obj->add_user(5450, true));
+    status_aux(obj->add_user(3655, true));
     get_all_movies_count_aux(obj, 1);
-    get_num_views_aux(obj, 7091, 1);
-    obj->remove_movie(8722);
-    obj->add_user(7796, true);
-    obj->add_user(6289, false);
-    get_num_views_aux(obj, 7091, 4);
-    obj->add_user(3040, false);
-    obj->remove_user(6854);
-    obj->rate_movie(3643, 716, 107);
-    obj->add_user_to_group(6289, 2471);
-    obj->remove_group(2471);
-    obj->remove_group(4359);
-    obj->add_user(4506, false);
-    get_all_movies_aux(obj, 4);
-    get_all_movies_aux(obj, 2);
-    add_movie_aux(obj, 2829, 4, 20, false);
-    obj->get_group_recommendation(4359);
-    obj->remove_user(6289);
-    obj->add_group(9206);
-    obj->add_user(6947, true);
-    get_all_movies_aux(obj, 0);
-    get_all_movies_aux(obj, 2);
-    get_all_movies_aux(obj, 4);
-    obj->add_group(1712);
-    obj->add_user(9874, false);
-    get_num_views_aux(obj, 9314, 1);
-    get_all_movies_count_aux(obj, 4);
-    get_all_movies_aux(obj, 1);
-    get_all_movies_count_aux(obj, 2);
-    obj->rate_movie(9314, 2829, 57);
-    obj->add_user_to_group(3040, 4359);
-    obj->user_watch(7091, 1407);
-    obj->user_watch(9314, 1407);
-    obj->remove_group(9206);
+    status_aux(obj->add_user(6007, true));
+    status_aux(obj->user_watch(3655, 7517));
     get_all_movies_count_aux(obj, 0);
-    obj->remove_movie(716);
-    obj->add_user(9388, false);
-    obj->remove_group(4359);
-    obj->remove_user(4506);
+    get_all_movies_aux(obj, 1);
+    status_aux(obj->add_user(5973, false));
+    get_all_movies_aux(obj, 2);
+    get_all_movies_aux(obj, 3);
+    add_movie_aux(obj, 1771, 0, 77, true);
+    status_aux(obj->add_user(1211, false));
+    status_aux(obj->user_watch(5740, 1771));
+    add_movie_aux(obj, 4008, 2, 8, true);
+    get_all_movies_aux(obj, 4);
+    get_all_movies_count_aux(obj, 0);
+    get_all_movies_count_aux(obj, 2);
+    status_aux(obj->user_watch(3655, 4008));
+    status_aux(obj->user_watch(5740, 4008));
+    status_aux(obj->add_group(8180));
+    status_aux(obj->add_user_to_group(5973, 8180));
+    status_aux(obj->remove_user(8643));
+    status_aux(obj->add_group(2254));
+    status_aux(obj->remove_user(5046));
+    status_aux(obj->remove_group(2254));
+    status_aux(obj->remove_group(3182));
+    status_aux(obj->remove_movie(4008));
+    status_aux(obj->remove_movie(1771));
+    add_movie_aux(obj, 1376, 3, 8, false);
+    status_aux(obj->add_user_to_group(1211, 3906));
+    status_aux(obj->add_user_to_group(3655, 8180));
+    status_aux(obj->group_watch(3182, 1376));
+    get_all_movies_count_aux(obj, 2);
+    status_aux(obj->user_watch(1211, 1376));
+    status_aux(obj->add_user_to_group(1211, 3906));
+    add_movie_aux(obj, 6549, 2, 58, false);
+    status_aux(obj->remove_movie(2038));
+    get_all_movies_aux(obj, 4);
+    get_group_recommendation_aux(obj, 3906);
+    status_aux(obj->rate_movie(1211, 6549, 14));
+    status_aux(obj->rate_movie(5450, 6549, 48));
+    status_aux(obj->add_user(3931, true));
+    get_all_movies_aux(obj, 0);
+    get_all_movies_aux(obj, 1);
+    get_num_views_aux(obj, 1211, 1);
+    get_all_movies_aux(obj, 2);
+    status_aux(obj->remove_movie(1376));
+    get_all_movies_aux(obj, 1);
+    status_aux(obj->user_watch(6007, 6549));
+    status_aux(obj->add_user(188, false));
+    status_aux(obj->add_user(2103, true));
+    status_aux(obj->add_user_to_group(2103, 3182));//user exists but group doesn't, should return failure but crashes
 
-
-   
+    cout<<"didnt add user 2103 from group 3182"  <<endl;
+    //dies here!///////////////////////////////////////////////
+    status_aux(obj->remove_group(3182));
+    status_aux(obj->rate_movie(3655, 6549, 78));
+    status_aux(obj->add_group(6737));
+    get_all_movies_aux(obj, 4);
+    get_all_movies_aux(obj, 4);
+    status_aux(obj->add_user(7092, true));
+    status_aux(obj->add_group(8818));
+    status_aux(obj->remove_movie(6549));
+    status_aux(obj->rate_movie(1744, 6549, 17));
+    get_group_recommendation_aux(obj, 8180);
+    status_aux(obj->remove_user(2103));
 
     delete obj;
 

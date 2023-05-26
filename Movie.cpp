@@ -1,11 +1,13 @@
 #include "Movie.h"
+#include "StreamingDBa1.h"
+using namespace std;
 
 Movie::Movie():
-m_movieId(1), m_views(0), m_numOfVoters(0),m_rating(0), m_vipOnly(false), m_genre(Genre::NONE), m_flag(false)
+m_movieId(1), m_views(0), m_rating(0), m_vipOnly(false), m_genre(Genre::NONE), m_flag(false)
 {}
 
 Movie::Movie(int movieID, int views, bool vipOnly, Genre genre, bool flag):
-m_movieId(movieID), m_views(views), m_numOfVoters(0), m_rating(0), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
+m_movieId(movieID), m_views(views), m_rating(0), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
 {}
 //arnt checking input here, we'll check it in addMovie in StreamingDBa1
 
@@ -13,11 +15,19 @@ void Movie::addRating(double rating)
 {
     if (rating > 0 && rating < 100)
     {
-        rating += m_rating * m_numOfVoters;
-        m_numOfVoters++;
-        m_rating = rating / m_numOfVoters;
+        if(m_numOfVoters == 0){
+            m_rating = rating;
+            cout<<"for movie "<< m_movieId << "rating is "<<m_rating<<endl;
+        }
+        else{
+            rating += m_rating * m_numOfVoters;
+            m_numOfVoters++;
+            m_rating = rating / m_numOfVoters;
+        }
+
     }
 }
+
 
 void Movie::addViews(int views)
 {
@@ -65,20 +75,48 @@ bool operator<(const Movie &a, const Movie &b)
 {
     if(a.getFlag() != b.getFlag())
     {
-        std::cout << "the movie flags are different" << std::endl;//should never be happen
-    }
-    if(!a.getFlag())//the flag dictates we compare by movie ID
-    {
-        if(a.getMovieId() > b.getMovieId())//opposite on purpose because the lower id values higher
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        cout << "the movie flags are different" << endl;//should never be happen
     }
 
+    if(!a.getFlag()){
+        if(a.getMovieId() > b.getMovieId()){
+            return true;
+        }
+        return false;
+    }
+
+    else{
+        cout<<"movie a: "<< a.getMovieId() <<endl;
+        cout<<"movie a: "<< a.getMovieId() <<endl;
+        cout<<"rating a:"<<a.getRating()<<endl;
+        cout<<"rating b:"<<b.getRating()<<endl;
+        if(a.getRating() > b.getRating()){
+            return true;
+        }
+
+        if(a.getRating() < b.getRating()){
+            return false;
+        }
+
+        if(a.getRating() == b.getRating()){
+            if(a.getViews() > b.getViews()){
+                return true;
+            }
+            if(a.getViews() < b.getViews()){
+                return false;
+            }
+            if(a.getViews() == b.getViews()){
+                if(a.getMovieId() > b.getMovieId()){
+                    return true;
+                }
+                return false;
+            }
+        }
+    }
+}
+    
+
+/*
     if(a.getRating() <= b.getRating())//the flag dictates we compare by rating
     {
         if(a.getRating() == b.getRating())
@@ -97,6 +135,7 @@ bool operator<(const Movie &a, const Movie &b)
     }
     return false;
 }
+*/
 
 bool operator>(const Movie &a, const Movie &b)
 {
