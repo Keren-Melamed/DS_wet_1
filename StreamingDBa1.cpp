@@ -66,10 +66,6 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
         throw BadAllocation();
     }
 
-    cout << "this is the new tree in movieTreeToArray: " << endl;
-    newTree->inOrder(cout, newTree->getRoot());
-    cout << endl;
-
     Movie** movieArray = new Movie*[sizeOfArray];
     newTree->treeToArrayInOrderRight(newTree->getRoot(), movieArray, sizeOfArray, counter);
 
