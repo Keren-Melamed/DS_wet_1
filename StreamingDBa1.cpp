@@ -530,14 +530,13 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
 
     Group* tempGroup = new Group(groupId, false ,0);
     Node<Group> *groupNode = m_groups.findObject(m_groups.getRoot(), tempGroup);
-    
+    delete tempGroup;
+
     if(groupNode == nullptr)
     {
         output_t<int> out(StatusType::FAILURE);
         return out;
     }
-
-    delete tempGroup;
 
     if (groupNode->getValue()->getMembers()->getRoot() == nullptr) {
         output_t<int> out(StatusType::FAILURE);
@@ -554,8 +553,6 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
         }
     }
 
-    delete groupNode;
-
     if (m_movies_in_genre[(int) fav_genre] == 0) {
         output_t<int> out(StatusType::FAILURE);
         return out;
@@ -571,7 +568,6 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
         output_t<int> out(m_movies_by_genre[(int) fav_genre]->getRoot()->getValue()->getMovieId());
         return out;
     }
-
 }
 
 
