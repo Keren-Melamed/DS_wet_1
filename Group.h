@@ -24,6 +24,8 @@ class Group{
 
         void print(ostream &os) const;
 
+        Group() = delete;
+
         Group(int group_id, bool isVip, int group_size);
 
         ~Group();

@@ -19,6 +19,8 @@ class User{
         bool operator<(const User& other) const;
         bool operator>(const User& other) const;
 
+        User() = delete;
+
         User(int user_id, bool is_Vip, Group* user_group = nullptr);
 
         ~User() = default;

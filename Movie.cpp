@@ -1,11 +1,12 @@
 #include "Movie.h"
+using namespace std;
 
-Movie::Movie():
+/*Movie::Movie():
 m_movieId(1), m_views(0), m_numOfVoters(0),m_rating(0), m_vipOnly(false), m_genre(Genre::NONE), m_flag(false)
-{}
+{}*/
 
-Movie::Movie(int movieID, int views, bool vipOnly, Genre genre, bool flag):
-m_movieId(movieID), m_views(views), m_numOfVoters(0), m_rating(0), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
+Movie::Movie(int movieID, int views, bool vipOnly, Genre genre, double rating, bool flag):
+m_movieId(movieID), m_views(views), m_numOfVoters(0), m_rating(rating), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
 {}
 //arnt checking input here, we'll check it in addMovie in StreamingDBa1
 
@@ -65,10 +66,11 @@ bool operator<(const Movie &a, const Movie &b)
 {
     if(a.getFlag() != b.getFlag())
     {
-        std::cout << "the movie flags are different" << std::endl;//should never be happen
+        cout << "the movie flags are different" << endl;//should never happen
     }
     if(!a.getFlag())//the flag dictates we compare by movie ID
     {
+        //cout << "the flags were false" << endl;
         if(a.getMovieId() > b.getMovieId())//opposite on purpose because the lower id values higher
         {
             return true;
@@ -81,6 +83,7 @@ bool operator<(const Movie &a, const Movie &b)
 
     if(a.getRating() <= b.getRating())//the flag dictates we compare by rating
     {
+        //cout << "the flags were true" << endl;
         if(a.getRating() == b.getRating())
         {
             if(a.getViews() <= b.getViews())
@@ -95,6 +98,7 @@ bool operator<(const Movie &a, const Movie &b)
         }
         return true;
     }
+    //cout << "neither if was entered" << endl;
     return false;
 }
 
@@ -102,7 +106,7 @@ bool operator>(const Movie &a, const Movie &b)
 {
     if(a.getFlag() != b.getFlag())
     {
-        std::cout << "the movie flags are different" << std::endl;
+        cout << "the movie flags are different" << endl;
     }
     if(a == b)
     {
@@ -174,6 +178,9 @@ bool Movie::getFlag() const
     return m_flag;
 }
 
-
+void Movie::print(std::ostream &os) const
+{
+    os << m_movieId << " ";
+}
 
 
