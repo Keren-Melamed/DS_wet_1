@@ -40,9 +40,6 @@ private:
     AVLTree<Movie> m_action_movies_by_rating;
     AVLTree<Movie> m_drama_movies_by_rating;
 
-    //void movieTreeToArray(Genre genre, int *const output, int* counter);
-    //void createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre, bool flag);
-
     void addMovieToGenreTree(Genre genre, Movie *movie);
     void addMovieToGenreTreeRanked(Genre genre, Movie* movieWithFlag);
     void addMovieToGenreTreeRanked(Genre genre, Movie* movieWithFlag);
@@ -50,23 +47,11 @@ private:
     void removeMovieFromGenreTree(Genre genre, Movie* movie);
     void removeMovieFromGenreTreeRanked(Genre genre, Movie* movieWithFlag);
 
-    StatusType rateRemoveAndAddMovie(Node<Movie>* movieNode, double rating);
-    StatusType viewRemoveAndAddMovie(Node<Movie>* movieNode, int views);
-
-
-    void removeMovieFromGenreTreeRanked(Genre genre, Movie* movieWithFlag);
-
-    StatusType rateRemoveAndAddMovie(Node<Movie>* movieNode, double rating);
-    StatusType viewRemoveAndAddMovie(Node<Movie>* movieNode, int views);
-
 
 
     AVLTree<Movie>* m_movies_by_genre[5] = {&m_comedy_movies, &m_drama_movies, &m_action_movies,
                                             &m_fantasy_movies, &m_movies};
 
-    AVLTree<Movie>* m_movies_by_genre_by_rank[5] = {&m_comedy_movies_by_rating, &m_drama_movies_by_rating,
-                                                    &m_action_movies_by_rating,
-                                            &m_fantasy_movies_by_rating, &m_movies_ranked};
     AVLTree<Movie>* m_movies_by_genre_by_rank[5] = {&m_comedy_movies_by_rating, &m_drama_movies_by_rating,
                                                     &m_action_movies_by_rating,
                                             &m_fantasy_movies_by_rating, &m_movies_ranked};
