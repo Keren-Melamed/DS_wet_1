@@ -35,7 +35,8 @@ private:
     AVLTree<Movie> m_action_movies;
     AVLTree<Movie> m_drama_movies;*/
 
-    void movieTreeToArray(Genre genre, int *const output, int* counter);
+    //void movieTreeToArray(Genre genre, int *const output, int* counter);
+    //void createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre, bool flag);
 
     void addMovieToGenreTree(Genre genre, Movie *movie);
     void addMovieToGenreTreeRanked(Genre genre, Movie* movieWithFlag);
@@ -56,7 +57,7 @@ private:
                                             &m_fantasy_movies_by_rating, &m_movies_ranked};
 
 public:
-    void createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre, bool flag);
+
 
     AVLTree<User> m_users;
     AVLTree<Movie> m_movies;

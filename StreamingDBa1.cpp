@@ -11,13 +11,9 @@ streaming_database::~streaming_database()
 {
     m_movies.setAllToNullptr(m_movies.getRoot());
     m_movies_ranked.setAllToNullptr(m_movies_ranked.getRoot());
-    m_fantasy_movies_by_rating.setAllToNullptr(m_fantasy_movies_by_rating.getRoot());
-    m_comedy_movies_by_rating.setAllToNullptr(m_comedy_movies_by_rating.getRoot());
-    m_action_movies_by_rating.setAllToNullptr(m_action_movies_by_rating.getRoot());
-    m_drama_movies_by_rating.setAllToNullptr(m_drama_movies_by_rating.getRoot());
 }
 
-void streaming_database::createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre,
+/*void streaming_database::createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre,
                                                      bool flag)////// no rating
 {
     if(node == nullptr)
@@ -54,11 +50,11 @@ void streaming_database::createTreeWithOppositeFlags(AVLTree<Movie>* newTree, No
         throw BadAllocation();
     }
     createTreeWithOppositeFlags(newTree, node->getLeftNode(), treeGenre, flag);
-}
+}*/
 
-void streaming_database::movieTreeToArray(Genre genre, int *const output, int* counter)
+/*void streaming_database::movieTreeToArray(Genre genre, int *const output, int* counter)
 {
-    /*
+
     output_t<int> tmp = this->get_all_movies_count(genre);
     int sizeOfArray = tmp.ans();
 
@@ -82,8 +78,8 @@ void streaming_database::movieTreeToArray(Genre genre, int *const output, int* c
 
     delete[] movieArray;
     delete newTree;
-     */
-}
+
+}*/
 
 void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 {
@@ -658,7 +654,12 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
             int sizeOfArray = tmp.ans();
             Movie** movieArray = new Movie*[sizeOfArray];
 
-            m_movies_by_genre_by_rank[(int) genre]->treeToArrayInOrderRight(m_movies_by_genre_by_rank[(int) genre]->getRoot(), movieArray, counter)
+            m_movies_by_genre_by_rank[(int) genre]->treeToArrayInOrderRight(
+                        m_movies_by_genre_by_rank[(int) genre]->getRoot(), movieArray, sizeOfArray, counter);
+            for(int i = 0; i < sizeOfArray; ++i)
+            {
+                output[i] = movieArray[i]->getMovieId();
+            }
             //movieTreeToArray(genre, output, counter);
             delete counter;
         }
@@ -789,7 +790,7 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
     }
     else
     {
-        output_t<int> out(m_movies_by_genre[(int) fav_genre]->getRoot()->getValue()->getMovieId());// is sorted by id not rating !!!! and also why the root?
+        output_t<int> out(m_movies_by_genre[(int) fav_genre]->getMaximumValue()->getValue()->getMovieId());// is sorted by id not rating !!!! and also why the root?
         return out;
     }
 }
