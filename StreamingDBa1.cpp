@@ -154,7 +154,6 @@ StatusType streaming_database::rateRemoveAndAddMovie(Node<Movie>* movieNode, dou
     numOfVoters++;
     double newRating = rating / numOfVoters;
 
-
     //adding the movies to both types of trees
     Movie* movie = new Movie(movieId, views, vip, genre, newRating, numOfVoters, false);
     Movie* movieWithFlag = new Movie(movieId, views, vip, genre, newRating, numOfVoters, true);
@@ -356,6 +355,12 @@ StatusType streaming_database::remove_user(int userId)//find by object
         {
             AVLTree<User> *membersTree = (userNode->getValue()->getGroup()->getMembers());
             membersTree->removeValue(userNode->getValue());
+            for(int i = 0; i < 4; ++i)
+            {
+                Genre genre = static_cast<Genre>(i);
+                int viewsToRemove = userNode->getValue()->getMoviesUserWatchedInGenre(genre);
+                userNode->getValue()->getGroup()->updateMoviesGroupWatchedInGenre(genre, viewsToRemove);
+            }
             //delete membersTree; causes tests to fail
         }
         m_users.removeValue(userNode->getValue());
@@ -574,8 +579,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
         return StatusType::FAILURE;
     }
 
-    Movie* tmpMovieWithFlag = new Movie(movieId, 0, false, Genre::NONE, 0, 0,
-                                        true);
+    Movie* tmpMovieWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), false,
+                                    Genre::NONE,movieNode->getValue()->getRating(), 0,true);
     Node<Movie>* movieNodeWithFlag = m_movies_ranked.findObject(m_movies_ranked.getRoot(), tmpMovieWithFlag);
     delete tmpMovieWithFlag;
 
@@ -607,7 +612,6 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 
     groupNode->getValue()->updateMoviesGroupWatchedInGenre(movieNode->getValue()->getGenre(),
                                                            groupNode->getValue()->getGroupSize());
-
 
     return StatusType::SUCCESS;
 }
@@ -667,7 +671,6 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
         return StatusType::SUCCESS;
     }
 }
-// curently isnt at the time complexity, were creating a new tree and thats n not logn...
 
 output_t<int> streaming_database::get_num_views(int userId, Genre genre)
 {
@@ -691,8 +694,6 @@ output_t<int> streaming_database::get_num_views(int userId, Genre genre)
     output_t<int> output(num);
     delete tmp;
     return output;
-
-
 }
 
 StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
