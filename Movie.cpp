@@ -2,11 +2,12 @@
 using namespace std;
 
 /*Movie::Movie():
+/*Movie::Movie():
 m_movieId(1), m_views(0), m_numOfVoters(0),m_rating(0), m_vipOnly(false), m_genre(Genre::NONE), m_flag(false)
 {}*/
 
 Movie::Movie(int movieID, int views, bool vipOnly, Genre genre, double rating, int numOfVoters, bool flag):
-m_movieId(movieID), m_views(views), m_numOfVoters(0), m_rating(rating), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
+m_movieId(movieID), m_views(views), m_numOfVoters(numOfVoters), m_rating(rating), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
 {}
 //arnt checking input here, we'll check it in addMovie in StreamingDBa1
 
@@ -72,6 +73,11 @@ int Movie::getNumOfVoters() const
     return m_numOfVoters;
 }
 
+int Movie::getNumOfVoters() const
+{
+    return m_numOfVoters;
+}
+
 bool operator==(const Movie& a, const Movie& b)
 {
     if (a.getMovieId() == b.getMovieId())
@@ -121,6 +127,7 @@ bool operator<(const Movie &a, const Movie &b)
             }
         }
     }
+    //cout << "neither if was entered" << endl;
     return false;
 }
     
@@ -129,6 +136,7 @@ bool operator>(const Movie &a, const Movie &b)
 {
     if(a.getFlag() != b.getFlag())
     {
+        cout << "the movie flags are different" << endl;
         cout << "the movie flags are different" << endl;
     }
     if(a == b)

@@ -89,6 +89,10 @@ class AVLTree
 
         Node<T>* findObject(Node<T>* node, T* value);
 
+        Node<T>* getMaximumValue();
+
+        void setMaximumValue(Node<T>* node);
+
         ostream& inOrder(ostream& os, Node<T>* node) const;
 
         ostream& postOrder(ostream& os, Node<T>* node) const;
@@ -115,6 +119,9 @@ class AVLTree
 
         Node<T>* findObjectHelper(Node<T>* node, T* value);
 
+        Node<T> *findMaximumValue(Node<T> *node);
+
+
         void numOfNodes(Node<T>* node, int* counter);
 
         /*
@@ -124,6 +131,7 @@ class AVLTree
         Node<T>* rotateRight(Node<T>* parent);
         
         Node<T>* m_root;
+        Node<T>* m_maximumValue;
 
 };
 
@@ -417,6 +425,7 @@ template<class T>
 void AVLTree<T>::removeValue(T* value)
 {
     m_root = removeValueHelper(m_root, value);
+    setMaximumValue(findMaximumValue(m_root));
 }
 
 template<class T>
@@ -455,6 +464,7 @@ template<class T>
 void AVLTree<T>::insertValue(T* value)
 {
     m_root = insertValueHelper(m_root, value);
+    setMaximumValue(findMaximumValue(m_root));
 }
 
 template<class T>
@@ -666,6 +676,32 @@ void AVLTree<T>::setAllToNullptr(Node<T>* node)
         setAllToNullptr(node->getRightNode());
     }
     node->setValue(nullptr);
+}
+
+template<class T>
+Node<T>* AVLTree<T>::findMaximumValue(Node<T>* node)
+{
+    if(node == nullptr)
+    {
+        return nullptr;
+    }
+    if(node->getRightNode() == nullptr)
+    {
+        return node;
+    }
+    return (findMaximumValue(node->getRightNode()));
+}
+
+template<class T>
+Node<T>* AVLTree<T>::getMaximumValue()
+{
+    return m_maximumValue;
+}
+
+template<class T>
+void AVLTree<T>::setMaximumValue(Node<T>* node)
+{
+    m_maximumValue = node;
 }
 
 /************************AVLTree Print Functions*************************/

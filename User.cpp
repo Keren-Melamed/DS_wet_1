@@ -39,7 +39,7 @@ int User::getMoviesUserWatchedInGenre(Genre genre)
     {
         int value=0;
 
-        for(int i = 0; i <4; i++)
+        for(int i = 0; i < 4; i++)
         {
             value += m_movies_user_watched[i];
         }
