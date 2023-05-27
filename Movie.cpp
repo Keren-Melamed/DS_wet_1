@@ -5,8 +5,8 @@ using namespace std;
 m_movieId(1), m_views(0), m_numOfVoters(0),m_rating(0), m_vipOnly(false), m_genre(Genre::NONE), m_flag(false)
 {}*/
 
-Movie::Movie(int movieID, int views, bool vipOnly, Genre genre, double rating, bool flag):
-m_movieId(movieID), m_views(views), m_numOfVoters(0), m_rating(rating), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
+Movie::Movie(int movieID, int views, bool vipOnly, Genre genre, double rating, int numOfVoters, bool flag):
+m_movieId(movieID), m_views(views), m_numOfVoters(numOfVoters), m_rating(rating), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
 {}
 //arnt checking input here, we'll check it in addMovie in StreamingDBa1
 
@@ -48,6 +48,11 @@ int Movie::getViews() const
 Genre Movie::getGenre() const
 {
     return m_genre;
+}
+
+int Movie::getNumOfVoters() const
+{
+    return m_numOfVoters;
 }
 
 bool operator==(const Movie& a, const Movie& b)
@@ -182,5 +187,7 @@ void Movie::print(std::ostream &os) const
 {
     os << m_movieId << " ";
 }
+
+
 
 
