@@ -14,6 +14,7 @@ streaming_database::~streaming_database()
 
 void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 {
+    cout<<"adding movie "<<movie->getMovieId()<<" to genre tree "<<(int) genre<<endl;
     try
     {
         m_movies_by_genre[(int) genre]->insertValue(movie);
@@ -26,6 +27,7 @@ void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 
 void streaming_database::addMovieToGenreTreeRanked(Genre genre, Movie* movieWithFlag)
 {
+    cout<<"adding movie "<<movieWithFlag->getMovieId()<<" from genre tree ranked "<<(int) genre<<endl;
     try
     {
         m_movies_by_genre_by_rank[(int) genre]->insertValue(movieWithFlag);
@@ -38,6 +40,8 @@ void streaming_database::addMovieToGenreTreeRanked(Genre genre, Movie* movieWith
 
 void streaming_database::removeMovieFromGenreTree(Genre genre, Movie* movie)
 {
+    cout<<"removing movie "<<movie->getMovieId()<<" to genre tree "<<(int) genre<<endl;
+
     Node<Movie>* movieNode = m_movies_by_genre[(int) genre]->findObject(
             m_movies_by_genre[(int) genre]->getRoot(), movie);
     if(movieNode == nullptr)
@@ -50,6 +54,8 @@ void streaming_database::removeMovieFromGenreTree(Genre genre, Movie* movie)
 
 void streaming_database::removeMovieFromGenreTreeRanked(Genre genre, Movie* movieWithFlag)
 {
+    cout<<"removing movie "<<movieWithFlag->getMovieId()<<" from genre tree ranked "<<(int) genre<<endl;
+
     Node<Movie>* movieNodeWithFlag = m_movies_by_genre_by_rank[(int) genre]->findObject(
             m_movies_by_genre_by_rank[(int) genre]->getRoot(), movieWithFlag);
     if(movieNodeWithFlag == nullptr)
@@ -62,6 +68,7 @@ void streaming_database::removeMovieFromGenreTreeRanked(Genre genre, Movie* movi
 
 StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bool vipOnly)//insert by object
 {
+    cout<<"add_movie: adding movie "<<movieId<<"  to genre "<<(int) genre<<endl;
     if((movieId <= 0) || (views < 0) || (genre == Genre::NONE)){
         return StatusType::INVALID_INPUT;
     }
@@ -73,6 +80,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
         delete movie;
         return StatusType::FAILURE;
     }
+
 
     Movie* movieWithFlag = new Movie(movieId, views, vipOnly, genre, 0, 0, true);
     Node<Movie>* tmpWithFlag = m_movies_ranked.findObject(m_movies_ranked.getRoot(), movieWithFlag);
@@ -107,6 +115,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
 
 StatusType streaming_database::remove_movie(int movieId)//insert by object
 {
+    cout<<"remove_movie: removing movie "<<movieId <<endl;
 
     if(movieId <= 0)
     {
@@ -123,9 +132,13 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
         return StatusType::FAILURE;
     }
 
-    Movie* tmpWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), false,
+    Movie* tmpRegular = new Movie(movieId, movieNode->getValue()->getViews(), movieNode->getValue()->getVipOnly(),
                                    movieNode->getValue()->getGenre(),movieNode->getValue()->getRating(),
-                                   0, true);
+                                   movieNode->getValue()->getNumOfVoters(), false);
+
+    Movie* tmpWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), movieNode->getValue()->getVipOnly(),
+                                   movieNode->getValue()->getGenre(),movieNode->getValue()->getRating(),
+                                   movieNode->getValue()->getNumOfVoters(), true);
     Node<Movie>* movieNodeWithFlag = m_movies_ranked.findObject(m_movies_ranked.getRoot(), tmpWithFlag);
 
     if(movieNodeWithFlag == nullptr)
@@ -140,11 +153,12 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
 
         m_movies.removeValue(movieNode->getValue());
         m_movies_ranked.removeValue(movieNodeWithFlag->getValue());
-        removeMovieFromGenreTree(temp_genre, tmp);
+        removeMovieFromGenreTree(temp_genre, tmpRegular);
         removeMovieFromGenreTreeRanked(temp_genre, tmpWithFlag);
 
         m_movies_in_genre[(int) temp_genre] -= 1;
         delete tmp;
+        delete tmpRegular;
         delete tmpWithFlag;
         //delete movieNode->getValue();
         return StatusType::SUCCESS;
@@ -153,6 +167,7 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
 
 StatusType streaming_database::add_user(int userId, bool isVip)//insert by object
 {
+    cout<<"add_user: adding user "<< userId<<endl;
     if(userId <= 0)
     {
         return StatusType::INVALID_INPUT;
@@ -181,6 +196,7 @@ StatusType streaming_database::add_user(int userId, bool isVip)//insert by objec
 
 StatusType streaming_database::remove_user(int userId)//find by object
 {
+    cout<<"remove_user: removing user "<< userId<<endl;
     if(userId <= 0)
     {
         return StatusType::INVALID_INPUT;
@@ -217,6 +233,7 @@ StatusType streaming_database::remove_user(int userId)//find by object
 
 StatusType streaming_database::add_group(int groupId)//insert by object
 {
+    cout<<"add_group: adding group "<< groupId<<endl;
     if(groupId <= 0){
         return StatusType::INVALID_INPUT;
     }
@@ -247,6 +264,7 @@ StatusType streaming_database::add_group(int groupId)//insert by object
 
 StatusType streaming_database::remove_group(int groupId)//remove by object
 {
+    cout<<"remove_group: removing group "<< groupId<<endl;
     if(groupId <= 0)
     {
         return StatusType::INVALID_INPUT;
@@ -272,6 +290,7 @@ StatusType streaming_database::remove_group(int groupId)//remove by object
 
 StatusType streaming_database::add_user_to_group(int userId, int groupId)//find and insert by object
 {
+    cout<<"add_user_to_group: adding user "<< userId<<" to group "<<groupId<<endl;
     if((groupId <= 0) || (userId <= 0))
     {
         return StatusType::INVALID_INPUT;
@@ -333,6 +352,7 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 
 StatusType streaming_database::user_watch(int userId, int movieId)
 {
+    cout<<"user_watch: user "<< userId<<" watched movie "<<movieId<<endl;
     //need to possibly rebalance(remove the movie and add it back) the tree by rank after a movie has been watched cause its "size" changed
     if((userId <= 0) || (movieId <= 0)){
         return StatusType::INVALID_INPUT;
@@ -394,6 +414,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
 
 StatusType streaming_database::group_watch(int groupId,int movieId)
 {
+    cout<<"group_watch: group "<< groupId<<" watched movie "<<movieId<<endl;
     //need to possibly rebalance(remove the movie and add it back) the tree by rank after a movie has been watched cause its "size" changed
     if((groupId <= 0) || (movieId <= 0))
     {
@@ -437,8 +458,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
     groupNode->getValue()->updateMoviesGroupWatchedInGenre(genre, groupNode->getValue()->getGroupSize());
     groupNode->getValue()->addViewToMembers(groupNode->getValue()->getMembers()->getRoot(), genre);
 
-    m_movies_ranked.removeValue(movieNode->getValue());//maybe should be tmpMovieWithFlag
-    m_movies_by_genre_by_rank[(int) genre]->removeValue(movieNode->getValue());//here too?// there's a func for this
+    m_movies_ranked.removeValue(movieNodeWithFlag->getValue());//replaced movieNodeWithFlag with tmpMovieWithFlag
+    m_movies_by_genre_by_rank[(int) genre]->removeValue(movieNodeWithFlag->getValue());
     tmpMovieWithFlag->addViews(groupNode->getValue()->getGroupSize());
     try
     {
@@ -455,6 +476,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
 
 output_t<int> streaming_database::get_all_movies_count(Genre genre)
 {
+    cout<<"get_all_movies_count: genre "<<(int)genre<<endl;
     if(genre != Genre::NONE)
     {
         output_t<int> out(m_movies_in_genre[(int)genre]);
@@ -473,6 +495,7 @@ output_t<int> streaming_database::get_all_movies_count(Genre genre)
 
 StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 {
+    cout<<"get_all_movies: genre "<<(int)genre<<endl;
     if(output == nullptr){
         return StatusType::INVALID_INPUT;
     }
@@ -507,6 +530,7 @@ StatusType streaming_database::get_all_movies(Genre genre, int *const output)
 
 output_t<int> streaming_database::get_num_views(int userId, Genre genre)
 {
+    cout<<"get_num_views: user "<<userId<<" genre "<<(int)genre<<endl;
     if(userId <= 0)
     {
         output_t<int> output(StatusType::INVALID_INPUT);
@@ -524,6 +548,7 @@ output_t<int> streaming_database::get_num_views(int userId, Genre genre)
 
     User* user = node->getValue();
     int num = user->getMoviesUserWatchedInGenre(genre);
+
     output_t<int> output(num);
     delete tmp;
     return output;
@@ -531,6 +556,7 @@ output_t<int> streaming_database::get_num_views(int userId, Genre genre)
 
 StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 {
+    cout<<"rate_movie: user "<<userId<<" movie "<<movieId<<" rating "<<rating<<endl;
     if (userId <= 0 || movieId <=0 || rating < 0 || rating > 100)
     {
         return StatusType::INVALID_INPUT;
@@ -585,7 +611,7 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 
 output_t<int> streaming_database::get_group_recommendation(int groupId)
 {
-
+    cout<<"get_group_recommendation: group "<<groupId<<endl;
     if(groupId <= 0)
     {
         output_t<int> out(StatusType::INVALID_INPUT);
