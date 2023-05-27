@@ -116,8 +116,6 @@ class AVLTree
         Node<T>* findObjectHelper(Node<T>* node, T* value);
 
         void numOfNodes(Node<T>* node, int* counter);
-        Node<T>* nodeWithMinimumValue(Node<T>* node);
-        Node<T>* deletionBalance(Node<T>* node);
 
         /*
         * different methods for balancing an AVLTree 
@@ -284,7 +282,6 @@ int AVLTree<T>::calculateHeight(Node<T>* node) const
     }
 }     
 
-
 template<class T>
 int AVLTree<T>::balanceFactor(Node<T>* node)
 {
@@ -333,15 +330,6 @@ int AVLTree<T>::balanceFactor(Node<T>* node)
 }
 
 template<class T>
-Node<T>* AVLTree<T>::nodeWithMinimumValue(Node<T>* node)
-{
-    Node<T>* current = node;
-    while (current->getLeftNode() != NULL)
-        current = current->getLeftNode();
-    return current;
-}
-
-template<class T>
 Node<T>* AVLTree<T>::removeValueHelper(Node<T>* node, T* value)
 {
     if(node == nullptr)
@@ -361,6 +349,7 @@ Node<T>* AVLTree<T>::removeValueHelper(Node<T>* node, T* value)
     }
     else
     {
+        //delete node->getValue(); also causes the prog to seg fault
         //cout << "the value was equal in size" << endl;
         if(node->getLeftNode() == nullptr || node->getRightNode() == nullptr)
         {
@@ -399,6 +388,8 @@ Node<T>* AVLTree<T>::removeValueHelper(Node<T>* node, T* value)
                     node = temp;
                 }
             }
+            //delete child->getValue(); crashes the code, but we still need to delete the value somewhere
+            //maybe delete it in the node d'tor?
             delete child;
         }
 
@@ -421,7 +412,6 @@ Node<T>* AVLTree<T>::removeValueHelper(Node<T>* node, T* value)
 
     return node;
 }
-
 
 template<class T>
 void AVLTree<T>::removeValue(T* value)
@@ -524,53 +514,6 @@ Node<T>* AVLTree<T>::balance(Node<T>* node)
         //cout << "nothing happened" << endl;
         return node;
     }
-
-
-
-
-    return node;
-}
-
-template <class T>
-Node<T>* AVLTree<T>::deletionBalance(Node<T>* node)
-{
-    if(balanceFactor(node->getLeftNode()) > 1 || balanceFactor(node->getLeftNode()) < -1)
-    {
-        node->setLeftNode(balance(node->getLeftNode(), node->getLeftNode()->getValue()));
-
-    }
-    if(balanceFactor(node->getRightNode()) > 1 || balanceFactor(node->getRightNode()) < -1)
-    {
-        node->setRightNode(balance(node->getRightNode(), node->getRightNode()->getValue()));
-
-    }
-    if(balanceFactor(node) == 2 && balanceFactor(node->getLeftNode()) == 1)
-    {
-        node = rotateLeft(node);
-    }
-    else if(balanceFactor(node) == 2 && balanceFactor(node->getLeftNode()) == -1)
-    {
-        node->setLeftNode(rotateLeft(node->getLeftNode()));
-        node = rotateRight(node);
-    }
-    else if(balanceFactor(node) == 2 && balanceFactor(node->getLeftNode()) == 0)
-    {
-        node = rotateLeft(node);
-    }
-    else if(balanceFactor(node) == -2 && balanceFactor(node->getLeftNode()) == -1)
-    {
-        node = rotateRight(node);
-    }
-    else if(balanceFactor(node) == -2 && balanceFactor(node->getLeftNode()) == 1)
-    {
-        node->setRightNode(rotateRight(node->getRightNode()));
-        node = rotateRight(node);
-    }
-    else if(balanceFactor(node) == -2 && balanceFactor(node->getLeftNode()) == 0)
-    {
-        node = rotateLeft(node);
-    }
-    return node;
 }
 
 template<class T>
@@ -578,18 +521,22 @@ Node<T>* AVLTree<T>::findObjectHelper(Node<T>* node, T* value)
 {
     if(node == nullptr )
     {
+        //cout << "value not found" <<endl;
         return nullptr;
     }
     else if(*(node->getValue()) == *value)
     {
+        //cout << "the value was equal" <<endl;
         return node;
     }
     else if(*value < *(node->getValue()))
     {
+        //cout << "the value was smaller" <<endl;
         return findObjectHelper(node->getLeftNode(), value);
     }
     else if(*value > *(node->getValue()))
     {
+        //cout << "the value was bigger" <<endl;
         return findObjectHelper(node->getRightNode(), value);
     }
     //cout << "no condition was met, so return nullptr" << endl;
