@@ -9,7 +9,9 @@ class Movie
     public:
         Movie() = delete;
 
-        Movie(int movieID, int views, bool vipOnly, Genre genre, double rating, bool flag = false);
+        Movie(int movieID, int views, bool vipOnly, Genre genre, double rating, int numOfVoters, bool flag = false);
+
+        Movie(const Movie& movie);
 
         ~Movie() = default;
 
@@ -26,6 +28,8 @@ class Movie
         int getViews() const;
 
         int getMovieId() const;
+
+        int getNumOfVoters() const;
 
         double getRating() const;
 
