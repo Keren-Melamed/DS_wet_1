@@ -11,9 +11,9 @@ class Movie
 
         Movie(int movieID, int views, bool vipOnly, Genre genre, double rating, int numOfVoters, bool flag = false);
 
-        ~Movie() = default;
-
         Movie(const Movie& movie);
+
+        ~Movie() = default;
 
         void addRating(double rating);
         
