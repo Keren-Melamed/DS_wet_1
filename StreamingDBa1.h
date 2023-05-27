@@ -27,16 +27,18 @@ private:
 
     int m_movies_in_genre[4] = {0};
 
-/*    AVLTree<User> m_users;
+    AVLTree<User> m_users;
     AVLTree<Movie> m_movies;
     AVLTree<Group> m_groups;
     AVLTree<Movie> m_fantasy_movies;
     AVLTree<Movie> m_comedy_movies;
     AVLTree<Movie> m_action_movies;
-    AVLTree<Movie> m_drama_movies;*/
-
-    //void movieTreeToArray(Genre genre, int *const output, int* counter);
-    //void createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre, bool flag);
+    AVLTree<Movie> m_drama_movies;
+    AVLTree<Movie> m_movies_ranked;
+    AVLTree<Movie> m_fantasy_movies_by_rating;
+    AVLTree<Movie> m_comedy_movies_by_rating;
+    AVLTree<Movie> m_action_movies_by_rating;
+    AVLTree<Movie> m_drama_movies_by_rating;
 
     void addMovieToGenreTree(Genre genre, Movie *movie);
     void addMovieToGenreTreeRanked(Genre genre, Movie* movieWithFlag);
@@ -59,18 +61,7 @@ private:
 public:
 
 
-    AVLTree<User> m_users;
-    AVLTree<Movie> m_movies;
-    AVLTree<Group> m_groups;
-    AVLTree<Movie> m_fantasy_movies;
-    AVLTree<Movie> m_comedy_movies;
-    AVLTree<Movie> m_action_movies;
-    AVLTree<Movie> m_drama_movies;
-    AVLTree<Movie> m_movies_ranked;
-    AVLTree<Movie> m_fantasy_movies_by_rating;
-    AVLTree<Movie> m_comedy_movies_by_rating;
-    AVLTree<Movie> m_action_movies_by_rating;
-    AVLTree<Movie> m_drama_movies_by_rating;
+
     // <DO-NOT-MODIFY> {
 
     streaming_database();

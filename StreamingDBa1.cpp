@@ -2,9 +2,6 @@
 #include<memory>
 
 
-/////// need to fix the dry part !!!! funcs creatTreeWith, all removes and adds, watch and rank, get rec... maybe more
-
-
 streaming_database::streaming_database() = default;
 
 streaming_database::~streaming_database()
@@ -12,74 +9,6 @@ streaming_database::~streaming_database()
     m_movies.setAllToNullptr(m_movies.getRoot());
     m_movies_ranked.setAllToNullptr(m_movies_ranked.getRoot());
 }
-
-/*void streaming_database::createTreeWithOppositeFlags(AVLTree<Movie>* newTree, Node<Movie>* node, Genre treeGenre,
-                                                     bool flag)////// no rating
-{
-    if(node == nullptr)
-    {
-        return;
-    }
-    createTreeWithOppositeFlags(newTree, node->getRightNode(),treeGenre, flag);
-
-    int id = node->getValue()->getMovieId(), views = node->getValue()->getViews();
-    Genre genre = node->getValue()->getGenre();
-    bool vip = node->getValue()->getVipOnly();
-
-    Movie* tmpMovie = new Movie(id, views, vip, genre, 0, false);
-    Node<Movie>* movieNode = m_movies_by_genre[(int) genre]->findObject(
-            m_movies_by_genre[(int) treeGenre]->getRoot(), tmpMovie);
-    // searching for the movie to get its rating in the regular tree;
-    delete tmpMovie;
-
-    //we were adding in movies without the rating to the newTree(which is sorted by rating) hence why it wasn't working
-
-    id = movieNode->getValue()->getMovieId();
-    views = movieNode->getValue()->getViews();
-    genre = movieNode->getValue()->getGenre();
-    vip = movieNode->getValue()->getVipOnly();
-    double rating = movieNode->getValue()->getRating();
-
-    Movie* movieToAdd = new Movie(id, views, vip, genre, rating, true);
-    try
-    {
-        newTree->insertValue(movieToAdd);
-    }
-    catch(BadAllocation& e)
-    {
-        throw BadAllocation();
-    }
-    createTreeWithOppositeFlags(newTree, node->getLeftNode(), treeGenre, flag);
-}*/
-
-/*void streaming_database::movieTreeToArray(Genre genre, int *const output, int* counter)
-{
-
-    output_t<int> tmp = this->get_all_movies_count(genre);
-    int sizeOfArray = tmp.ans();
-
-    AVLTree<Movie>* newTree = new AVLTree<Movie>;
-    try
-    {
-        createTreeWithOppositeFlags(newTree, m_movies_by_genre[(int) genre]->getRoot(), genre, true);
-    }
-    catch(BadAllocation& e)
-    {
-        throw BadAllocation();
-    }
-
-    Movie** movieArray = new Movie*[sizeOfArray];
-    newTree->treeToArrayInOrderRight(newTree->getRoot(), movieArray, sizeOfArray, counter);
-
-    for (int i = 0; i < sizeOfArray; ++i)
-    {
-        output[i] = movieArray[i]->getMovieId();
-    }
-
-    delete[] movieArray;
-    delete newTree;
-
-}*/
 
 void streaming_database::addMovieToGenreTree(Genre genre, Movie* movie)
 {
@@ -131,10 +60,6 @@ void streaming_database::removeMovieFromGenreTreeRanked(Genre genre, Movie* movi
 
 StatusType streaming_database::rateRemoveAndAddMovie(Node<Movie>* movieNode, double rating)
 {
-    //removing the movies from both trees(remove movie already does both
-    // but add movie does it without the updated rating so its no good, cause it always adds with value 0 and we cant
-    // change its definition)
-
     int movieId = movieNode->getValue()->getMovieId();
     int views = movieNode->getValue()->getViews();
     double currentRating = movieNode->getValue()->getRating();
@@ -145,7 +70,6 @@ StatusType streaming_database::rateRemoveAndAddMovie(Node<Movie>* movieNode, dou
     StatusType tmpStatus = remove_movie(movieId);
     if(tmpStatus == StatusType::FAILURE)
     {
-        cout << "rebalancing the tree after rating the movie was unsuccessful" << endl;
         return StatusType::FAILURE;
     }
 
@@ -154,7 +78,6 @@ StatusType streaming_database::rateRemoveAndAddMovie(Node<Movie>* movieNode, dou
     numOfVoters++;
     double newRating = rating / numOfVoters;
 
-    //adding the movies to both types of trees
     Movie* movie = new Movie(movieId, views, vip, genre, newRating, numOfVoters, false);
     Movie* movieWithFlag = new Movie(movieId, views, vip, genre, newRating, numOfVoters, true);
 
@@ -178,10 +101,6 @@ StatusType streaming_database::rateRemoveAndAddMovie(Node<Movie>* movieNode, dou
 
 StatusType streaming_database::viewRemoveAndAddMovie(Node<Movie>* movieNode, int views)
 {
-    //removing the movies from both trees(remove movie already does both
-    // but add movie does it without the updated rating so its no good, cause it always adds with value 0 and we cant
-    // change its definition)
-
     int movieId = movieNode->getValue()->getMovieId();
     int viewsBeforeAddition = movieNode->getValue()->getViews();
     double rating = movieNode->getValue()->getRating();
@@ -193,7 +112,6 @@ StatusType streaming_database::viewRemoveAndAddMovie(Node<Movie>* movieNode, int
     StatusType tmpStatus = remove_movie(movieId);
     if(tmpStatus == StatusType::FAILURE)
     {
-        cout << "rebalancing the tree after user or group watched the movie was unsuccessful" << endl;
         return StatusType::FAILURE;
     }
 
@@ -283,8 +201,8 @@ StatusType streaming_database::remove_movie(int movieId)//insert by object
         return StatusType::FAILURE;
     }
 
-    Movie* tmpWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), false, Genre::NONE,
-                                   movieNode->getValue()->getRating(), 0, true);
+    Movie* tmpWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), movieNode->getValue()->getVipOnly(), movieNode->getValue()->getGenre(),
+                                   movieNode->getValue()->getRating(), movieNode->getValue()->getNumOfVoters(), true);
     Node<Movie>* movieNodeWithFlag = m_movies_ranked.findObject(m_movies_ranked.getRoot(), tmpWithFlag);
 
     if(movieNodeWithFlag == nullptr)
@@ -444,21 +362,11 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 
     if(userNode == nullptr || groupNode == nullptr)
     {
-        if(userNode == nullptr)
-        {
-            //cout << "the userNode was null" << endl;
-        }
-        if(groupNode == nullptr)
-        {
-            //cout << "the groupNode was null" << endl;
-        }
-
         return StatusType::FAILURE;
     }
 
     if(userNode->getValue()->getGroup() != nullptr)
     {
-
         return StatusType::FAILURE;
     }
 
@@ -503,7 +411,6 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)//find 
 
 StatusType streaming_database::user_watch(int userId, int movieId)
 {
-    //need to possibly rebalance(remove the movie and add it back) the tree by rank after a movie has been watched cause its "size" changed
     if((userId <= 0) || (movieId <= 0)){
         return StatusType::INVALID_INPUT;
     }
@@ -527,8 +434,8 @@ StatusType streaming_database::user_watch(int userId, int movieId)
         return StatusType::FAILURE;
     }
 
-    Movie* tmpMovieWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), false,
-                                   Genre::NONE,movieNode->getValue()->getRating(), 0, true);
+    Movie* tmpMovieWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), movieNode->getValue()->getVipOnly(),
+                                   movieNode->getValue()->getGenre(),movieNode->getValue()->getRating(), movieNode->getValue()->getNumOfVoters(), true);
     Node<Movie>* movieNodeWithFlag = m_movies_ranked.findObject(m_movies_ranked.getRoot(), tmpMovieWithFlag);
     delete tmpMovieWithFlag;
 
@@ -542,13 +449,10 @@ StatusType streaming_database::user_watch(int userId, int movieId)
     StatusType tmpStatus = viewRemoveAndAddMovie(movieNode, 1);
     if(tmpStatus == StatusType::FAILURE)
     {
-        cout << "removing and adding the movie was unsuccessful in user watch" << endl;
         return StatusType::FAILURE;
     }
 
     userNode->getValue()->UpdateMoviesUserWatchedInGenre(movieNode->getValue()->getGenre());
-    //movieNode->getValue()->addViews(1);
-    //movieNodeWithFlag->getValue()->addViews(1);
 
     Group* user_group = userNode->getValue()->getGroup();
     if(user_group != nullptr)
@@ -579,8 +483,8 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
         return StatusType::FAILURE;
     }
 
-    Movie* tmpMovieWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), false,
-                                    Genre::NONE,movieNode->getValue()->getRating(), 0,true);
+    Movie* tmpMovieWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), movieNode->getValue()->getVipOnly(),
+                                    movieNode->getValue()->getGenre(),movieNode->getValue()->getRating(), movieNode->getValue()->getNumOfVoters(),true);
     Node<Movie>* movieNodeWithFlag = m_movies_ranked.findObject(m_movies_ranked.getRoot(), tmpMovieWithFlag);
     delete tmpMovieWithFlag;
 
@@ -603,7 +507,6 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
     StatusType tmpStatus = viewRemoveAndAddMovie(movieNode, groupNode->getValue()->getGroupSize());
     if(tmpStatus == StatusType::FAILURE)
     {
-        cout << "removing and adding the movie was unsuccessful in user watch" << endl;
         return StatusType::FAILURE;
     }
 
@@ -698,7 +601,7 @@ output_t<int> streaming_database::get_num_views(int userId, Genre genre)
 
 StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
 {
-    //need to possibly rebalance(remove the movie and add it back) the tree by rank after a movie has been rated cause its "size" changed
+    
     if (userId <= 0 || movieId <=0 || rating < 0 || rating > 100)
     {
         return StatusType::INVALID_INPUT;
@@ -721,8 +624,8 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
         return StatusType::FAILURE;
     }
 
-    Movie* tmpMovieWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), false,
-                                  Genre::NONE, movieNode->getValue()->getRating(), 0, true);
+    Movie* tmpMovieWithFlag = new Movie(movieId, movieNode->getValue()->getViews(), movieNode->getValue()->getVipOnly(),
+                                  movieNode->getValue()->getGenre(), movieNode->getValue()->getRating(), movieNode->getValue()->getNumOfVoters(), true);
     Node<Movie>* movieNodeWithFlag = m_movies_ranked.findObject(m_movies_ranked.getRoot(), tmpMovieWithFlag);
     delete tmpMovieWithFlag;
 
@@ -734,7 +637,6 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
     StatusType tmpStatus = rateRemoveAndAddMovie(movieNode, rating);
     if(tmpStatus == StatusType::FAILURE)
     {
-        cout << "removing and adding the movie was unsuccessful in rate movie" << endl;
         return StatusType::FAILURE;
     }
 
@@ -791,7 +693,8 @@ output_t<int> streaming_database::get_group_recommendation(int groupId)
     }
     else
     {
-        output_t<int> out(m_movies_by_genre[(int) fav_genre]->getMaximumValue()->getValue()->getMovieId());// is sorted by id not rating !!!! and also why the root?
+        output_t<int> out(m_movies_by_genre[(int) fav_genre]->getMaximumValue()->getValue()->getMovieId());
+
         return out;
     }
 }

@@ -8,7 +8,7 @@ m_movieId(1), m_views(0), m_numOfVoters(0),m_rating(0), m_vipOnly(false), m_genr
 Movie::Movie(int movieID, int views, bool vipOnly, Genre genre, double rating, int numOfVoters, bool flag):
 m_movieId(movieID), m_views(views), m_numOfVoters(numOfVoters), m_rating(rating), m_vipOnly(vipOnly), m_genre(genre), m_flag(flag)
 {}
-//arnt checking input here, we'll check it in addMovie in StreamingDBa1
+
 
 void Movie::addRating(double rating)
 {
@@ -69,10 +69,7 @@ bool operator==(const Movie& a, const Movie& b)
 
 bool operator<(const Movie &a, const Movie &b)
 {
-    if(a.getFlag() != b.getFlag())
-    {
-        cout << "the movie flags are different" << endl;//should never happen
-    }
+
     if(!a.getFlag())//the flag dictates we compare by movie ID
     {
         //cout << "the flags were false" << endl;
@@ -109,10 +106,6 @@ bool operator<(const Movie &a, const Movie &b)
 
 bool operator>(const Movie &a, const Movie &b)
 {
-    if(a.getFlag() != b.getFlag())
-    {
-        cout << "the movie flags are different" << endl;
-    }
     if(a == b)
     {
         return false;
@@ -121,58 +114,6 @@ bool operator>(const Movie &a, const Movie &b)
     return (!tmp);//I feel like this should work
 }
 
-/*bool Movie::operator<(const Movie& other) const
-{
-    if(this->getFlag() != other.getFlag())
-    {
-        std::cout << "the movie flags are different" << std::endl;//should never be happen
-    }
-    if(!this->getFlag())//the flag dictates we compare by movie ID
-    {
-        std::cout << "the flags were false" << std::endl;
-        if(this->getMovieId() > other.getMovieId())//opposite on purpose because the lower id values higher
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    if(this->getRating() <= other.getRating())//the flag dictates we compare by rating
-    {
-        std::cout << "the flags were true" << std::endl;
-        if(this->getRating() == other.getRating())
-        {
-            if(this->getViews() <= other.getViews())
-            {
-                if(this->getViews() == other.getViews())
-                {
-                    return (this->getMovieId() > other.getMovieId());//under the assumption no 2 movies have the same id
-                }
-                return true;
-            }
-            return false;
-        }
-        return true;
-    }
-
-    return false;
-}
-//under the assumption no 2 movies have the same id
-
-//opposite of above function
-bool Movie::operator>(const Movie& other) const
-{
-    if(this->getFlag() != other.getFlag())
-    {
-        std::cout << "the movie flags are different" << std::endl;
-    }
-    bool tmp = (*this < other);
-    return (!tmp);//I feel like this should work
-}
-*/
 void Movie::setFlag(bool flag)
 {
     m_flag = flag;
